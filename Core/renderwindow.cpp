@@ -15,8 +15,10 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
     } else
         initialized = true;
     
-    if (initialized)
+    if (initialized) {
+        UpdateSize();
         SDL_SetWindowTitle(window, windowName);
+    }
 }
 
 
@@ -37,7 +39,10 @@ void RenderWindow::ToggleFullscreen() {
     }
 }
 void RenderWindow::UpdateSize() {
-    tileRes = fmax(x/MapWidth, y/MapHeight);
+    SDL_GetWindowSize(window, &x, &y);
+    tileRes = fmin(x/MapWidth, y/MapHeight);
+    offsetX = (x-MapWidth*tileRes)/2;
+    offsetY = (y-MapHeight*tileRes)/2;
 }
 
 
@@ -52,18 +57,16 @@ void RenderWindow::Close() {
 
 void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
     if (tileID == 0) return;
-    int resX = x/40;
-    int resY = y/15;
 
     SDL_Rect tile;
-    tile.w = resX;
-    tile.h = resY;
-    tile.x = tileX*resX;
-    tile.y = tileY*resY;
+    tile.w = tileRes;
+    tile.h = tileRes;
+    tile.x = tileX*tileRes + offsetX;
+    tile.y = tileY*tileRes + offsetY;
 
     if (tileID == 1) {
-        SDL_SetRenderDrawColor(canvas, 0x10, 0x10, 0x10, 0x00);
-        SDL_RenderDrawRect(canvas, &tile);
+        SDL_SetRenderDrawColor(canvas, 255, 255, 255, 0);
+        SDL_RenderFillRect(canvas, &tile);
     }
 }
 void RenderWindow::DrawDialogueBox() {

@@ -1,27 +1,3 @@
-# CC=g++
-# CCFLAGS=-ICore -IEntities -ITile#-Wall -Werror -g
-# LDFLAGS=-lSDL2 -lSDL2main -lSDL2_ttf
-# SOURCES=$(wildcard *.cpp)
-# OBJECTS=$(SOURCES:.cpp=.o)
-# SUBMAKE=$(wildcard **/Makefile)
-# TARGET=main
-
-# all: $(TARGET)
-
-# $(TARGET): $(OBJECTS)
-# 		$(CC) -o $@ $^ $(LDFLAGS) 
-
-# %.o: %.cpp %.h
-# 		$(CC) $(CCFLAGS) -c $<
-
-# %.o: %.cpp
-# 		$(CC) $(CCFLAGS) -c $<
-
-# clean:
-# 		rm -f *.o $(TARGET)
-
-
-
 CC        := g++ 
 LD        := g++
 

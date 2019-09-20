@@ -1,3 +1,15 @@
+/*
+Written by Alan O'Cull
+To compile:
+$make clean
+$make
+
+To Debug:
+$make run
+$make debug
+*/
+
+
 #include <SDL2/SDL.h>
 #include <cstdlib>
 
@@ -42,7 +54,7 @@ int main(int argc, char **argv) {
     RenderWindow window = RenderWindow(800,500,"Render Window");
     if (!window.IsInitialized()) return 3;
     Map level = Map();
-    level.WallRectangle(1,1);
+    level.WallRectangle(MapWidth,MapHeight);
 
     /*if (window.IsInitialized())
         window.SetDialogueText("Hit escape to exit program.");*/
