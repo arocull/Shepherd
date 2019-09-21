@@ -26,14 +26,20 @@ class RenderWindow {
         int windowedX;
         int windowedY;
 
+        float time = 0;
+        int ticks = 0;
+
     public:
         void DrawTile(int tileX, int tileY, int tileID);
+        void DrawEntity(int posX, int posY, int id);
         void DrawDialogueBox();
 
         bool IsInitialized();
         void ToggleFullscreen();
 
         void UpdateSize();
+        void TickDeltaTime(float DeltaTime);
+        void LogTick();
 
         void Close();
 };

@@ -25,19 +25,58 @@ bool MoveUp = false;
 bool MoveDown = false;
 bool MoveRight = false;
 bool MoveLeft = false;
+bool Move_QueueClear = false;
 void Movement_Clear() {
     MoveUp = false;
     MoveDown = false;
     MoveRight = false;
     MoveLeft = false;
+    Move_QueueClear = false;
 }
 
-// Push entity from
-/*void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
+// Push entity from point A to point B
+void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
     int desiredX = obj->x + dx;
-    int desiredY = obj->y + dy;
+    int desiredY = obj->y - dy;
 
-}*/
+    int distX = abs(obj->x - (obj->x + dx));
+    int distY = abs(obj->y - (obj->y - dy));
+
+    int xChange = significand(dx);
+    int yChange = -significand(dy);
+
+    if (distY > distX) {
+        for (int stepY = 0; stepY < distY; stepY++) {
+            if (world->tiles[obj->x][obj->y+yChange]->IsSolid())
+                break;
+            else
+                obj->y+=yChange;
+        }
+        for (int stepX = 0; stepX < distX; stepX++) {
+            if (world->tiles[obj->x+xChange][obj->y]->IsSolid())
+                break;
+            else
+                obj->x+=xChange;
+        }
+    } else {
+        for (int stepX = 0; stepX < distX; stepX++) {
+            if (world->tiles[obj->x+xChange][obj->y]->IsSolid())
+                break;
+            else
+                obj->x+=xChange;
+        }
+        for (int stepY = 0; stepY < distY; stepY++) {
+            if (world->tiles[obj->x][obj->y+yChange]->IsSolid())
+                break;
+            else
+                obj->y+=yChange;
+        }
+    }
+
+    SDL_Log("Attempting step %i, %i with signs %i, %i\tNew Position: %i, %i", dx, dy, distX, distY, obj->x, obj->y);
+
+    return;
+}
 
 
 
@@ -55,6 +94,13 @@ int main(int argc, char **argv) {
     if (!window.IsInitialized()) return 3;
     Map level = Map();
     level.WallRectangle(MapWidth,MapHeight);
+    level.FillRectangle(30,1,38,13,2);
+    level.FillRectangle(10,4,10,10,3);
+
+    Entity* player = new Entity(20, 7, 0);
+
+    //Entity* entities[MaxEntities];
+    //entities[0] = new Entity(20, 7, 0);
 
     /*if (window.IsInitialized())
         window.SetDialogueText("Hit escape to exit program.");*/
@@ -101,8 +147,9 @@ int main(int argc, char **argv) {
         } else if (event.type == SDL_KEYUP) {
             SDL_Keycode key = event.key.keysym.sym;
             if (key == SDLK_w || key == SDLK_UP || key == SDLK_s || key == SDLK_DOWN || key == SDLK_d || key == SDLK_RIGHT || key == SDLK_a || key == SDLK_LEFT)
-                Movement_Clear();
+                Move_QueueClear = true;
         }
+        
 
 
 
@@ -110,7 +157,21 @@ int main(int argc, char **argv) {
         GameTick+=DeltaTime*TickRate;
         if (GameTick >= 1) {
             ticks++;
+            window.LogTick();
             //SDL_Log("Game tick %i, DT %f", ticks, DeltaTime);
+
+            if (MoveUp)
+                Movement_ShiftEntity(&level, player, 0, 1);
+            else if (MoveDown)
+                Movement_ShiftEntity(&level, player, 0, -1);
+            else if (MoveRight)
+                Movement_ShiftEntity(&level, player, 1, 0);
+            else if (MoveLeft)
+                Movement_ShiftEntity(&level, player, -1, 0);
+
+            if (Move_QueueClear)
+                Movement_Clear();
+
             GameTick = 0;
         }
 
@@ -122,17 +183,20 @@ int main(int argc, char **argv) {
         SDL_SetRenderDrawColor(window.canvas, 0, 0, 0, 0);
         SDL_RenderClear(window.canvas);
         window.UpdateSize();
+        window.TickDeltaTime(DeltaTime);
         for (int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
                 window.DrawTile(x,y,level.tiles[x][y]->GetTileID());
             }
         }
+        window.DrawEntity(player->x, player->y, player->GetID());
         window.DrawDialogueBox();
         SDL_RenderPresent(window.canvas);
     }
 
     window.Close();
     level.Free();
+    delete player;
 
     return 0;
 }

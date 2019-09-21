@@ -24,6 +24,7 @@ void Tile::SetTileID(int newID) {
     id = newID;
     switch (id) {
         case 1:
+        case 3:
             solid = true;
             break;
         default:

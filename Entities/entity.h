@@ -1,15 +1,16 @@
-/*class Entity {
+#include "Core/config.h"
+
+class Entity {
     public:
         Entity();
-        Entity(int xPos, int yPos, int TileID);
+        Entity(int xPos, int yPos, int ID);
 
     private:
         int id = 0;
 
     public:
         int GetID();
-        bool IsSolid();
 
         int x;
         int y;
-};*/
+};

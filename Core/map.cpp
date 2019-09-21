@@ -23,6 +23,16 @@ void Map::WallRectangle(int x, int y) {
         }
     }
 }
+void Map::FillRectangle(int startX, int startY, int endX, int endY, int id) {
+    for (int x = 0; x < MapWidth; x++) {
+        for (int y = 0; y < MapHeight; y++) {
+            if (x >= startX && x <= endX && y >= startY && y <= endY)
+                tiles[x][y]->SetTileID(id);
+        }
+    }
+}
+
+
 void Map::Free() {
     for (int x = 0; x < MapWidth; x++) {
         for (int y = 0; y < MapHeight; y++) {

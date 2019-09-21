@@ -1,4 +1,6 @@
 #define MapWidth 40
 #define MapHeight 15
 
-#define TickRate 2
+#define MaxEntities 5
+
+#define TickRate 5
