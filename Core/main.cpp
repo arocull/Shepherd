@@ -39,8 +39,8 @@ void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
     int desiredX = obj->x + dx;
     int desiredY = obj->y - dy;
 
-    int distX = abs(obj->x - (obj->x + dx));
-    int distY = abs(obj->y - (obj->y - dy));
+    int distX = abs(dx);
+    int distY = abs(dy);
 
     int xChange = significand(dx);
     int yChange = -significand(dy);
@@ -73,10 +73,43 @@ void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
         }
     }
 
-    SDL_Log("Attempting step %i, %i with signs %i, %i\tNew Position: %i, %i", dx, dy, distX, distY, obj->x, obj->y);
+    //SDL_Log("Attempting step %i, %i with signs %i, %i\tNew Position: %i, %i", dx, dy, distX, distY, obj->x, obj->y);
 
     return;
 }
+void Movement_ShiftPlayer(Map* world, Entity* obj, int dx, int dy, int* worldX, int* worldY) {
+    int desiredX = obj->x + dx;
+    int desiredY = obj->y - dy;
+
+
+    if (desiredX > MapWidth) {
+        *worldX++;
+        obj->x = 0;
+    } else if (desiredX < 0) {
+        *worldX--;
+        obj->x = MapWidth-1;
+    } else if (!world->tiles[desiredX][obj->y]->IsSolid())
+        obj->x = desiredX;
+    
+    if (desiredY > MapHeight) {
+        *worldY++;
+        obj->y = 0;
+    } else if (desiredY < 0) {
+        *worldY--;
+        obj->y = MapHeight-1;
+    } else if (!world->tiles[obj->x][desiredY]->IsSolid())
+        obj->x = desiredY;
+
+
+    //SDL_Log("Attempting step %i, %i with signs %i, %i\tNew Position: %i, %i", dx, dy, distX, distY, obj->x, obj->y);
+
+    return;
+}
+
+
+
+
+
 
 
 
@@ -92,10 +125,18 @@ int main(int argc, char **argv) {
     
     RenderWindow window = RenderWindow(800,500,"Render Window");
     if (!window.IsInitialized()) return 3;
-    Map level = Map();
-    level.WallRectangle(MapWidth,MapHeight);
-    level.FillRectangle(30,1,38,13,2);
-    level.FillRectangle(10,4,10,10,3);
+
+
+    Map* world[WorldWidth][WorldHeight];
+    for (int x = 0; x < WorldWidth; x++) {
+        for (int y = 0; y < WorldHeight; y++)
+            world[x][y] = new Map();
+    }
+    int worldX = 1;
+    int worldY = 1;
+
+    Map* currentLevel = world[worldX][worldY];
+    currentLevel->WallRectangle(MapWidth,MapHeight);
 
     Entity* player = new Entity(20, 7, 0);
 
@@ -161,13 +202,13 @@ int main(int argc, char **argv) {
             //SDL_Log("Game tick %i, DT %f", ticks, DeltaTime);
 
             if (MoveUp)
-                Movement_ShiftEntity(&level, player, 0, 1);
+                Movement_ShiftEntity(currentLevel, player, 0, 1);
             else if (MoveDown)
-                Movement_ShiftEntity(&level, player, 0, -1);
+                Movement_ShiftEntity(currentLevel, player, 0, -1);
             else if (MoveRight)
-                Movement_ShiftEntity(&level, player, 1, 0);
+                Movement_ShiftEntity(currentLevel, player, 1, 0);
             else if (MoveLeft)
-                Movement_ShiftEntity(&level, player, -1, 0);
+                Movement_ShiftEntity(currentLevel, player, -1, 0);
 
             if (Move_QueueClear)
                 Movement_Clear();
@@ -186,7 +227,7 @@ int main(int argc, char **argv) {
         window.TickDeltaTime(DeltaTime);
         for (int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
-                window.DrawTile(x,y,level.tiles[x][y]->GetTileID());
+                window.DrawTile(x,y,currentLevel->tiles[x][y]->GetTileID());
             }
         }
         window.DrawEntity(player->x, player->y, player->GetID());
@@ -195,7 +236,12 @@ int main(int argc, char **argv) {
     }
 
     window.Close();
-    level.Free();
+    for (int x = 0; x < WorldWidth; x++) {
+        for (int y = 0; y < WorldHeight; y++) {
+            world[x][y]->Free();
+            delete world[x][y];
+        }
+    }
     delete player;
 
     return 0;
