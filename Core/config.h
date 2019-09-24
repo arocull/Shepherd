@@ -5,4 +5,4 @@
 
 #define MaxEntities 5
 
-#define TickRate 5
+#define TickRate 20

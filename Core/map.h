@@ -8,6 +8,7 @@ class Map {
         Tile* tiles[MapWidth][MapHeight];
 
         void WallRectangle(int x, int y);
+        void WallRectangle(int startX, int startY, int endX, int endY, int id);
         void FillRectangle(int startX, int startY, int endX, int endY, int id);
         void Free();
 };

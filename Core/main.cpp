@@ -82,42 +82,35 @@ void Movement_ShiftPlayer(Map* world, Entity* obj, int dx, int dy, int* worldX, 
     int desiredY = obj->y - dy;
 
 
-    if (desiredX >= MapWidth) {
+    if (desiredX >= MapWidth && *worldX+1 <= WorldWidth-1) {
         *worldX = *worldX+1;
-        SDL_Log("Shifting World X Coordinate up 1");
         obj->x = 0;
-    } else if (desiredX < 0) {
+    } else if (desiredX < 0 && *worldX-1 >= 0) {
         *worldX = *worldX-1;
-        SDL_Log("Shifting World X Coordinate down 1");
         obj->x = MapWidth-1;
     } else if (desiredX < MapWidth && desiredX >= 0 && !world->tiles[desiredX][obj->y]->IsSolid())
         obj->x = desiredX;
     
-    if (desiredY >= MapHeight) {
+    if (desiredY < 0 && *worldY+1 <= WorldHeight-1) {
         *worldY = *worldY+1;
-        SDL_Log("Shifting World Y Coordinate up 1");
-        obj->y = 0;
-    } else if (desiredY < 0) {
-        *worldY = *worldY-1;
-        SDL_Log("Shifting World Y Coordinate down 1");
         obj->y = MapHeight-1;
+    } else if (desiredY >= MapHeight && *worldY-1 >= 0) {
+        *worldY = *worldY-1;
+        obj->y = 0;
     } else if (desiredY < MapHeight && desiredY >= 0 && !world->tiles[obj->x][desiredY]->IsSolid())
         obj->y = desiredY;
-
-
-    //SDL_Log("Attempting step %i, %i with signs %i, %i\tNew Position: %i, %i", dx, dy, distX, distY, obj->x, obj->y);
-    SDL_Log("Finished player movement.");
+    
     return;
 }
 
 
 
 Map* LoadLevel(Map* world[WorldWidth][WorldHeight], int worldX, int worldY) {
-    SDL_Log("Attempting load of World Coordinate %i, %i", worldX, worldY);
+    //SDL_Log("Attempting load of World Coordinate %i, %i", worldX, worldY);
 
     Map* newLevel = world[worldX][worldY];
 
-    SDL_Log("Loaded World Coordinate %i, %i", worldX, worldY);
+    //SDL_Log("Loaded World Coordinate %i, %i", worldX, worldY);
 
     return newLevel;
 }
@@ -145,8 +138,10 @@ int main(int argc, char **argv) {
 
     Map* world[WorldWidth][WorldHeight];
     for (int x = 0; x < WorldWidth; x++) {
-        for (int y = 0; y < WorldHeight; y++)
+        for (int y = 0; y < WorldHeight; y++) {
             world[x][y] = new Map();
+            world[x][y]->WallRectangle(MapWidth,MapHeight);
+        }
     }
     int worldX = 1;
     int worldY = 1;
@@ -155,7 +150,20 @@ int main(int argc, char **argv) {
 
     Map* currentLevel = LoadLevel(world, worldX, worldY);
     //currentLevel->WallRectangle(MapWidth,MapHeight);
-    currentLevel->FillRectangle(5,5,10,10, 2);
+
+    world[0][2]->FillRectangle(1,1,MapWidth,MapHeight,0);
+    world[1][2]->FillRectangle(0,1,MapWidth,MapHeight,0);
+    world[2][2]->FillRectangle(0,1,MapWidth-1,MapHeight,0);
+
+    world[0][1]->FillRectangle(1,0,MapWidth,MapHeight,0);
+    world[1][1]->FillRectangle(0,0,MapWidth,MapHeight,0);
+    world[1][1]->FillRectangle(5,5,10,10, 2);
+    world[2][1]->FillRectangle(0,0,MapWidth-1,MapHeight,0);
+
+    world[0][0]->FillRectangle(1,0,MapWidth,MapHeight-1,0);
+    world[1][0]->FillRectangle(0,0,MapWidth,MapHeight-1,0);
+    world[2][0]->FillRectangle(0,0,MapWidth-1,MapHeight-1,0);
+    
 
     Entity* player = new Entity(20, 7, 0);
 
@@ -242,8 +250,10 @@ int main(int argc, char **argv) {
                 worldY = WorldHeight-1;
             else if (worldY < 0)
                 worldY = 0;
-            SDL_Log("Current World Coordinate is %i, %i", worldX, worldY);
+
             if (worldX != currentWorldX || worldY != currentWorldY) {
+                currentWorldX = worldX;
+                currentWorldY = worldY;
                 currentLevel = LoadLevel(world, worldX, worldY);
             }
 

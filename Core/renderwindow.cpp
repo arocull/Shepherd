@@ -51,6 +51,8 @@ void RenderWindow::UpdateSize() {
     tileRes = fmin(x/MapWidth, y/MapHeight);
     offsetX = (x-MapWidth*tileRes)/2;
     offsetY = (y-MapHeight*tileRes)/2;
+    innerWidth = tileRes*MapWidth;
+    innerHeight = tileRes*MapHeight;
 }
 void RenderWindow::TickDeltaTime(float DeltaTime) {
     time+=DeltaTime;
@@ -115,5 +117,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id) {
     SDL_RenderFillRect(canvas, &tile);
 }
 void RenderWindow::DrawDialogueBox() {
-
+    SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
+    SDL_RenderDrawLine(canvas,0,offsetY,x,offsetY);
+    SDL_RenderDrawLine(canvas,0,innerHeight+offsetY,x,innerHeight+offsetY);
 }
