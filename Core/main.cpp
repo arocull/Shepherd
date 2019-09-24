@@ -90,7 +90,7 @@ void Movement_ShiftPlayer(Map* world, Entity* obj, int dx, int dy, int* worldX, 
         *worldX = *worldX-1;
         SDL_Log("Shifting World X Coordinate down 1");
         obj->x = MapWidth-1;
-    } else if (desiredX < MapWidth && desiredX >= 0 && !world->tiles[desiredX][desiredY]->IsSolid())
+    } else if (desiredX < MapWidth && desiredX >= 0 && !world->tiles[desiredX][obj->y]->IsSolid())
         obj->x = desiredX;
     
     if (desiredY >= MapHeight) {
@@ -101,12 +101,12 @@ void Movement_ShiftPlayer(Map* world, Entity* obj, int dx, int dy, int* worldX, 
         *worldY = *worldY-1;
         SDL_Log("Shifting World Y Coordinate down 1");
         obj->y = MapHeight-1;
-    } else if (desiredY < MapHeight && desiredY >= 0 && !world->tiles[desiredX][desiredY]->IsSolid())
+    } else if (desiredY < MapHeight && desiredY >= 0 && !world->tiles[obj->x][desiredY]->IsSolid())
         obj->y = desiredY;
 
 
     //SDL_Log("Attempting step %i, %i with signs %i, %i\tNew Position: %i, %i", dx, dy, distX, distY, obj->x, obj->y);
-
+    SDL_Log("Finished player movement.");
     return;
 }
 
