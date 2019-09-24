@@ -5,4 +5,6 @@
 
 #define MaxEntities 5
 
-#define TickRate 20
+#define ShepherdHealth 3
+
+#define TickRate 5

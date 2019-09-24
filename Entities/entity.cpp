@@ -12,3 +12,6 @@ Entity::Entity(int xPos, int yPos, int ID) {
 int Entity::GetID(){
     return id;
 }
+int Entity::GetHealth() {
+    return Health;
+}

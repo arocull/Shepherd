@@ -16,7 +16,8 @@ $make debug
 #include "Core/renderwindow.h"
 #include "Core/map.h"
 
-#include "Entities/entity.h"
+//#include "Entities/entity.h"
+#include "Entities/shepherd.h"
 
 #include "config.h"
 
@@ -77,24 +78,24 @@ void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
 
     return;
 }
-void Movement_ShiftPlayer(Map* world, Entity* obj, int dx, int dy, int* worldX, int* worldY) {
+void Movement_ShiftPlayer(Map* world, Shepherd* obj, int dx, int dy, int* worldX, int* worldY) {
     int desiredX = obj->x + dx;
     int desiredY = obj->y - dy;
 
 
-    if (desiredX >= MapWidth && *worldX+1 <= WorldWidth-1) {
+    if (desiredX >= MapWidth && *worldX+1 <= WorldWidth-1 && obj->HasAllSheep()) {
         *worldX = *worldX+1;
         obj->x = 0;
-    } else if (desiredX < 0 && *worldX-1 >= 0) {
+    } else if (desiredX < 0 && *worldX-1 >= 0 && obj->HasAllSheep()) {
         *worldX = *worldX-1;
         obj->x = MapWidth-1;
     } else if (desiredX < MapWidth && desiredX >= 0 && !world->tiles[desiredX][obj->y]->IsSolid())
         obj->x = desiredX;
     
-    if (desiredY < 0 && *worldY+1 <= WorldHeight-1) {
+    if (desiredY < 0 && *worldY+1 <= WorldHeight-1 && obj->HasAllSheep()) {
         *worldY = *worldY+1;
         obj->y = MapHeight-1;
-    } else if (desiredY >= MapHeight && *worldY-1 >= 0) {
+    } else if (desiredY >= MapHeight && *worldY-1 >= 0 && obj->HasAllSheep()) {
         *worldY = *worldY-1;
         obj->y = 0;
     } else if (desiredY < MapHeight && desiredY >= 0 && !world->tiles[obj->x][desiredY]->IsSolid())
@@ -165,7 +166,7 @@ int main(int argc, char **argv) {
     world[2][0]->FillRectangle(0,0,MapWidth-1,MapHeight-1,0);
     
 
-    Entity* player = new Entity(20, 7, 0);
+    Shepherd* player = new Shepherd(20, 7);
 
     //Entity* entities[MaxEntities];
     //entities[0] = new Entity(20, 7, 0);

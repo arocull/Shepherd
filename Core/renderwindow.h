@@ -3,6 +3,7 @@
 
 #include "config.h"
 
+// Render Window - An individual window that renders things.
 class RenderWindow {
     public:
         RenderWindow();
@@ -13,20 +14,29 @@ class RenderWindow {
 
     private:
         bool initialized = false;
+        //Full X size of window
         int x;
+        //Full Y size of window
         int y;
         
+        //How many pixels per tile side length there are (same for X and Y)
         int tileRes;
+        //Width of viewport inside the window
         int innerWidth;
+        //Height of viewport inside the window
         int innerHeight;
+        //X Offset of viewport inside the window
         int offsetX;
+        //Y Offset of viewport inside the window
         int offsetY;
 
         bool fullscreen = false;
         int windowedX;
         int windowedY;
 
+        //How much time has passed since the window was created
         float time = 0;
+        //How many game ticks have passed since the window was created
         int ticks = 0;
 
     public:
