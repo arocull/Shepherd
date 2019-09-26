@@ -46,6 +46,9 @@ void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
     int xChange = significand(dx);
     int yChange = -significand(dy);
 
+
+    //A* pathing?
+    
     if (distY > distX) {
         for (int stepY = 0; stepY < distY; stepY++) {
             if (world->tiles[obj->x][obj->y+yChange]->IsSolid())
@@ -152,6 +155,8 @@ int main(int argc, char **argv) {
     Map* currentLevel = LoadLevel(world, worldX, worldY);
     //currentLevel->WallRectangle(MapWidth,MapHeight);
 
+
+    //Map Gen -- Use png
     world[0][2]->FillRectangle(1,1,MapWidth,MapHeight,0);
     world[1][2]->FillRectangle(0,1,MapWidth,MapHeight,0);
     world[2][2]->FillRectangle(0,1,MapWidth-1,MapHeight,0);
