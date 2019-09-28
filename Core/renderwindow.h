@@ -39,7 +39,13 @@ class RenderWindow {
         //How many game ticks have passed since the window was created
         int ticks = 0;
 
+
+
+        SDL_Surface* TEXTURESURFACE_sheep;
+        SDL_Texture* TEXTURE_sheep;
+
     public:
+        void FillViewportBackground(int r, int g, int b);
         void DrawTile(int tileX, int tileY, int tileID);
         void DrawEntity(int posX, int posY, int id);
         void DrawDialogueBox();

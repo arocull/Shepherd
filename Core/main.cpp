@@ -275,6 +275,7 @@ int main(int argc, char **argv) {
         SDL_RenderClear(window.canvas);
         window.UpdateSize();
         window.TickDeltaTime(DeltaTime);
+        window.FillViewportBackground(10, 50, 10);
         for (int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
                 window.DrawTile(x,y,currentLevel->tiles[x][y]->GetTileID());

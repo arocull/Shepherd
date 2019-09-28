@@ -18,6 +18,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
     if (initialized) {
         UpdateSize();
         SDL_SetWindowTitle(window, windowName);
+
+        TEXTURESURFACE_sheep = SDL_LoadBMP("Textures/Sheep.bmp");
+        if (TEXTURESURFACE_sheep) {
+            TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
+        }
     }
 }
 
@@ -65,12 +70,27 @@ void RenderWindow::LogTick() {
 
 void RenderWindow::Close() {
     if (!initialized) return;
+
+    SDL_FreeSurface(TEXTURESURFACE_sheep);
+    SDL_DestroyTexture(TEXTURE_sheep);
+
     SDL_DestroyRenderer(canvas);
     SDL_DestroyWindow(window);
 }
 
 
 
+void RenderWindow::FillViewportBackground(int r, int g, int b) {
+    SDL_Rect box;
+    box.x = offsetX;
+    box.y = offsetY;
+    box.w = tileRes*MapWidth;
+    box.h = tileRes*MapHeight;
+
+    SDL_SetRenderDrawColor(canvas, r, g, b, 0);
+    SDL_RenderFillRect(canvas, &box);
+    return;
+}
 void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
     if (tileID == 0) return;
 
@@ -113,8 +133,9 @@ void RenderWindow::DrawEntity(int posX, int posY, int id) {
     tile.x = posX*tileRes + offsetX;
     tile.y = posY*tileRes + offsetY;
 
-    SDL_SetRenderDrawColor(canvas, 10, 255, 120, 0);
-    SDL_RenderFillRect(canvas, &tile);
+    //SDL_SetRenderDrawColor(canvas, 10, 255, 120, 0);
+    //SDL_RenderFillRect(canvas, &tile);
+    SDL_RenderCopy(canvas, TEXTURE_sheep, NULL, &tile);
 }
 void RenderWindow::DrawDialogueBox() {
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
