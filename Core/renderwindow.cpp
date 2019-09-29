@@ -19,6 +19,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
         UpdateSize();
         SDL_SetWindowTitle(window, windowName);
 
+        TEXTURESURFACE_tree = SDL_LoadBMP("Textures/Tree.bmp");
+        if (TEXTURESURFACE_tree) {
+            TEXTURE_tree = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_tree);
+        }
+
         TEXTURESURFACE_sheep = SDL_LoadBMP("Textures/Sheep.bmp");
         if (TEXTURESURFACE_sheep) {
             TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
@@ -112,30 +117,38 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
 
         SDL_RenderFillRect(canvas, &tile);
     } else if (tileID == 3) {
-        SDL_SetRenderDrawColor(canvas, 50, 200, 75, 0);
-        SDL_RenderDrawLine(canvas, tileRes/2 + tile.x, tile.y,         tile.x,         tile.y+tileRes*.9);
-        SDL_RenderDrawLine(canvas, tileRes/2 + tile.x, tile.y,         tile.x+tileRes, tile.y+tileRes*.9);
-        SDL_RenderDrawLine(canvas, tile.x,             tile.y+tileRes*.9, tile.x+tileRes,         tile.y+tileRes*.9);
-        
-        tile.w-=3*tileRes/4;
-        tile.h-=7*tileRes/8;
-        tile.x+=7*tileRes/16;
-        tile.y+=7*tileRes/8;
-
-        SDL_SetRenderDrawColor(canvas, 150, 125, 25, 0);
-        SDL_RenderFillRect(canvas, &tile);
+        SDL_RenderCopy(canvas, TEXTURE_tree, NULL, &tile);
     }
 }
-void RenderWindow::DrawEntity(int posX, int posY, int id) {
+void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip) {
     SDL_Rect tile;
     tile.w = tileRes;
     tile.h = tileRes;
     tile.x = posX*tileRes + offsetX;
     tile.y = posY*tileRes + offsetY;
 
-    //SDL_SetRenderDrawColor(canvas, 10, 255, 120, 0);
-    //SDL_RenderFillRect(canvas, &tile);
-    SDL_RenderCopy(canvas, TEXTURE_sheep, NULL, &tile);
+    /*SDL_Point center;
+    center.x = tile.x+tile.w/2;
+    center.y = tile.y+tile.h/2;*/
+
+    SDL_RendererFlip flipStyle = SDL_FLIP_NONE;
+    if (flip)
+        flipStyle = SDL_FLIP_HORIZONTAL;
+
+    //SDL_RenderCopy(canvas, TEXTURE_sheep, NULL, &tile);
+
+    double angle = 0.0;
+    if (id == 1) {
+        int step = ticks/2 % 4;
+        if (step == 2)
+            angle = -3.0;
+        else if (step == 1 || step == 3)
+            angle = 0.0;
+        else
+            angle = 3.0;
+    }
+
+    SDL_RenderCopyEx(canvas, TEXTURE_sheep, NULL, &tile, angle, NULL, flipStyle);
 }
 void RenderWindow::DrawDialogueBox() {
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);

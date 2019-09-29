@@ -46,31 +46,35 @@ void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
     int xChange = significand(dx);
     int yChange = -significand(dy);
 
+    if (dx < 0)
+        obj->Flipped = true;
+    else if (dx > 0)
+        obj->Flipped = false;
 
     //A* pathing?
     
     if (distY > distX) {
         for (int stepY = 0; stepY < distY; stepY++) {
-            if (world->tiles[obj->x][obj->y+yChange]->IsSolid())
+            if (obj->y+yChange < 0 || obj->y+yChange >= MapHeight || world->tiles[obj->x][obj->y+yChange]->IsSolid())
                 break;
             else
                 obj->y+=yChange;
         }
         for (int stepX = 0; stepX < distX; stepX++) {
-            if (world->tiles[obj->x+xChange][obj->y]->IsSolid())
+            if (obj->x+xChange < 0 || obj->x+xChange >= MapWidth || world->tiles[obj->x+xChange][obj->y]->IsSolid())
                 break;
             else
                 obj->x+=xChange;
         }
     } else {
         for (int stepX = 0; stepX < distX; stepX++) {
-            if (world->tiles[obj->x+xChange][obj->y]->IsSolid())
+            if (obj->x+xChange < 0 || obj->x+xChange >= MapWidth || world->tiles[obj->x+xChange][obj->y]->IsSolid())
                 break;
             else
                 obj->x+=xChange;
         }
         for (int stepY = 0; stepY < distY; stepY++) {
-            if (world->tiles[obj->x][obj->y+yChange]->IsSolid())
+            if (obj->y+yChange < 0 || obj->y+yChange >= MapHeight || world->tiles[obj->x][obj->y+yChange]->IsSolid())
                 break;
             else
                 obj->y+=yChange;
@@ -85,6 +89,13 @@ void Movement_ShiftPlayer(Map* world, Shepherd* obj, int dx, int dy, int* worldX
     int desiredX = obj->x + dx;
     int desiredY = obj->y - dy;
 
+    if (dx < 0)
+        obj->Flipped = true;
+    else if (dx > 0)
+        obj->Flipped = false;
+
+    obj->lastX = dx;
+    obj->lastY = dy;
 
     if (desiredX >= MapWidth && *worldX+1 <= WorldWidth-1 && obj->HasAllSheep()) {
         *worldX = *worldX+1;
@@ -158,17 +169,31 @@ int main(int argc, char **argv) {
 
     //Map Gen -- Use png
     world[0][2]->FillRectangle(1,1,MapWidth,MapHeight,0);
+
     world[1][2]->FillRectangle(0,1,MapWidth,MapHeight,0);
+    world[1][2]->FillRectangle(9, 5,10,11, 3);
+    world[1][2]->FillRectangle(10,5,21,11, 2);
+    world[1][2]->FillRectangle(21,5,22,11, 3);
+
     world[2][2]->FillRectangle(0,1,MapWidth-1,MapHeight,0);
 
+
     world[0][1]->FillRectangle(1,0,MapWidth,MapHeight,0);
+
     world[1][1]->FillRectangle(0,0,MapWidth,MapHeight,0);
-    world[1][1]->FillRectangle(5,5,10,10, 2);
+    world[1][1]->FillRectangle(2,2,10,10, 2);
+    world[1][1]->FillRectangle(32,5,35,11,3);
+    world[1][1]->FillRectangle(15,12,30,13,1);
+
     world[2][1]->FillRectangle(0,0,MapWidth-1,MapHeight,0);
+    
 
     world[0][0]->FillRectangle(1,0,MapWidth,MapHeight-1,0);
+
     world[1][0]->FillRectangle(0,0,MapWidth,MapHeight-1,0);
+
     world[2][0]->FillRectangle(0,0,MapWidth-1,MapHeight-1,0);
+    world[1][0]->FillRectangle(10,12,31,14,3);
     
 
     Shepherd* player = new Shepherd(20, 7);
@@ -281,7 +306,7 @@ int main(int argc, char **argv) {
                 window.DrawTile(x,y,currentLevel->tiles[x][y]->GetTileID());
             }
         }
-        window.DrawEntity(player->x, player->y, player->GetID());
+        window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped);
         window.DrawDialogueBox();
         SDL_RenderPresent(window.canvas);
     }

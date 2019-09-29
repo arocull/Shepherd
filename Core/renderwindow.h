@@ -40,6 +40,8 @@ class RenderWindow {
         int ticks = 0;
 
 
+        SDL_Surface* TEXTURESURFACE_tree;
+        SDL_Texture* TEXTURE_tree;
 
         SDL_Surface* TEXTURESURFACE_sheep;
         SDL_Texture* TEXTURE_sheep;
@@ -47,7 +49,7 @@ class RenderWindow {
     public:
         void FillViewportBackground(int r, int g, int b);
         void DrawTile(int tileX, int tileY, int tileID);
-        void DrawEntity(int posX, int posY, int id);
+        void DrawEntity(int posX, int posY, int id, bool flip);
         void DrawDialogueBox();
 
         bool IsInitialized();

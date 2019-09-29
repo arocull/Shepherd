@@ -6,5 +6,6 @@
 #define MaxEntities 5
 
 #define ShepherdHealth 3
+#define FireballSpeed 3
 
 #define TickRate 10

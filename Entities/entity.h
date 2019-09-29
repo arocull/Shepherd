@@ -17,4 +17,6 @@ class Entity {
 
         int x;
         int y;
+
+        bool Flipped = false;
 };
