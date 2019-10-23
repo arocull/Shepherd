@@ -18,6 +18,7 @@ $make debug
 
 //#include "Entities/entity.h"
 #include "Entities/shepherd.h"
+//#include "Entities/fireball.h"
 
 #include "config.h"
 
@@ -27,6 +28,7 @@ bool MoveDown = false;
 bool MoveRight = false;
 bool MoveLeft = false;
 bool Move_QueueClear = false;
+bool MoveFireballQueued = false;
 void Movement_Clear() {
     MoveUp = false;
     MoveDown = false;
@@ -197,6 +199,7 @@ int main(int argc, char **argv) {
     
 
     Shepherd* player = new Shepherd(20, 7);
+    //Entity[MaxEntities] levelEntities;
 
     //Entity* entities[MaxEntities];
     //entities[0] = new Entity(20, 7, 0);
@@ -242,6 +245,8 @@ int main(int argc, char **argv) {
             } else if (key == SDLK_a || key == SDLK_LEFT) {
                 Movement_Clear();
                 MoveLeft = true;
+            } else if (key == SDLK_SPACE) {
+                MoveFireballQueued = true;
             }
         } else if (event.type == SDL_KEYUP) {
             SDL_Keycode key = event.key.keysym.sym;
@@ -286,6 +291,12 @@ int main(int argc, char **argv) {
                 currentWorldX = worldX;
                 currentWorldY = worldY;
                 currentLevel = LoadLevel(world, worldX, worldY);
+            }
+
+            if (MoveFireballQueued) {
+                MoveFireballQueued = false;
+                printf("Toss fireball\n");
+                
             }
 
             GameTick = 0;

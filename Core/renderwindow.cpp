@@ -138,7 +138,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip) {
     //SDL_RenderCopy(canvas, TEXTURE_sheep, NULL, &tile);
 
     double angle = 0.0;
-    if (id == 1) {
+    if (id == 1 || id == 2) {  // Player or Sheep
         int step = ticks/2 % 4;
         if (step == 2)
             angle = -3.0;
@@ -146,6 +146,10 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip) {
             angle = 0.0;
         else
             angle = 3.0;
+    } else if (id == 3) {   // Fireball
+        int sha = 20 * (float) (sin(time) + 1);
+        SDL_SetRenderDrawColor(canvas, 200 + sha, 70 + sha, 10, 0);
+        SDL_RenderFillRect(canvas, &tile);
     }
 
     SDL_RenderCopyEx(canvas, TEXTURE_sheep, NULL, &tile, angle, NULL, flipStyle);
