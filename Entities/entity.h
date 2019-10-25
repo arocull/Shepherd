@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Core/config.h"
 
 // Entity - Any mobile object with individual properties.

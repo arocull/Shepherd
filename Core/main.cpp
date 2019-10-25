@@ -16,9 +16,9 @@ $make debug
 #include "Core/renderwindow.h"
 #include "Core/map.h"
 
-//#include "Entities/entity.h"
+#include "Entities/entity.h"
 #include "Entities/shepherd.h"
-//#include "Entities/fireball.h"
+#include "Entities/fireball.h"
 
 #include "config.h"
 
@@ -122,10 +122,15 @@ void Movement_ShiftPlayer(Map* world, Shepherd* obj, int dx, int dy, int* worldX
 
 
 
-Map* LoadLevel(Map* world[WorldWidth][WorldHeight], int worldX, int worldY) {
+Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY) {
     //SDL_Log("Attempting load of World Coordinate %i, %i", worldX, worldY);
 
-    Map* newLevel = world[worldX][worldY];
+    //Dump entities in current level back into the map data (exclude sheep, fireballs)
+
+    Map* newLevel = world[worldX][worldY];  //Point current level to the new map
+
+    //Load entities from map into the new level entities
+    //levelEntities;
 
     //SDL_Log("Loaded World Coordinate %i, %i", worldX, worldY);
 
@@ -165,7 +170,9 @@ int main(int argc, char **argv) {
     int currentWorldX = worldX;
     int currentWorldY = worldY;
 
-    Map* currentLevel = LoadLevel(world, worldX, worldY);
+    Entity* levelEntities[MaxEntities];
+
+    Map* currentLevel = LoadLevel(world, levelEntities, worldX, worldY);
     //currentLevel->WallRectangle(MapWidth,MapHeight);
 
 
@@ -200,10 +207,6 @@ int main(int argc, char **argv) {
     
 
     Shepherd* player = new Shepherd(20, 7);
-    //Entity[MaxEntities] levelEntities;
-
-    //Entity* entities[MaxEntities];
-    //entities[0] = new Entity(20, 7, 0);
 
     /*if (window.IsInitialized())
         window.SetDialogueText("Hit escape to exit program.");*/
@@ -291,7 +294,7 @@ int main(int argc, char **argv) {
             if (worldX != currentWorldX || worldY != currentWorldY) {
                 currentWorldX = worldX;
                 currentWorldY = worldY;
-                currentLevel = LoadLevel(world, worldX, worldY);
+                currentLevel = LoadLevel(world, levelEntities, worldX, worldY);
             }
 
 
