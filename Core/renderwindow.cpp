@@ -105,18 +105,23 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
     tile.x = tileX*tileRes + offsetX;
     tile.y = tileY*tileRes + offsetY;
 
-    if (tileID == 1) {
+    if (tileID == 1) {      // Wall
         //if ((time - round(time)) <= .5 && )
         if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
             SDL_SetRenderDrawColor(canvas, 215, 215, 215, 0);
         else
             SDL_SetRenderDrawColor(canvas, 235, 235, 235, 0);
         SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 2) {
+    } else if (tileID == 2) {   //Water
         SDL_SetRenderDrawColor(canvas, 0, 30, 200 + (int) (sin(time + (sqrt(pow(tileX,2) + pow(tileY,2)))) * 20), 0);
 
         SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 3) {
+    } else if (tileID == 3) {   //Magma
+        float z = sqrt(pow(tileX,2) + pow(tileY,2));
+        SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2 + z) * 30), 80 + (int) (sin(time/3 + z) * 20), 20, 0);
+        
+        SDL_RenderFillRect(canvas, &tile);
+    } else if (tileID == 4) {   //Tree
         SDL_RenderCopy(canvas, TEXTURE_tree, NULL, &tile);
     }
 }

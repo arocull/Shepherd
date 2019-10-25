@@ -23,9 +23,14 @@ bool Tile::IsSolid() {
 void Tile::SetTileID(int newID) {
     id = newID;
     switch (id) {
-        case 1:
-        case 3:
+        case 1:     //Wall
+        case 4:     //Tree
             solid = true;
+            break;
+        case 2:     //Water
+        case 3:     //Magma
+            liquid = true;
+            solid = false;
             break;
         default:
             solid = false;

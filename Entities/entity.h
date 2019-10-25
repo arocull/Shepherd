@@ -19,4 +19,5 @@ class Entity {
         int y;
 
         bool Flipped = false;
+        bool HasFire = false;
 };

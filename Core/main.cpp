@@ -173,9 +173,9 @@ int main(int argc, char **argv) {
     world[0][2]->FillRectangle(1,1,MapWidth,MapHeight,0);
 
     world[1][2]->FillRectangle(0,1,MapWidth,MapHeight,0);
-    world[1][2]->FillRectangle(9, 5,10,11, 3);
+    world[1][2]->FillRectangle(9, 5,10,11, 4);
     world[1][2]->FillRectangle(10,5,21,11, 2);
-    world[1][2]->FillRectangle(21,5,22,11, 3);
+    world[1][2]->FillRectangle(21,5,22,11, 4);
 
     world[2][2]->FillRectangle(0,1,MapWidth-1,MapHeight,0);
 
@@ -183,8 +183,9 @@ int main(int argc, char **argv) {
     world[0][1]->FillRectangle(1,0,MapWidth,MapHeight,0);
 
     world[1][1]->FillRectangle(0,0,MapWidth,MapHeight,0);
-    world[1][1]->FillRectangle(2,2,10,10, 2);
-    world[1][1]->FillRectangle(32,5,35,11,3);
+    world[1][1]->FillRectangle(2,2,10,10, 2);   // Lake
+    world[1][1]->FillRectangle(2,11,10,14,3);   // Lava
+    world[1][1]->FillRectangle(32,5,35,11,4);   // Trees
     world[1][1]->FillRectangle(15,12,30,13,1);
 
     world[2][1]->FillRectangle(0,0,MapWidth-1,MapHeight,0);
@@ -195,7 +196,7 @@ int main(int argc, char **argv) {
     world[1][0]->FillRectangle(0,0,MapWidth,MapHeight-1,0);
 
     world[2][0]->FillRectangle(0,0,MapWidth-1,MapHeight-1,0);
-    world[1][0]->FillRectangle(10,12,31,14,3);
+    world[1][0]->FillRectangle(10,12,31,14,4);
     
 
     Shepherd* player = new Shepherd(20, 7);
@@ -293,11 +294,19 @@ int main(int argc, char **argv) {
                 currentLevel = LoadLevel(world, worldX, worldY);
             }
 
-            if (MoveFireballQueued) {
+
+            // Check Entities for Fire
+            if (currentLevel->tiles[player->x][player->y]->GetTileID() == 3)
+                player->HasFire = true;
+
+
+            // Toss Fireball
+            if (MoveFireballQueued && player->HasFire) {
                 MoveFireballQueued = false;
+                player->HasFire = false;
                 printf("Toss fireball\n");
-                
-            }
+            } else
+                MoveFireballQueued = false;
 
             GameTick = 0;
         }
