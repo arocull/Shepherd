@@ -136,6 +136,11 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
 
     return newLevel;
 }
+Entity** AppendEntity(Entity* entities[MaxEntities], Entity* newEntity) {
+    
+
+    return entities;
+}
 
 
 
@@ -340,6 +345,9 @@ int main(int argc, char **argv) {
             world[x][y]->Free();
             delete world[x][y];
         }
+    }
+    for (int i = 0; i < MaxEntities; i++) {
+        delete levelEntities[i];
     }
     delete player;
 
