@@ -3,7 +3,7 @@
 #define MapWidth 40
 #define MapHeight 15
 
-#define MaxEntities 5
+#define MaxEntities 15
 
 #define ShepherdHealth 3
 #define FireballSpeed 3

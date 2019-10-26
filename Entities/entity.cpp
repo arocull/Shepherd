@@ -1,7 +1,8 @@
 #include "entity.h"
 
 Entity::Entity() {
-
+    x = MapHeight/2;
+    y = MapWidth/2;
 }
 Entity::Entity(int xPos, int yPos, int ID) {
     x = xPos;

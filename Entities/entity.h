@@ -14,8 +14,8 @@ class Entity {
         int Health = 1;
 
     public:
-        int GetID();
-        int GetHealth();
+        virtual int GetID();
+        virtual int GetHealth();
 
         int x;
         int y;

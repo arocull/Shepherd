@@ -21,6 +21,7 @@ $make debug
 #include "Entities/fireball.h"
 
 #include "config.h"
+#include "mathutil.h"
 
 
 bool MoveUp = false;
@@ -45,8 +46,8 @@ void Movement_ShiftEntity(Map* world, Entity* obj, int dx, int dy) {
     int distX = abs(dx);
     int distY = abs(dy);
 
-    int xChange = significand(dx);
-    int yChange = -significand(dy);
+    int xChange = sgn(dx);
+    int yChange = -sgn(dy);
 
     if (dx < 0)
         obj->Flipped = true;
@@ -123,23 +124,46 @@ void Movement_ShiftPlayer(Map* world, Shepherd* obj, int dx, int dy, int* worldX
 
 
 Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY) {
-    //SDL_Log("Attempting load of World Coordinate %i, %i", worldX, worldY);
-
     //Dump entities in current level back into the map data (exclude sheep, fireballs)
 
     Map* newLevel = world[worldX][worldY];  //Point current level to the new map
 
-    //Load entities from map into the new level entities
-    //levelEntities;
+    for (int i = 0; i < MaxEntities; i++) {
+        if (levelEntities[i]) {
+            delete levelEntities[i];
+            levelEntities[i] = nullptr;
+        }
+    }
 
-    //SDL_Log("Loaded World Coordinate %i, %i", worldX, worldY);
+    //Load entities from map into the new level entities
+
 
     return newLevel;
 }
-Entity** AppendEntity(Entity* entities[MaxEntities], Entity* newEntity) {
-    
-
-    return entities;
+void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity) {
+    for (int i = 0; i < MaxEntities; i++) {
+        if (!entities[i]) {
+            entities[i] = newEntity;
+            break;
+        }
+    }
+}
+void RemoveEntity(Entity* entities[MaxEntities], Entity* delEntity) {
+    for (int i = 0; i < MaxEntities; i++) {
+        if (entities[i] && delEntity && entities[i] == delEntity) {
+            delete entities[i];
+            entities[i] = nullptr;
+            break;
+        }
+    }
+}
+void CleanEntities(Entity* entities[MaxEntities]) {
+    for (int i = MaxEntities-1; i > 0; i--) {
+        if (!entities[i-1] && entities[i]) {
+            entities[i-1] = entities[i];
+            entities[i] = nullptr;
+        }
+    }
 }
 
 
@@ -175,12 +199,9 @@ int main(int argc, char **argv) {
     int currentWorldX = worldX;
     int currentWorldY = worldY;
 
-    Entity* levelEntities[MaxEntities];
 
-    Map* currentLevel = LoadLevel(world, levelEntities, worldX, worldY);
-    //currentLevel->WallRectangle(MapWidth,MapHeight);
-
-
+    // Generate World
+    printf("Generating world...\n");
     //Map Gen -- Use png
     world[0][2]->FillRectangle(1,1,MapWidth,MapHeight,0);
 
@@ -213,6 +234,14 @@ int main(int argc, char **argv) {
 
     Shepherd* player = new Shepherd(20, 7);
 
+    Entity* levelEntities[MaxEntities];
+    for (int i = 0; i < MaxEntities; i++) {
+        levelEntities[i] = nullptr;
+    }
+
+    printf("Loading level...\n");
+    Map* currentLevel = LoadLevel(world, levelEntities, worldX, worldY);
+
     /*if (window.IsInitialized())
         window.SetDialogueText("Hit escape to exit program.");*/
 
@@ -223,6 +252,7 @@ int main(int argc, char **argv) {
     int ticks = 0;
 
 
+    printf("Starting main loop...\n\n");
 
     SDL_Event event;
     while (true) {
@@ -300,6 +330,9 @@ int main(int argc, char **argv) {
                 currentWorldX = worldX;
                 currentWorldY = worldY;
                 currentLevel = LoadLevel(world, levelEntities, worldX, worldY);
+
+                // Spawn Sheep
+                AppendEntity(levelEntities, new Entity(player->x, player->y, 2));
             }
 
 
@@ -312,9 +345,48 @@ int main(int argc, char **argv) {
             if (MoveFireballQueued && player->HasFire) {
                 MoveFireballQueued = false;
                 player->HasFire = false;
-                printf("Toss fireball\n");
+
+                //Fireball fireball = Fireball(player->x, player->y, player->lastX, player->lastY, 0);
+                AppendEntity(levelEntities, new Fireball(player->x, player->y, player->lastX, player->lastY, 0));
             } else
                 MoveFireballQueued = false;
+
+
+
+            // Tick Entities
+            for (int i = 0; i < MaxEntities; i++) {
+                if (!levelEntities[i]) continue;   //Skip checks if this is a nullpointer or uninitialized
+                Entity* a = levelEntities[i];
+
+                if (a->GetID() == 3) {      //Fireball
+                    Fireball* fireball = dynamic_cast<Fireball*>(a);
+
+                    if (fireball) {
+                        int fX = a->x;
+                        int fY = a->y;
+                        Movement_ShiftEntity(currentLevel, a, fireball->speedX, fireball->speedY);
+
+                        // Set things on fire
+
+                        if (a->x == fX && a->y == fY) {     // Destroy fireball if did not move
+                            RemoveEntity(levelEntities, fireball);
+                            continue;
+                        }
+                    }
+                } else if (a->GetID() == 2 && (ticks % 2) == 0) {   //Sheep AI
+                    int dirToPlayerX = (player->x - a->x);
+                    int dirToPlayerY = (player->y - a->y);
+                    if (abs(dirToPlayerX) >= abs(dirToPlayerY))
+                        dirToPlayerY = 0;
+                    else
+                        dirToPlayerX = 0;
+                    Movement_ShiftEntity(currentLevel, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
+                }
+            }
+            // Clean Entity List
+            CleanEntities(levelEntities);
+
+
 
             GameTick = 0;
         }
@@ -334,6 +406,10 @@ int main(int argc, char **argv) {
                 window.DrawTile(x,y,currentLevel->tiles[x][y]->GetTileID());
             }
         }
+        for (Entity* obj : levelEntities) {
+            if(obj)
+                window.DrawEntity(obj->x, obj->y, obj->GetID(), false);
+        }
         window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped);
         window.DrawDialogueBox();
         SDL_RenderPresent(window.canvas);
@@ -347,7 +423,8 @@ int main(int argc, char **argv) {
         }
     }
     for (int i = 0; i < MaxEntities; i++) {
-        delete levelEntities[i];
+        if (levelEntities[i])
+            delete levelEntities[i];
     }
     delete player;
 

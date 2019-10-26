@@ -1,5 +1,3 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include "renderwindow.h"
 
 RenderWindow::RenderWindow() {
@@ -151,13 +149,19 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip) {
             angle = 0.0;
         else
             angle = 3.0;
+
+        SDL_RenderCopyEx(canvas, TEXTURE_sheep, NULL, &tile, angle, NULL, flipStyle);
     } else if (id == 3) {   // Fireball
         int sha = 20 * (float) (sin(time) + 1);
-        SDL_SetRenderDrawColor(canvas, 200 + sha, 70 + sha, 10, 0);
-        SDL_RenderFillRect(canvas, &tile);
-    }
+        SDL_SetRenderDrawColor(canvas, 220 + sha, 100 + sha, 50, 0);
 
-    SDL_RenderCopyEx(canvas, TEXTURE_sheep, NULL, &tile, angle, NULL, flipStyle);
+        tile.x += tile.w*.25;
+        tile.y += tile.h*.25;
+        tile.w *= .5;
+        tile.h *= .5;
+
+        SDL_RenderFillRect(canvas, &tile);
+    }    
 }
 void RenderWindow::DrawDialogueBox() {
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);

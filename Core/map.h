@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Tile/tile.h>
 #include "config.h"
 
