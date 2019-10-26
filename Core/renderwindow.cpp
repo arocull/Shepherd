@@ -26,6 +26,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
         if (TEXTURESURFACE_sheep) {
             TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
         }
+
+        TEXTURESURFACE_shepherd = SDL_LoadBMP("Textures/Shepherd.bmp");
+        if (TEXTURESURFACE_shepherd) {
+            TEXTURE_shepherd = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_shepherd);
+        }
     }
 }
 
@@ -74,8 +79,12 @@ void RenderWindow::LogTick() {
 void RenderWindow::Close() {
     if (!initialized) return;
 
+    SDL_FreeSurface(TEXTURESURFACE_tree);
+    SDL_DestroyTexture(TEXTURE_tree);
     SDL_FreeSurface(TEXTURESURFACE_sheep);
     SDL_DestroyTexture(TEXTURE_sheep);
+    SDL_FreeSurface(TEXTURESURFACE_shepherd);
+    SDL_DestroyTexture(TEXTURE_shepherd);
 
     SDL_DestroyRenderer(canvas);
     SDL_DestroyWindow(window);
@@ -123,25 +132,54 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
         SDL_RenderCopy(canvas, TEXTURE_tree, NULL, &tile);
     }
 }
-void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip) {
+void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
     SDL_Rect tile;
     tile.w = tileRes;
     tile.h = tileRes;
     tile.x = posX*tileRes + offsetX;
     tile.y = posY*tileRes + offsetY;
 
-    /*SDL_Point center;
-    center.x = tile.x+tile.w/2;
-    center.y = tile.y+tile.h/2;*/
-
     SDL_RendererFlip flipStyle = SDL_FLIP_NONE;
     if (flip)
         flipStyle = SDL_FLIP_HORIZONTAL;
 
-    //SDL_RenderCopy(canvas, TEXTURE_sheep, NULL, &tile);
-
     double angle = 0.0;
-    if (id == 1 || id == 2) {  // Player or Sheep
+    if (id == 1) {
+        int step = ticks/TickRate % 2;
+
+        switch (anim) {
+            case 2:
+                tile.x += tile.w/6;
+                tile.w *= (float) 2 / (float) 3;
+                break;
+            default:
+                tile.x += tile.w/3;
+                tile.w /= 3;
+        }
+
+        SDL_Rect src;
+        src.h = 32;
+        src.y = 0;
+
+        if (anim == 1) {
+            src.w = 12;
+            src.x = 20;
+            step = ticks % 2;
+            angle = (((double) step) - 0.5)*5;
+        } else if (anim == 2) {
+            src.w = 23;
+            src.x = 32; 
+        } else {
+            src.w = 10;
+            if (step == 1)
+                src.x = 10;
+            else
+                src.x = 0;
+        }
+        
+
+        SDL_RenderCopyEx(canvas, TEXTURE_shepherd, &src, &tile, angle, NULL, flipStyle);
+    } else if (id == 2) {  // Player or Sheep
         int step = ticks/2 % 4;
         if (step == 2)
             angle = -3.0;
@@ -152,8 +190,8 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip) {
 
         SDL_RenderCopyEx(canvas, TEXTURE_sheep, NULL, &tile, angle, NULL, flipStyle);
     } else if (id == 3) {   // Fireball
-        int sha = 20 * (float) (sin(time) + 1);
-        SDL_SetRenderDrawColor(canvas, 220 + sha, 100 + sha, 50, 0);
+        int sha = (int) 20 * (sin(time*20) + 1);
+        SDL_SetRenderDrawColor(canvas, 210 + sha, 100 + sha, 0, 0);
 
         tile.x += tile.w*.25;
         tile.y += tile.h*.25;

@@ -22,4 +22,6 @@ class Entity {
 
         bool Flipped = false;
         bool HasFire = false;
+
+        int animation = 0;
 };

@@ -99,6 +99,7 @@ void Movement_ShiftPlayer(Map* world, Shepherd* obj, int dx, int dy, int* worldX
 
     obj->lastX = dx;
     obj->lastY = dy;
+    obj->animation = 1;     //Set animation to walking
 
     if (desiredX >= MapWidth && *worldX+1 <= WorldWidth-1 && obj->HasAllSheep()) {
         *worldX = *worldX+1;
@@ -303,6 +304,8 @@ int main(int argc, char **argv) {
             window.LogTick();
             //SDL_Log("Game tick %i, DT %f", ticks, DeltaTime);
 
+            player->animation = 0;
+
             if (MoveUp)
                 Movement_ShiftPlayer(currentLevel, player, 0, 1, &worldX, &worldY);
             else if (MoveDown)
@@ -345,8 +348,9 @@ int main(int argc, char **argv) {
             if (MoveFireballQueued && player->HasFire) {
                 MoveFireballQueued = false;
                 player->HasFire = false;
-
-                //Fireball fireball = Fireball(player->x, player->y, player->lastX, player->lastY, 0);
+                player->animation = 2;      //Fireball Toss animation
+                
+                //printf("Tossed fireball! Tick %i\n", ticks);
                 AppendEntity(levelEntities, new Fireball(player->x, player->y, player->lastX, player->lastY, 0));
             } else
                 MoveFireballQueued = false;
@@ -380,7 +384,10 @@ int main(int argc, char **argv) {
                         dirToPlayerY = 0;
                     else
                         dirToPlayerX = 0;
-                    Movement_ShiftEntity(currentLevel, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
+
+                    // If there is one tile of space or less between sheep and player, don't move
+                    if (!((abs(dirToPlayerX) <= 1 && dirToPlayerY == 0) || (dirToPlayerX == 0 && abs(dirToPlayerY) <= 1)))
+                        Movement_ShiftEntity(currentLevel, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
                 }
             }
             // Clean Entity List
@@ -408,9 +415,9 @@ int main(int argc, char **argv) {
         }
         for (Entity* obj : levelEntities) {
             if(obj)
-                window.DrawEntity(obj->x, obj->y, obj->GetID(), false);
+                window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation);
         }
-        window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped);
+        window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation);
         window.DrawDialogueBox();
         SDL_RenderPresent(window.canvas);
     }

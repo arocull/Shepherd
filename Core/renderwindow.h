@@ -48,10 +48,13 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_sheep;
         SDL_Texture* TEXTURE_sheep;
 
+        SDL_Surface* TEXTURESURFACE_shepherd;
+        SDL_Texture* TEXTURE_shepherd;
+
     public:
         void FillViewportBackground(int r, int g, int b);
         void DrawTile(int tileX, int tileY, int tileID);
-        void DrawEntity(int posX, int posY, int id, bool flip);
+        void DrawEntity(int posX, int posY, int id, bool flip, int animation);
         void DrawDialogueBox();
 
         bool IsInitialized();
