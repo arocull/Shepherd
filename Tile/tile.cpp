@@ -17,6 +17,9 @@ int Tile::GetTileID() {
 bool Tile::IsSolid() {
     return solid;
 }
+bool Tile::IsLiquid() {
+    return liquid;
+}
 
 
 

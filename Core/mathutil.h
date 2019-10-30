@@ -11,3 +11,16 @@ sgn(n) - Gets and returns -1, 0, or 1 based off of the sign of the given value
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
+
+template <typename T> T min(T val1, T val2) {
+    if (val1 > val2)
+        return val2;
+    else
+        return val1;
+}
+template <typename T> T max(T val1, T val2) {
+    if (val1 > val2)
+        return val1;
+    else
+        return val2;
+}

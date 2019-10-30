@@ -99,7 +99,7 @@ bool HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
         }
     }
 
-    printf("Sheep tally is %i sheep\n", sheep);
+    //printf("Sheep tally is %i sheep\n", sheep);
 
     return sheep >= MaxSheep;
 }
@@ -108,6 +108,9 @@ bool HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
 
 
 // Level Loading
+bool LoadLevel_IsSpawnable(Map* level, Entity* entities[MaxEntities], int xPos, int yPos) {
+    return (!level->tiles[xPos][yPos]->IsSolid() && !level->tiles[xPos][yPos]->IsLiquid() && !GetEntityAtLocation(entities, xPos, yPos));
+}
 Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY) {
     //Dump entities in current level back into the map data (exclude sheep, fireballs)
 
@@ -124,8 +127,55 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
 
     //Spawn Sheep (if playerX or playerY is negative, do not spawn any)
     if (playerX >= 0 && playerY >= 0) {
-        for (int i = 0; i < MaxSheep; i++)
-            AppendEntity(levelEntities, new Entity(playerX,playerY,2));
+        int sheepLeft = MaxSheep;
+
+        int top = playerY+1; int bottom = playerY-1; int left = playerX-1; int right = playerX+1;
+        int dir = 0;    //0 = right, 1 = down, 2 = left, 3 = up
+
+        while (sheepLeft > 0) {
+            bottom = max(0, bottom);
+            left = max(0, left);
+            top = min(MapHeight, top);
+            right = min(MapWidth, right);
+
+            if (dir == 0) {
+                for (int x = left; x <= right && x < MapWidth && x >= 0; x++) {
+                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, x, top) && sheepLeft > 0) {
+                        AppendEntity(levelEntities, new Entity(x, top, 2));
+                        sheepLeft--;
+                    }
+                }
+                top++;
+                dir = 1;
+            } else if (dir == 1) {
+                for (int y = top; y >= bottom && y < MapHeight && y >= 0; y--) {
+                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, right, y) && sheepLeft > 0) {
+                        AppendEntity(levelEntities, new Entity(right, y, 2));
+                        sheepLeft--;
+                    }
+                }
+                right++;
+                dir = 2;
+            } else if (dir == 2) {
+                for (int x = right; x >= left && x < MapWidth && x >= 0; x--) {
+                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, x, bottom) && sheepLeft > 0) {
+                        AppendEntity(levelEntities, new Entity(x, bottom, 2));
+                        sheepLeft--;
+                    }
+                }
+                bottom--;
+                dir = 3;
+            } else if (dir == 3) {
+                for (int y = bottom; y <= top && y < MapHeight && y >= 0; y++) {
+                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, left, y) && sheepLeft > 0) {
+                        AppendEntity(levelEntities, new Entity(left, y, 2));
+                        sheepLeft--;
+                    }
+                }
+                left--;
+                dir = 0;
+            }
+        }
     }
 
 
