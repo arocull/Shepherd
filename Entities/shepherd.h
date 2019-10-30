@@ -12,8 +12,6 @@ class Shepherd : public Entity {
     private:
 
     public:
-        bool HasAllSheep();
-
         int lastX = 0;
         int lastY = 0;
 };
