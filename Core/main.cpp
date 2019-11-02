@@ -69,6 +69,7 @@ void CleanEntities(Entity* entities[MaxEntities]) {
         }
     }
 }
+// Searches list of entities and returns the first entity it finds with given location; otherwise returns null
 Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos) {
     for (int i = 0; i < MaxEntities; i++) {
         if (entities[i] && entities[i]->x == xPos && entities[i]->y == yPos)
@@ -107,10 +108,14 @@ bool HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
 
 
 
-// Level Loading
+// Level Loading //
+
+// Checks to see if the given location is valid for spawning entities
 bool LoadLevel_IsSpawnable(Map* level, Entity* entities[MaxEntities], int xPos, int yPos) {
     return (!level->tiles[xPos][yPos]->IsSolid() && !level->tiles[xPos][yPos]->IsLiquid() && !GetEntityAtLocation(entities, xPos, yPos));
 }
+/* Loads a new level
+Saves any entities that are archivable to the current level, or deletes them if they are no longer present, */
 Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY) {
     //Dump entities in current level back into the map data (exclude sheep, fireballs)
 
@@ -129,52 +134,28 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
     if (playerX >= 0 && playerY >= 0) {
         int sheepLeft = MaxSheep;
 
-        int top = playerY+1; int bottom = playerY-1; int left = playerX-1; int right = playerX+1;
+        int top = playerY-1; int bottom = playerY+1; int left = playerX-1; int right = playerX+1;
         int dir = 0;    //0 = right, 1 = down, 2 = left, 3 = up
 
-        while (sheepLeft > 0) {
-            bottom = max(0, bottom);
+        while (sheepLeft > 0 || (bottom == MapHeight && left == -1 && right == MapWidth && top == -1)) {
+            top = max(0, top);
             left = max(0, left);
-            top = min(MapHeight, top);
-            right = min(MapWidth, right);
+            bottom = min(MapHeight-1, bottom);
+            right = min(MapWidth-1, right);
 
-            if (dir == 0) {
-                for (int x = left; x <= right && x < MapWidth && x >= 0; x++) {
-                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, x, top) && sheepLeft > 0) {
-                        AppendEntity(levelEntities, new Entity(x, top, 2));
+            for (int y = top; y <= bottom; y++) {
+                for (int x = left; x <= right; x++) {
+                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, x, y) && sheepLeft > 0) {
+                        AppendEntity(levelEntities, new Entity(x, y, 2));
                         sheepLeft--;
                     }
                 }
-                top++;
-                dir = 1;
-            } else if (dir == 1) {
-                for (int y = top; y >= bottom && y < MapHeight && y >= 0; y--) {
-                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, right, y) && sheepLeft > 0) {
-                        AppendEntity(levelEntities, new Entity(right, y, 2));
-                        sheepLeft--;
-                    }
-                }
-                right++;
-                dir = 2;
-            } else if (dir == 2) {
-                for (int x = right; x >= left && x < MapWidth && x >= 0; x--) {
-                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, x, bottom) && sheepLeft > 0) {
-                        AppendEntity(levelEntities, new Entity(x, bottom, 2));
-                        sheepLeft--;
-                    }
-                }
-                bottom--;
-                dir = 3;
-            } else if (dir == 3) {
-                for (int y = bottom; y <= top && y < MapHeight && y >= 0; y++) {
-                    if (LoadLevel_IsSpawnable(newLevel, levelEntities, left, y) && sheepLeft > 0) {
-                        AppendEntity(levelEntities, new Entity(left, y, 2));
-                        sheepLeft--;
-                    }
-                }
-                left--;
-                dir = 0;
             }
+
+            bottom++;
+            top--;
+            left--;
+            right++;
         }
     }
 

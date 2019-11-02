@@ -7,4 +7,5 @@ This is heavily a work-in-progress and something I do only on my own time when I
 ## Packages
 
 To compile this program, you must install the SDL package.
+
 `$ apt install libsdl2-dev`
