@@ -309,10 +309,10 @@ int main(int argc, char **argv) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize program: %s", SDL_GetError());
         return 3;
     }
-    if (TTF_Init()) {
+    /*if (TTF_Init()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize Font System: %s", SDL_GetError());
         return 3;
-    }
+    }*/
     
     RenderWindow window = RenderWindow(800,500,"Render Window");
     if (!window.IsInitialized()) return 3;
