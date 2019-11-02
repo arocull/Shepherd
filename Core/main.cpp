@@ -137,6 +137,7 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
         int top = playerY-1; int bottom = playerY+1; int left = playerX-1; int right = playerX+1;
         int dir = 0;    //0 = right, 1 = down, 2 = left, 3 = up
 
+        // Summon sheep until all are summoned or no more available spawn points (NOTE: game will softlock if it runs out of spawn tiles)
         while (sheepLeft > 0 || (bottom == MapHeight && left == -1 && right == MapWidth && top == -1)) {
             top = max(0, top);
             left = max(0, left);
@@ -314,13 +315,13 @@ int main(int argc, char **argv) {
 
     // Generate World
     printf("Generating world...\n");
-    //Map Gen -- Use png
+    //Map Gen -- Use png in future for maps
     world[0][2]->FillRectangle(1,1,MapWidth,MapHeight,0);
 
     world[1][2]->FillRectangle(0,1,MapWidth,MapHeight,0);
-    world[1][2]->FillRectangle(9, 5,10,11, 4);
-    world[1][2]->FillRectangle(10,5,21,11, 2);
-    world[1][2]->FillRectangle(21,5,22,11, 4);
+    world[1][2]->FillRectangle(9, 5,10,11, 4);  // Trees
+    world[1][2]->FillRectangle(10,5,21,11, 2);  // Lake
+    world[1][2]->FillRectangle(21,5,22,11, 4);  // Trees
 
     world[2][2]->FillRectangle(0,1,MapWidth-1,MapHeight,0);
 
@@ -341,9 +342,9 @@ int main(int argc, char **argv) {
     world[1][0]->FillRectangle(0,0,MapWidth,MapHeight-1,0);
 
     world[2][0]->FillRectangle(0,0,MapWidth-1,MapHeight-1,0);
-    world[1][0]->FillRectangle(10,12,31,14,4);
+    world[1][0]->FillRectangle(10,12,31,14,4);  // Trees
     
-
+    // Summon player
     Shepherd* player = new Shepherd(20, 7);
 
     Entity* levelEntities[MaxEntities];
@@ -430,7 +431,7 @@ int main(int argc, char **argv) {
                 Movement_Clear();
 
 
-            
+            // Limit world coordinates to actual world
             if (worldX >= WorldWidth)
                 worldX = WorldWidth-1;
             else if (worldX < 0)
@@ -440,6 +441,7 @@ int main(int argc, char **argv) {
             else if (worldY < 0)
                 worldY = 0;
 
+            // If world coordinate has changed, load a new level
             if (worldX != currentWorldX || worldY != currentWorldY) {
                 currentWorldX = worldX;
                 currentWorldY = worldY;
@@ -494,7 +496,7 @@ int main(int argc, char **argv) {
                         dirToPlayerX = 0;
 
                     // If there is one tile of space or less between sheep and player, don't move
-                    if (!((abs(dirToPlayerX) <= 1 && dirToPlayerY == 0) || (dirToPlayerX == 0 && abs(dirToPlayerY) <= 1)))
+                    if (!((abs(dirToPlayerX) == 1 && dirToPlayerY == 0) || (dirToPlayerX == 0 && abs(dirToPlayerY) == 1)))
                         Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
                 }
             }
@@ -530,6 +532,8 @@ int main(int argc, char **argv) {
         SDL_RenderPresent(window.canvas);
     }
 
+
+    // Close window and deallocate memory
     window.Close();
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {

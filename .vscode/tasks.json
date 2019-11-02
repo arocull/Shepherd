@@ -11,7 +11,7 @@
                 "${file}",
                 "-lSDL2",
                 "-lSDL2main",
-                "-lSDL2_ttf",
+                //"-lSDL2_ttf",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
