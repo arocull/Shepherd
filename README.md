@@ -23,3 +23,5 @@ In order to move to different areas around the world, you must be touching all y
 Standing on the magma will give you a fireball. Hit space to fling it.
 
 Hit F11 to toggle fullscreen and windowed mode (game should adjust aspect ratio automatically).
+
+Hit Escape to close the game.

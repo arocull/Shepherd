@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Tile/tile.h>
+#include <Map/tile.h>
 #include "config.h"
 
 // Map - A class that holds a 2D array of tiles, as well as a list of entities that persist only within the map.

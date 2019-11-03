@@ -12,12 +12,14 @@ template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
 
+// Returns the minimum of two values--works for any numerical type
 template <typename T> T min(T val1, T val2) {
     if (val1 > val2)
         return val2;
     else
         return val1;
 }
+// Returns the maximum of two values--works for any numerical type
 template <typename T> T max(T val1, T val2) {
     if (val1 > val2)
         return val1;

@@ -5,7 +5,7 @@ CCFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main `sdl2-config --cflags` -L/usr/lib
 LDFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main `sdl2-config --cflags` -L/usr/lib #-Wl,--verbose, -lSDL2_ttf
 TARGET=main
 
-MODULES   := Core Entities Tile
+MODULES   := Core Entities Entities/Subclasses Map
 SRC_DIR   := $(addprefix ./,$(MODULES)) .
 BUILD_DIR := $(addprefix build/,$(MODULES))
 
