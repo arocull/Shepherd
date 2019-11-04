@@ -31,6 +31,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
         if (TEXTURESURFACE_shepherd) {
             TEXTURE_shepherd = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_shepherd);
         }
+
+        TEXTURESURFACE_alphabet = SDL_LoadBMP("Textures/Alphabet.bmp");
+        if (TEXTURESURFACE_alphabet) {
+            TEXTURE_alphabet = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_alphabet);
+        }
     }
 }
 
@@ -85,6 +90,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_sheep);
     SDL_FreeSurface(TEXTURESURFACE_shepherd);
     SDL_DestroyTexture(TEXTURE_shepherd);
+    SDL_FreeSurface(TEXTURESURFACE_alphabet);
+    SDL_DestroyTexture(TEXTURE_alphabet);
 
     SDL_DestroyRenderer(canvas);
     SDL_DestroyWindow(window);
@@ -201,6 +208,62 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
         SDL_RenderFillRect(canvas, &tile);
     }    
 }
+
+
+
+
+
+void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char letter) {
+    if (letter == ' ') return;
+
+    SDL_Rect let;
+    let.w = sizeX;
+    let.h = sizeY;
+    let.x = xPos;
+    let.y = yPos;
+
+    int sx = LetterMap[letter];
+    int sy = 0;
+
+    // Constrain source X to be within 0-25; adds to source Y for each 26-character row
+    for (; sx >= 26; sx-=26)
+        sy++;
+
+    SDL_Rect sample;
+    sample.w = 5;
+    sample.h = 8;
+    sample.x = 5*sx;
+    sample.y = 8*sy;
+
+    switch (letter) {
+        case 'g':
+        case 'j':
+        case 'p':
+        case 'q':
+        case 'y':
+            let.y+=sizeY/2;
+    }
+
+    SDL_RenderCopy(canvas, TEXTURE_alphabet, &sample, &let);
+}
+// Writes the given text to fit the set boundaries
+// Returns the index of whatever letter it was cut off on (the next letter that would not fit in the box)
+int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* text) {
+    int sizeY = bottomY-topY;
+    int sizeX = (int) sizeY * (5.0f/8.0f);
+
+    int currentIndex = 0;
+    for (char* letter = text; *letter && leftX <= rightX-sizeX; ++letter) {
+        DrawLetter(leftX, topY, sizeX, sizeY, *letter);
+        leftX+=sizeX + sizeX*LetterSpacing;
+        currentIndex++;
+    }
+
+    return currentIndex;
+}
+
+
+
 void RenderWindow::DrawDialogueBox() {
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
     SDL_RenderDrawLine(canvas,0,offsetY,x,offsetY);

@@ -4,6 +4,8 @@
 //#include <SDL2/SDL_ttf.h>
 
 #include "config.h"
+#include "charmap.h"
+#include "mathutil.h"
 
 // Render Window - An individual window that renders things.
 class RenderWindow {
@@ -51,11 +53,19 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_shepherd;
         SDL_Texture* TEXTURE_shepherd;
 
+        SDL_Surface* TEXTURESURFACE_alphabet;
+        SDL_Texture* TEXTURE_alphabet;
+
     public:
         void FillViewportBackground(int r, int g, int b);
         void DrawTile(int tileX, int tileY, int tileID);
         void DrawEntity(int posX, int posY, int id, bool flip, int animation);
+
+        void DrawLetter(int posX, int posY, int sizeX, int sizeY, char letter);
+        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text);
+        
         void DrawDialogueBox();
+        
 
         bool IsInitialized();
         void ToggleFullscreen();

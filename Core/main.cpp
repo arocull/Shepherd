@@ -277,7 +277,12 @@ int main(int argc, char **argv) {
                 window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation);
         }
         window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation);
+
+        //window.WriteText(0, 0, 1680, 20, "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 1234567890 .,!?()-+*/=_");
+        //window.WriteText(0, 20, 1680, 40, "The quick brown fox jumped over the lazy dog.");
+
         window.DrawDialogueBox();
+        
         SDL_RenderPresent(window.canvas);
     }
 
