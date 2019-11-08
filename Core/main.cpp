@@ -115,6 +115,8 @@ int main(int argc, char **argv) {
 
 
     printf("Starting main loop...\n\n");
+    //window.SetDialogueText("ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 1234567890 .,!?()-+*/=_");
+    window.SetDialogueText("Basic dialogue text.\nThis feature is currently being tested.");
 
     SDL_Event event;
     while (true) {

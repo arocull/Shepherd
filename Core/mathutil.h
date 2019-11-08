@@ -2,7 +2,6 @@
 
 // Math Functions
 
-
 /*
 sgn(n) - Gets and returns -1, 0, or 1 based off of the sign of the given value
 
@@ -26,3 +25,21 @@ template <typename T> T max(T val1, T val2) {
     else
         return val2;
 }
+
+
+// Lops off the left side of the string up until X point
+// Used guide at http://www.martinbroadhurst.com/trim-a-string-in-c.html
+/*char *string_leftTrim(char *str, int trimTo) {
+    size_t trimSize = sizeof(char)*trimTo;
+    
+    int i = 0;//strlen(str);
+    while (i < trimTo) {
+        str[i] = '\0';  //Set character to terminating character
+        i++;
+    }
+
+    // Move terminating characters to end of string
+    //memmove(str, str + trimSize, )
+
+    return str;
+}*/

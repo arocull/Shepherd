@@ -12,7 +12,7 @@ To compile this program, you must install the SDL2 library.
 
 The game compiles based off of a Makefile as well using g++, but it should hopefully handle the rest.
 
-
+Once the game is compiled, to run it, simply execute 'main' within the build/ directory to play it.
 
 ## Gameplay (Currently)
 

@@ -48,13 +48,6 @@ void RenderWindow::ToggleFullscreen() {
         windowedX = x;
         windowedY = y;
         
-        /*SDL_DisplayMode DM;
-        SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex(window), &DM);
-        int DisplayWidth = DM.w;
-        int DisplayHeight = DM.h;
-
-        //SDL_SetWindowSize(window, DisplayWidth, DisplayHeight);
-        //SDL_SetWindowBordered(window, SDL_FALSE);*/
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP); //Enforce borderless fullscreen without screwing up resolution
         fullscreen = true;
     } else {
@@ -66,9 +59,17 @@ void RenderWindow::ToggleFullscreen() {
 }
 void RenderWindow::UpdateSize() {
     SDL_GetWindowSize(window, &x, &y);
-    tileRes = fmin(x/MapWidth, y/MapHeight);
-    offsetX = (x-MapWidth*tileRes)/2;
-    offsetY = (y-MapHeight*tileRes)/2;
+
+    if (dialogueBoxVisible)
+        dialogueBoxY = y*DialogueBoxScale;
+    else
+        dialogueBoxY = 0;
+
+    dialogueBoxLineHeight = dialogueBoxY/DialogueBoxLines - dialogueBoxY*DialogueBoxLineSpacing;
+
+    tileRes = fmin(x/MapWidth, (y - dialogueBoxY)/MapHeight);
+    offsetX = (x - MapWidth*tileRes)/2;
+    offsetY = (y - MapHeight*tileRes - dialogueBoxY)/2;
     innerWidth = tileRes*MapWidth;
     innerHeight = tileRes*MapHeight;
 }
@@ -77,12 +78,25 @@ void RenderWindow::TickDeltaTime(float DeltaTime) {
 }
 void RenderWindow::LogTick() {
     ticks++;
+
+    // Check if we we have any dialogue text waiting to be cleared
+    if (dialogueTicksLeft > 0) {
+        dialogueTicksLeft--;
+        if (dialogueTicksLeft == 0 && dialogueText && dialogueText[0]) {   //If its time is up, clear it
+            dialogueText[0] = '\0'; //Lazy clear, sets first character to a string terminator, but is fast
+
+            //If you wanted to clear the whole buffer, you would do:
+            //memset(dialogueText,'\0',strlen(dialogueText));
+        }
+    }
 }
 
 
 
 void RenderWindow::Close() {
     if (!initialized) return;
+
+    free(dialogueText);
 
     SDL_FreeSurface(TEXTURESURFACE_tree);
     SDL_DestroyTexture(TEXTURE_tree);
@@ -246,26 +260,67 @@ void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char let
 
     SDL_RenderCopy(canvas, TEXTURE_alphabet, &sample, &let);
 }
-// Writes the given text to fit the set boundaries
-// Returns the index of whatever letter it was cut off on (the next letter that would not fit in the box)
-int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* text) {
+/*Writes the given text to fit the set boundaries
+
+Returns the index of whatever letter it was cut off on (the next letter that would not fit in the box)
+
+Start and end describe what sections of the string to scan, defaults to 0 and -1
+Set 'end' to -1 for no end*/
+int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start, int end) {
     int sizeY = bottomY-topY;
     int sizeX = (int) sizeY * (5.0f/8.0f);
 
-    int currentIndex = 0;
-    for (char* letter = text; *letter && leftX <= rightX-sizeX; ++letter) {
-        DrawLetter(leftX, topY, sizeX, sizeY, *letter);
-        leftX+=sizeX + sizeX*LetterSpacing;
-        currentIndex++;
-    }
+    int currentIndex = start;
+    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftX <= rightX-sizeX) {
+        if (text[currentIndex] == '\n') { //If it's a new line, move on (automatically gets pushed on)
+            currentIndex++;
+            break;
+        }
 
+        DrawLetter(leftX, topY, sizeX, sizeY, text[currentIndex]);
+
+        currentIndex++;
+        leftX+=sizeX + sizeX*LetterSpacing;
+    }
+    
     return currentIndex;
 }
 
 
+/*Displays given text within the dialogue box
 
+Set the amount of ticks the dialogue remains in the box, defaults to 50 (5 seconds with a tick rate of 10)
+Set 'ticks' to 0 for the text to last indefinitely or until overwritten*/
+void RenderWindow::SetDialogueText(char* text, int ticks) {
+    dialogueText = strdup(text);//strcpy(dialogueText, text);
+    dialogueTicksLeft = ticks;
+}
+char* RenderWindow::GetDialogueText() {
+    return dialogueText;
+}
 void RenderWindow::DrawDialogueBox() {
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
     SDL_RenderDrawLine(canvas,0,offsetY,x,offsetY);
-    SDL_RenderDrawLine(canvas,0,innerHeight+offsetY,x,innerHeight+offsetY);
+
+    // Top pixel of dialogue box
+    int dboxtop = innerHeight + offsetY;
+    SDL_RenderDrawLine(canvas,0,dboxtop,x,innerHeight+offsetY);
+    
+
+    // Only render text if it exists
+    if (dialogueText && dialogueText[0]) {
+        // Add in half a line-space to center text
+        dboxtop+=dialogueBoxY*DialogueBoxLineSpacing/2;
+
+        int shave = 0;
+        for (int i = 0; i < DialogueBoxLines && dialogueText[shave]; i++) {
+            int top = dboxtop + i*dialogueBoxLineHeight + i*dialogueBoxY*DialogueBoxLineSpacing;
+            shave = WriteText(0, top, x, top + dialogueBoxLineHeight, dialogueText, shave);
+        }
+
+        // Remove the offset to keep frame bottom consistent
+        dboxtop-=dialogueBoxY*DialogueBoxLineSpacing/2;
+    }
+
+    SDL_RenderDrawLine(canvas,0,dboxtop+dialogueBoxY,x,dboxtop+dialogueBoxY);
 }

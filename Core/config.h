@@ -5,6 +5,12 @@
 
 // How big the gaps are between letters in rendered text in proportion to the letters themselves
 #define LetterSpacing .1
+// Scale of the dialogue box in proportion to the total available window space
+#define DialogueBoxScale .2
+// How many lines of text the dialogue box contains
+#define DialogueBoxLines 3
+// Amount of space between each line of text in proportion to the total size of the dialogue box
+#define DialogueBoxLineSpacing .05
 
 // Maximum entities that can exist at a time (not counting player)
 #define MaxEntities 15

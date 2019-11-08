@@ -44,6 +44,14 @@ class RenderWindow {
         int ticks = 0;
 
 
+        //Y Size of the dialogue box
+        int dialogueBoxY;
+        int dialogueBoxLineHeight;
+        bool dialogueBoxVisible = true;
+        char* dialogueText;
+        int dialogueTicksLeft = 0;
+
+
         SDL_Surface* TEXTURESURFACE_tree;
         SDL_Texture* TEXTURE_tree;
 
@@ -62,8 +70,10 @@ class RenderWindow {
         void DrawEntity(int posX, int posY, int id, bool flip, int animation);
 
         void DrawLetter(int posX, int posY, int sizeX, int sizeY, char letter);
-        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text);
+        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start = 0, int end = -1);
         
+        void SetDialogueText(char* newText, int ticks = 50);
+        char* GetDialogueText();
         void DrawDialogueBox();
         
 
