@@ -12,11 +12,13 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
     Map* newLevel = world[worldX][worldY];  //Point current level to the new map
 
     for (int i = 0; i < MaxEntities; i++) {
-        if (levelEntities[i]) {
+        if (levelEntities[i] && levelEntities[i]->GetID() != 1) {
             delete levelEntities[i];
             levelEntities[i] = nullptr;
         }
     }
+
+    CleanEntities(levelEntities);
 
     //Load entities from map into the new level entities
 

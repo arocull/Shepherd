@@ -97,7 +97,8 @@ int main(int argc, char **argv) {
     Shepherd* player = new Shepherd(20, 7);
 
     Entity* levelEntities[MaxEntities];
-    for (int i = 0; i < MaxEntities; i++) {
+    levelEntities[0] = player;
+    for (int i = 1; i < MaxEntities; i++) {
         levelEntities[i] = nullptr;
     }
 
@@ -247,7 +248,7 @@ int main(int argc, char **argv) {
                         dirToPlayerX = 0;
 
                     // If there is one tile of space or less between sheep and player, don't move
-                    if (!((abs(dirToPlayerX) == 1 && dirToPlayerY == 0) || (dirToPlayerX == 0 && abs(dirToPlayerY) == 1)))
+                    //if (!((abs(dirToPlayerX) == 1 && dirToPlayerY == 0) || (dirToPlayerX == 0 && abs(dirToPlayerY) == 1)))
                         Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
                 }
             }
