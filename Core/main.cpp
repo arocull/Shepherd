@@ -299,7 +299,7 @@ int main(int argc, char **argv) {
         }
     }
     for (int i = 0; i < MaxEntities; i++) {
-        if (levelEntities[i] && levelEntities[i]->GetID() != 0)
+        if (levelEntities[i] && levelEntities[i]->GetID() != 1)
             delete levelEntities[i];
     }
     delete player;

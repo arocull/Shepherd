@@ -55,3 +55,18 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
 
     return newLevel;
 }
+
+
+/*
+We want to read a PNG file and convert it to map data.
+
+
+https://stackoverflow.com/questions/15510507/open-a-png-file-and-read-its-hex-values-in-c
+
+https://www.zarb.org/~gc/html/libpng.html
+*/
+Map* GenerateMapFromPNG() {
+
+
+    return nullptr;
+}
