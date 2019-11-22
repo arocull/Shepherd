@@ -19,6 +19,7 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
 
         TEXTURESURFACE_tree = SDL_LoadBMP("Textures/Tree.bmp");
         if (TEXTURESURFACE_tree) {
+            SDL_SetWindowIcon(window, TEXTURESURFACE_tree);
             TEXTURE_tree = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_tree);
         }
 

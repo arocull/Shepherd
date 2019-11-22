@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
         return 3;
     }*/
     
-    RenderWindow window = RenderWindow(800,500,"Render Window");
+    RenderWindow window = RenderWindow(800,500,"Shepherd");
     if (!window.IsInitialized()) return 3;
 
 
