@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "Core/config.h"
 #include "Core/mathutil.h"
 
@@ -16,4 +18,4 @@ Saves any entities that are archivable to the current level
 Deletes entities from level data if they are no longer present */
 Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY);
 
-Map* GenerateMapFromPNG();
+Map* GenerateMapFromFile(const char* filePath);

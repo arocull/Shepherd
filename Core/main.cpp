@@ -86,7 +86,9 @@ int main(int argc, char **argv) {
     world[2][1]->FillRectangle(0,0,MapWidth-1,MapHeight,0);
     
 
-    world[0][0]->FillRectangle(1,0,MapWidth,MapHeight-1,0);
+    //world[0][0]->FillRectangle(1,0,MapWidth,MapHeight-1,0);
+    delete world[0][0];
+    world[0][0] = GenerateMapFromFile("Map/Maps/ZeroZero");
 
     world[1][0]->FillRectangle(0,0,MapWidth,MapHeight-1,0);
 

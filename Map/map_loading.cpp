@@ -64,9 +64,41 @@ We want to read a PNG file and convert it to map data.
 https://stackoverflow.com/questions/15510507/open-a-png-file-and-read-its-hex-values-in-c
 
 https://www.zarb.org/~gc/html/libpng.html
+
+https://stackoverflow.com/questions/31079947/how-can-i-manually-read-png-files-in-c
+
+http://paulbourke.net/dataformats/bmp/
+
+https://www.youtube.com/watch?v=1Fo-5vJcB4w     //Using this
+at 7 minutes
 */
-Map* GenerateMapFromPNG() {
+Map* GenerateMapFromFile(const char* filePath) {
+    std::fstream mapFile;       //Creates stream to read from
+    mapFile.open(filePath);     //Opens file path
 
+    Map* map = new Map();       //Generates new map
 
-    return nullptr;
+    for (int y = 0; y < MapHeight; y++) {
+        for (int x = 0; x < MapWidth; x++) {
+            int charID = mapFile.get();
+            if (charID == '\n')         //If char ID is a newline, get the next character instead
+                charID = mapFile.get();
+            int tileID = 0;
+
+            if (charID == 'W')      //Wall
+                tileID = 1;
+            else if (charID == 'w') //Water
+                tileID = 2;
+            else if (charID == 'L') //Lava
+                tileID = 3;
+            else if (charID == 'T') //Tree
+                tileID = 4;
+            
+            map->tiles[x][y]->SetTileID(tileID); 
+        }
+    }
+
+    mapFile.close();
+
+    return map;
 }
