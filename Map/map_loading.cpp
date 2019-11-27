@@ -78,15 +78,12 @@ Map* GenerateMapFromFile(const char* filePath) {
 
     Map* map = new Map();       //Generates new map
     
-    for (int y = 0; y < MapHeight; y++) {
-        for (int x = 0; x < MapWidth; x++) {
+    for (int y = 0; y < MapHeight && !mapFile.eof(); y++) {
+        for (int x = 0; x < MapWidth && !mapFile.eof(); x++) {
             int charID;
             int tileID = 0;
 
-            if (!mapFile.eof()) //Check to make sure we're not at the end of the file
-                mapFile.get();
-            else                //If we are, start setting tiles to air as a fail-safe.
-                charID = '_';
+            charID = mapFile.get();
 
             if (charID == '\n' && !mapFile.eof())         //If char ID is a newline, get the next character instead
                 charID = mapFile.get();
@@ -100,6 +97,8 @@ Map* GenerateMapFromFile(const char* filePath) {
                 tileID = 3;
             else if (charID == 'T') //Tree
                 tileID = 4;
+            else if (charID == 'R') //Rock
+                tileID = 5;
             
             map->tiles[x][y]->SetTileID(tileID); 
         }

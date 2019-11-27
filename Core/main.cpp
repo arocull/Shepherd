@@ -40,57 +40,42 @@ int main(int argc, char **argv) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize program: %s", SDL_GetError());
         return 3;
     }
-    /*if (TTF_Init()) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not initialize Font System: %s", SDL_GetError());
-        return 3;
-    }*/
     
     RenderWindow window = RenderWindow(800,500,"Shepherd");
     if (!window.IsInitialized()) return 3;
 
-
+    // Load world from files
     Map* world[WorldWidth][WorldHeight];
-    /*for (int x = 0; x < WorldWidth; x++) {
-        for (int y = 0; y < WorldHeight; y++) {
-            world[x][y] = new Map();
-            world[x][y]->WallRectangle(MapWidth,MapHeight);
-        }
-    }*/
-    int worldX = 0;
-    int worldY = 2;
-    int currentWorldX = worldX;
-    int currentWorldY = worldY;
-
-
-    // Generate World
-    printf("Generating world...\n");
-    //Map Gen -- Use png in future for maps
     world[0][0] = GenerateMapFromFile("Map/Maps/ZeroZero");
-    world[0][1] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[0][1] = GenerateMapFromFile("Map/Maps/ZeroOne");
     world[0][2] = GenerateMapFromFile("Map/Maps/ZeroTwo");
 
-    world[1][0] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[1][0] = GenerateMapFromFile("Map/Maps/OneZero");
     world[1][1] = GenerateMapFromFile("Map/Maps/OneOne");
     world[1][2] = GenerateMapFromFile("Map/Maps/OneOne");
 
     world[2][0] = GenerateMapFromFile("Map/Maps/OneOne");
-    world[2][1] = GenerateMapFromFile("Map/Maps/OneOne");
-    world[2][2] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[2][1] = GenerateMapFromFile("Map/Maps/ZeroOne");
+    world[2][2] = GenerateMapFromFile("Map/Maps/ZeroTwo");
+
+    int worldX = 0;
+    int worldY = 2;
+    int currentWorldX = worldX;
+    int currentWorldY = worldY;
     
+
     // Summon player
     Shepherd* player = new Shepherd(15, 5);
 
+    // Initialize entity list
     Entity* levelEntities[MaxEntities];
     levelEntities[0] = player;
     for (int i = 1; i < MaxEntities; i++) {
         levelEntities[i] = nullptr;
     }
 
-    printf("Loading level...\n");
+    // Load in initial level
     Map* currentLevel = LoadLevel(world, levelEntities, worldX, worldY, player->x, player->y);
-
-    /*if (window.IsInitialized())
-        window.SetDialogueText("Hit escape to exit program.");*/
 
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
@@ -99,9 +84,6 @@ int main(int argc, char **argv) {
     int ticks = 0;
 
 
-    printf("Starting main loop...\n\n");
-    //window.SetDialogueText("ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 1234567890 .,!?()-+*/=_");
-    window.SetDialogueText("Basic dialogue text.\nThis feature is currently being tested.");
 
     SDL_Event event;
     while (true) {

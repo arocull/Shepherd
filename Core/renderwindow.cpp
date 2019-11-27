@@ -13,6 +13,8 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
     } else
         initialized = true;
     
+    dialogueText = "";
+
     if (initialized) {
         UpdateSize();
         SDL_SetWindowTitle(window, windowName);
@@ -21,6 +23,12 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
         if (TEXTURESURFACE_tree) {
             SDL_SetWindowIcon(window, TEXTURESURFACE_tree);
             TEXTURE_tree = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_tree);
+        }
+
+        TEXTURESURFACE_rock = SDL_LoadBMP("Textures/Rock.bmp");
+        if (TEXTURESURFACE_rock) {
+            SDL_SetWindowIcon(window, TEXTURESURFACE_rock);
+            TEXTURE_rock = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_rock);
         }
 
         TEXTURESURFACE_sheep = SDL_LoadBMP("Textures/Sheep.bmp");
@@ -152,6 +160,8 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
         SDL_RenderFillRect(canvas, &tile);
     } else if (tileID == 4) {   //Tree
         SDL_RenderCopy(canvas, TEXTURE_tree, NULL, &tile);
+    } else if (tileID == 5) {   //Rock
+        SDL_RenderCopy(canvas, TEXTURE_rock, NULL, &tile);
     }
 }
 void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {

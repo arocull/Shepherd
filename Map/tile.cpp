@@ -28,6 +28,7 @@ void Tile::SetTileID(int newID) {
     switch (id) {
         case 1:     //Wall
         case 4:     //Tree
+        case 5:     //Rock
             solid = true;
             break;
         case 2:     //Water
