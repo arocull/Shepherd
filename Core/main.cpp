@@ -50,14 +50,14 @@ int main(int argc, char **argv) {
 
 
     Map* world[WorldWidth][WorldHeight];
-    for (int x = 0; x < WorldWidth; x++) {
+    /*for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
             world[x][y] = new Map();
             world[x][y]->WallRectangle(MapWidth,MapHeight);
         }
-    }
-    int worldX = 1;
-    int worldY = 1;
+    }*/
+    int worldX = 0;
+    int worldY = 2;
     int currentWorldX = worldX;
     int currentWorldY = worldY;
 
@@ -65,38 +65,20 @@ int main(int argc, char **argv) {
     // Generate World
     printf("Generating world...\n");
     //Map Gen -- Use png in future for maps
-    world[0][2]->FillRectangle(1,1,MapWidth,MapHeight,0);
-
-    world[1][2]->FillRectangle(0,1,MapWidth,MapHeight,0);
-    world[1][2]->FillRectangle(9, 5,10,11, 4);  // Trees
-    world[1][2]->FillRectangle(10,5,21,11, 2);  // Lake
-    world[1][2]->FillRectangle(21,5,22,11, 4);  // Trees
-
-    world[2][2]->FillRectangle(0,1,MapWidth-1,MapHeight,0);
-
-
-    world[0][1]->FillRectangle(1,0,MapWidth,MapHeight,0);
-
-    world[1][1]->FillRectangle(0,0,MapWidth,MapHeight,0);
-    world[1][1]->FillRectangle(2,2,10,10, 2);   // Lake
-    world[1][1]->FillRectangle(2,11,10,14,3);   // Lava
-    world[1][1]->FillRectangle(32,5,35,11,4);   // Trees
-    world[1][1]->FillRectangle(15,12,30,13,1);
-
-    world[2][1]->FillRectangle(0,0,MapWidth-1,MapHeight,0);
-    
-
-    //world[0][0]->FillRectangle(1,0,MapWidth,MapHeight-1,0);
-    delete world[0][0];
     world[0][0] = GenerateMapFromFile("Map/Maps/ZeroZero");
+    world[0][1] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[0][2] = GenerateMapFromFile("Map/Maps/ZeroTwo");
 
-    world[1][0]->FillRectangle(0,0,MapWidth,MapHeight-1,0);
+    world[1][0] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[1][1] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[1][2] = GenerateMapFromFile("Map/Maps/OneOne");
 
-    world[2][0]->FillRectangle(0,0,MapWidth-1,MapHeight-1,0);
-    world[1][0]->FillRectangle(10,12,31,14,4);  // Trees
+    world[2][0] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[2][1] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[2][2] = GenerateMapFromFile("Map/Maps/OneOne");
     
     // Summon player
-    Shepherd* player = new Shepherd(20, 7);
+    Shepherd* player = new Shepherd(15, 5);
 
     Entity* levelEntities[MaxEntities];
     levelEntities[0] = player;

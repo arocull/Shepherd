@@ -77,13 +77,20 @@ Map* GenerateMapFromFile(const char* filePath) {
     mapFile.open(filePath);     //Opens file path
 
     Map* map = new Map();       //Generates new map
-
+    
     for (int y = 0; y < MapHeight; y++) {
         for (int x = 0; x < MapWidth; x++) {
-            int charID = mapFile.get();
-            if (charID == '\n')         //If char ID is a newline, get the next character instead
-                charID = mapFile.get();
+            int charID;
             int tileID = 0;
+
+            if (!mapFile.eof()) //Check to make sure we're not at the end of the file
+                mapFile.get();
+            else                //If we are, start setting tiles to air as a fail-safe.
+                charID = '_';
+
+            if (charID == '\n' && !mapFile.eof())         //If char ID is a newline, get the next character instead
+                charID = mapFile.get();
+            
 
             if (charID == 'W')      //Wall
                 tileID = 1;
