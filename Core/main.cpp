@@ -260,23 +260,19 @@ int main(int argc, char **argv) {
 
 
     // Close window and deallocate memory
-    printf("Closing window\n");
     window.Close();
-    printf("Window closed successfully\n");
+
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
-            printf("Freeing level %i, %i\n", x, y);
             world[x][y]->Free();
             delete world[x][y];
         }
     }
-    printf("Finished freeing levels, freeing entities\n");
     for (int i = 0; i < MaxEntities; i++) {
         if (levelEntities[i] && levelEntities[i]->GetID() != 1)
             delete levelEntities[i];
     }
     delete player;
 
-    printf("All memory deallocated\n");
     return 0;
 }

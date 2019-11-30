@@ -107,11 +107,8 @@ void RenderWindow::LogTick() {
 void RenderWindow::Close() {
     if (!initialized) return;
 
-    printf("AAAAAAAAAA\n");
-
     free(dialogueText);
 
-    printf("a\n");
     SDL_FreeSurface(TEXTURESURFACE_tree);
     SDL_DestroyTexture(TEXTURE_tree);
     SDL_FreeSurface(TEXTURESURFACE_rock);
@@ -122,7 +119,6 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_shepherd);
     SDL_FreeSurface(TEXTURESURFACE_alphabet);
     SDL_DestroyTexture(TEXTURE_alphabet);
-    printf("b\n");
 
     SDL_DestroyRenderer(canvas);
     SDL_DestroyWindow(window);
