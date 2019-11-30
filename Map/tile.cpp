@@ -1,46 +1,30 @@
-#include "tile.h"
+#include "Map/tile.h"
 
-
-Tile::Tile() {
-    
-}
-Tile::Tile(int xPos, int yPos, int tileID = 0) {
-    x = xPos;
-    y = yPos;
-    SetTileID(tileID);
-}
-
-
-int Tile::GetTileID() {
-    return id;
-}
-bool Tile::IsSolid() {
-    return solid;
-}
-bool Tile::IsLiquid() {
-    return liquid;
+// Creates a tile object at position X, Y and automatically sets its properties based off of ID
+struct Tile* MakeTile(int x, int y, int id) {
+    // Force-clear the spot of memory to avoid tile corruption
+    struct Tile* tile = (struct Tile*) calloc(1, sizeof(struct Tile));
+    tile->x = x;
+    tile->y = y;
+    SetTileID(tile, id);
+    return tile;
 }
 
-
-
-void Tile::SetTileID(int newID) {
-    id = newID;
-    switch (id) {
+// Sets tile's ID and properties based off of the given ID
+void SetTileID(struct Tile* tile, int newID) {
+    tile->id = newID;
+    switch (newID) {
         case 1:     //Wall
         case 4:     //Tree
         case 5:     //Rock
-            solid = true;
+            tile->solid = true;
             break;
         case 2:     //Water
         case 3:     //Magma
-            liquid = true;
-            solid = false;
+            tile->liquid = true;
+            tile->solid = false;
             break;
         default:
-            solid = false;
+            tile->solid = false;
     }
-}
-void Tile::SetPosition(int newX, int newY) {
-    x = newX;
-    y = newY;
 }

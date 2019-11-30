@@ -1,22 +1,15 @@
 #pragma once
 
-class Tile {
-    public:
-        Tile();
-        Tile(int xPos, int yPos, int TileID);
+#include <stdlib.h>
+#include <stdbool.h>
 
-    private:
-        int x;
-        int y;
-        int id = 0;
-        bool solid = false;
-        bool liquid = false;
-
-    public:
-        int GetTileID();
-        bool IsSolid();
-        bool IsLiquid();
-
-        void SetTileID(int newID);
-        void SetPosition(int newX, int newY);
+struct Tile {
+    int x;
+    int y;
+    int id = 0;
+    bool solid = false;
+    bool liquid = false;
 };
+
+void SetTileID(struct Tile* tile, int newID);
+struct Tile* MakeTile(int x, int y, int id);

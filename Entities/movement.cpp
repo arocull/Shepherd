@@ -37,26 +37,26 @@ void Movement_ShiftEntity(Map* world, Entity* entities[MaxEntities], Entity* obj
     
     if (distY > distX) {
         for (int stepY = 0; stepY < distY; stepY++) {
-            if (obj->y+yChange < 0 || obj->y+yChange >= MapHeight || world->tiles[obj->x][obj->y+yChange]->IsSolid() || GetEntityAtLocation(entities, obj->x, obj->y+yChange))
+            if (obj->y+yChange < 0 || obj->y+yChange >= MapHeight || world->IsTileSolid(obj->x, obj->y+yChange) || GetEntityAtLocation(entities, obj->x, obj->y+yChange))
                 break;
             else
                 obj->y+=yChange;
         }
         for (int stepX = 0; stepX < distX; stepX++) {
-            if (obj->x+xChange < 0 || obj->x+xChange >= MapWidth || world->tiles[obj->x+xChange][obj->y]->IsSolid() || GetEntityAtLocation(entities, obj->x+xChange, obj->y))
+            if (obj->x+xChange < 0 || obj->x+xChange >= MapWidth || world->IsTileSolid(obj->x+xChange, obj->y) || GetEntityAtLocation(entities, obj->x+xChange, obj->y))
                 break;
             else
                 obj->x+=xChange;
         }
     } else {
         for (int stepX = 0; stepX < distX; stepX++) {
-            if (obj->x+xChange < 0 || obj->x+xChange >= MapWidth || world->tiles[obj->x+xChange][obj->y]->IsSolid() || GetEntityAtLocation(entities, obj->x+xChange, obj->y))
+            if (obj->x+xChange < 0 || obj->x+xChange >= MapWidth || world->IsTileSolid(obj->x+xChange, obj->y) || GetEntityAtLocation(entities, obj->x+xChange, obj->y))
                 break;
             else
                 obj->x+=xChange;
         }
         for (int stepY = 0; stepY < distY; stepY++) {
-            if (obj->y+yChange < 0 || obj->y+yChange >= MapHeight || world->tiles[obj->x][obj->y+yChange]->IsSolid() || GetEntityAtLocation(entities, obj->x, obj->y+yChange))
+            if (obj->y+yChange < 0 || obj->y+yChange >= MapHeight || world->IsTileSolid(obj->x, obj->y+yChange) || GetEntityAtLocation(entities, obj->x, obj->y+yChange))
                 break;
             else
                 obj->y+=yChange;
@@ -86,7 +86,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
     } else if (desiredX < 0 && *worldX-1 >= 0 && HasAllSheep(entities, obj)) {
         *worldX = *worldX-1;
         obj->x = MapWidth-1;
-    } else if (desiredX < MapWidth && desiredX >= 0 && !world->tiles[desiredX][obj->y]->IsSolid()) {
+    } else if (desiredX < MapWidth && desiredX >= 0 && !world->IsTileSolid(desiredX, obj->y)) {
         Entity* hit = GetEntityAtLocation(entities, desiredX, obj->y);
         if (hit && hit->GetID() == 2) {   //If shep, swap places
             hit->x = obj->x;
@@ -102,7 +102,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
     } else if (desiredY >= MapHeight && *worldY-1 >= 0 && HasAllSheep(entities, obj)) {
         *worldY = *worldY-1;
         obj->y = 0;
-    } else if (desiredY < MapHeight && desiredY >= 0 && !world->tiles[obj->x][desiredY]->IsSolid()) {
+    } else if (desiredY < MapHeight && desiredY >= 0 && !world->IsTileSolid(obj->x, desiredY)) {
         Entity* hit = GetEntityAtLocation(entities, obj->x, desiredY);
         if (hit && hit->GetID() == 2)   //If shep, swap places
             hit->y = obj->y;

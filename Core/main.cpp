@@ -7,6 +7,9 @@ $make
 To Debug:
 $make run
 $make debug
+
+$gdb ./build/program
+$> run
 */
 
 
@@ -168,7 +171,7 @@ int main(int argc, char **argv) {
 
 
             // Check Entities for Fire
-            if (currentLevel->tiles[player->x][player->y]->GetTileID() == 3)
+            if (currentLevel->GetTileID(player->x, player->y) == 3)
                 player->HasFire = true;
 
 
@@ -238,7 +241,7 @@ int main(int argc, char **argv) {
         window.FillViewportBackground(10, 50, 10);
         for (int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
-                window.DrawTile(x,y,currentLevel->tiles[x][y]->GetTileID());
+                window.DrawTile(x,y,currentLevel->GetTileID(x,y));
             }
         }
         for (Entity* obj : levelEntities) {
@@ -257,18 +260,23 @@ int main(int argc, char **argv) {
 
 
     // Close window and deallocate memory
+    printf("Closing window\n");
     window.Close();
+    printf("Window closed successfully\n");
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
+            printf("Freeing level %i, %i\n", x, y);
             world[x][y]->Free();
             delete world[x][y];
         }
     }
+    printf("Finished freeing levels, freeing entities\n");
     for (int i = 0; i < MaxEntities; i++) {
         if (levelEntities[i] && levelEntities[i]->GetID() != 1)
             delete levelEntities[i];
     }
     delete player;
 
+    printf("All memory deallocated\n");
     return 0;
 }

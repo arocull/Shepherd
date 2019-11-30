@@ -2,25 +2,29 @@
 #include "Map/map_loading.h"
 
 bool LoadLevel_IsSpawnable(Map* level, Entity* entities[MaxEntities], int xPos, int yPos) {
-    return (!level->tiles[xPos][yPos]->IsSolid() && !level->tiles[xPos][yPos]->IsLiquid() && !GetEntityAtLocation(entities, xPos, yPos));
+    return (!level->IsTileSolid(xPos, yPos) && !level->IsTileLiquid(xPos, yPos) && !GetEntityAtLocation(entities, xPos, yPos));
 }
 
 
 Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY) {
     //Dump entities in current level back into the map data (exclude sheep, fireballs)
 
-    Map* newLevel = world[worldX][worldY];  //Point current level to the new map
 
+    //Point current level to the new map
+    Map* newLevel = world[worldX][worldY];
+
+    // Frees current entity array and cleans it (ignores Shepherds)
     for (int i = 0; i < MaxEntities; i++) {
         if (levelEntities[i] && levelEntities[i]->GetID() != 1) {
             delete levelEntities[i];
             levelEntities[i] = nullptr;
         }
     }
-
     CleanEntities(levelEntities);
 
     //Load entities from map into the new level entities
+
+
 
     //Spawn Sheep (if playerX or playerY is negative, do not spawn any)
     if (playerX >= 0 && playerY >= 0) {
@@ -52,15 +56,17 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
         }
     }
 
-
+    // Job's done!
     return newLevel;
 }
 
 
 /*
-We want to read a PNG file and convert it to map data.
+Currently: Takes a map file and reads each character, generating a tilemap based off char
 
+Possibly in future: read a PNG file and convert it to map data.
 
+References for future:
 https://stackoverflow.com/questions/15510507/open-a-png-file-and-read-its-hex-values-in-c
 
 https://www.zarb.org/~gc/html/libpng.html
@@ -78,17 +84,19 @@ Map* GenerateMapFromFile(const char* filePath) {
 
     Map* map = new Map();       //Generates new map
     
+    // Iterate through the map tiles, row by row 
     for (int y = 0; y < MapHeight && !mapFile.eof(); y++) {
         for (int x = 0; x < MapWidth && !mapFile.eof(); x++) {
             int charID;
             int tileID = 0;
 
-            charID = mapFile.get();
+            charID = mapFile.get(); //Get next character in line
 
             if (charID == '\n' && !mapFile.eof())         //If char ID is a newline, get the next character instead
                 charID = mapFile.get();
             
 
+            // Check character and set tile ID accordingly; defaults to 0 if none of these are present
             if (charID == 'W')      //Wall
                 tileID = 1;
             else if (charID == 'w') //Water
@@ -100,7 +108,7 @@ Map* GenerateMapFromFile(const char* filePath) {
             else if (charID == 'R') //Rock
                 tileID = 5;
             
-            map->tiles[x][y]->SetTileID(tileID); 
+            SetTileID(map->tiles[x][y], tileID); 
         }
     }
 
