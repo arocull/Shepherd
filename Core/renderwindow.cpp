@@ -38,6 +38,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
         }
 
+        TEXTURESURFACE_wolf = SDL_LoadBMP("Textures/Wolf.bmp");
+        if (TEXTURESURFACE_wolf) {
+            TEXTURE_wolf = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_wolf);
+        }
+
         TEXTURESURFACE_shepherd = SDL_LoadBMP("Textures/Shepherd.bmp");
         if (TEXTURESURFACE_shepherd) {
             TEXTURE_shepherd = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_shepherd);
@@ -115,6 +120,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_rock);
     SDL_FreeSurface(TEXTURESURFACE_sheep);
     SDL_DestroyTexture(TEXTURE_sheep);
+    SDL_FreeSurface(TEXTURESURFACE_wolf);
+    SDL_DestroyTexture(TEXTURE_wolf);
     SDL_FreeSurface(TEXTURESURFACE_shepherd);
     SDL_DestroyTexture(TEXTURE_shepherd);
     SDL_FreeSurface(TEXTURESURFACE_alphabet);
@@ -180,7 +187,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
         flipStyle = SDL_FLIP_HORIZONTAL;
 
     double angle = 0.0;
-    if (id == 1) {
+    if (id == 1) {          // Shepherd
         int step = ticks/TickRate % 2;
 
         switch (anim) {
@@ -215,7 +222,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
         
 
         SDL_RenderCopyEx(canvas, TEXTURE_shepherd, &src, &tile, angle, NULL, flipStyle);
-    } else if (id == 2) {  // Player or Sheep
+    } else if (id == 2) {  // Sheep
         int step = ticks/2 % 4;
         if (step == 2)
             angle = -3.0;
@@ -235,7 +242,19 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
         tile.h *= .5;
 
         SDL_RenderFillRect(canvas, &tile);
-    }    
+    } else if (id == 4) {
+        SDL_Rect src;
+        src.h = 32;
+        src.w = 32;
+        src.y = 0;
+
+        if (anim == 1)
+            src.x = (ticks % 2) * 32;
+        else
+            src.x = 0;
+
+        SDL_RenderCopyEx(canvas, TEXTURE_wolf, NULL, &tile, angle, NULL, flipStyle);
+    }
 }
 
 
