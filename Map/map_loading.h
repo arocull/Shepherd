@@ -9,6 +9,7 @@
 #include "Map/map.h"
 
 #include "Entities/entity.h"
+#include "Entities/Subclasses/wolf.h"
 #include "Entities/entity_management.h"
 
 /*

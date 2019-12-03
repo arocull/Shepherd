@@ -23,7 +23,13 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
     CleanEntities(levelEntities);
 
     //Load entities from map into the new level entities
-
+    for (int i = 0; i < MaxEntitiesStoreable; i++) {
+        if (newLevel->StoredEntities[i]) {
+            AppendEntity(levelEntities, newLevel->StoredEntities[i]);
+            newLevel->StoredEntities[i] = nullptr;
+        }
+    }
+    CleanEntities(newLevel->StoredEntities);
 
 
     //Spawn Sheep (if playerX or playerY is negative, do not spawn any)
@@ -107,6 +113,11 @@ Map* GenerateMapFromFile(const char* filePath) {
                 tileID = 4;
             else if (charID == 'R') //Rock
                 tileID = 5;
+            else if (charID == 'h') { // ENTITY - Wolf (H for hound)
+                Wolf* enemy = new Wolf(x, y);
+                enemy->archivable = true;
+                AppendEntity(map->StoredEntities, enemy);
+            }
             
             SetTileID(map->tiles[x][y], tileID); 
         }

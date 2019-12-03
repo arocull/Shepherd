@@ -7,6 +7,10 @@ Map::Map() {
             tiles[x][y] = MakeTile(x, y, 0);
         }
     }
+
+    for (int i = 0; i < MaxEntitiesStoreable; i++) {
+        StoredEntities[i] = nullptr;
+    }
 }
 
 // Returns the tile ID of the given tile at X, Y
@@ -62,5 +66,9 @@ void Map::Free() {
         for (int y = 0; y < MapHeight; y++) {
             free(tiles[x][y]);
         }
+    }
+    for (int i = 0; i < MaxEntitiesStoreable; i++) {
+        if (StoredEntities[i])
+            delete StoredEntities[i];
     }
 }
