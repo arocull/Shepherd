@@ -13,7 +13,9 @@
 #define DialogueBoxLineSpacing .05
 
 // Maximum entities that can exist at a time (not counting player)
-#define MaxEntities 15
+#define MaxEntities 25
+// Maximum number of entities that can be stored within a map
+#define MaxEntitiesStoreable 10
 // Amount of sheep the player must care for
 #define MaxSheep 5
 
