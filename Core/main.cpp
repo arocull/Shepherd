@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
     }
 
     // Load in initial level
-    Map* currentLevel = LoadLevel(world, levelEntities, worldX, worldY, player->x, player->y);
+    Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
 
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
             if (worldX != currentWorldX || worldY != currentWorldY) {
                 currentWorldX = worldX;
                 currentWorldY = worldY;
-                currentLevel = LoadLevel(world, levelEntities, worldX, worldY, player->x, player->y);
+                currentLevel = LoadLevel(world, currentLevel, levelEntities, worldX, worldY, player->x, player->y);
             }
 
 

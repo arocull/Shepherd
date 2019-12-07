@@ -18,10 +18,16 @@ Ensures tile is non-solid, non-liquid, and is not already occupied by an entity
 */
 bool LoadLevel_IsSpawnable(Map* level, Entity* entities[MaxEntities], int xPos, int yPos);
 
-/*Loads a new level
-Saves any entities that are archivable to the current level
-Deletes entities from level data if they are no longer present
+/*
+Loads a new level
+
+- Saves any entities that are archivable to the current map
+- Deletes entities from level data if they are no longer present
+
+- Grabs new Map object
+- Loads any stored entities into the main entity list
+- Spawns sheep in
 */
-Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY);
+Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY);
 
 Map* GenerateMapFromFile(const char* filePath);

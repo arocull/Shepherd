@@ -6,20 +6,23 @@ bool LoadLevel_IsSpawnable(Map* level, Entity* entities[MaxEntities], int xPos, 
 }
 
 
-Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY) {
-    //Dump entities in current level back into the map data (exclude sheep, fireballs)
-
-
+Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY) {
     //Point current level to the new map
     Map* newLevel = world[worldX][worldY];
 
-    // Frees current entity array and cleans it (ignores Shepherds)
+    // Dump any archivable entities into the map data (i.e. wolves)
+    // Free current entity array and clean it (delete everything but the Shepherd)
     for (int i = 0; i < MaxEntities; i++) {
         if (levelEntities[i] && levelEntities[i]->GetID() != 1) {
-            delete levelEntities[i];
+            if (currentMap && levelEntities[i]->archivable)
+                AppendEntityDetailed(currentMap->StoredEntities, levelEntities[i], MaxEntitiesStoreable, levelEntities[i]->GetID());
+            else
+                delete levelEntities[i];
             levelEntities[i] = nullptr;
         }
     }
+    if (currentMap)
+        CleanEntities(currentMap->StoredEntities);
     CleanEntities(levelEntities);
 
     //Load entities from map into the new level entities
@@ -30,7 +33,6 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
         }
     }
     CleanEntities(newLevel->StoredEntities);
-    CleanEntities(levelEntities);
 
 
     //Spawn Sheep (if playerX or playerY is negative, do not spawn any)
