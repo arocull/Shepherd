@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 // Math Functions
 
 /*
@@ -24,6 +26,12 @@ template <typename T> T max(T val1, T val2) {
         return val1;
     else
         return val2;
+}
+
+
+// Returns the Pythagorean distance between two points
+template <typename T> int dist(T x1, T y1, T x2, T y2) {
+    return sqrt(pow(x2-x1, 2) + pow(y2-y1, 2));
 }
 
 

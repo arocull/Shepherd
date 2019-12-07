@@ -194,7 +194,7 @@ int main(int argc, char **argv) {
                 if (!levelEntities[i]) continue;   //Skip checks if this is a nullpointer or uninitialized
                 Entity* a = levelEntities[i];
 
-                if (a->GetID() == 3) {      //Fireball
+                if (a->GetID() == 3) {      //Fireball, move in a straight line
                     Fireball* fireball = dynamic_cast<Fireball*>(a);
 
                     if (fireball) {
@@ -209,7 +209,9 @@ int main(int argc, char **argv) {
                             continue;
                         }
                     }
-                } else if (a->GetID() == 2 && (ticks % 2) == 0) {   //Sheep AI
+
+
+                } else if (a->GetID() == 2 && (ticks % 2) == 0) {   //Sheep AI; follow player every other tick
                     int dirToPlayerX = (player->x - a->x);
                     int dirToPlayerY = (player->y - a->y);
                     if (abs(dirToPlayerX) >= abs(dirToPlayerY))
@@ -217,9 +219,26 @@ int main(int argc, char **argv) {
                     else
                         dirToPlayerX = 0;
 
-                    // If there is one tile of space or less between sheep and player, don't move
-                    //if (!((abs(dirToPlayerX) == 1 && dirToPlayerY == 0) || (dirToPlayerX == 0 && abs(dirToPlayerY) == 1)))
-                        Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
+                    Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
+
+
+                } else if (a->GetID() == 4) {   //Wolf AI, hunt down closest sheep--if none left, attack player
+                    Entity* target = GetNearestEntity(levelEntities, a->x, a->y, MaxEntities, 2);
+                    if (!target)
+                        target = player;
+                    
+                    if (target) {
+                        int dirToTargetX = (target->x - a->x);
+                        int dirToTargetY = (target->y - a->y);
+                        if (abs(dirToTargetX) >= abs(dirToTargetY))
+                            dirToTargetY = 0;
+                        else
+                            dirToTargetX = 0;
+
+                        Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToTargetX), -sgn(dirToTargetY));
+                        a->animation = 1;
+                    } else
+                        a->animation = 0;
                 }
             }
             // Clean Entity List

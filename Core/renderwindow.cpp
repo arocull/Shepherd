@@ -242,18 +242,18 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
         tile.h *= .5;
 
         SDL_RenderFillRect(canvas, &tile);
-    } else if (id == 4) {
+    } else if (id == 4) {   // Wolf
         SDL_Rect src;
         src.h = 32;
         src.w = 32;
         src.y = 0;
 
         if (anim == 1)
-            src.x = (ticks % 2) * 32;
+            src.x = 64 + (ticks/2 % 2) * 32;
         else
-            src.x = 0;
+            src.x = (ticks/4 % 2) * 32;
 
-        SDL_RenderCopyEx(canvas, TEXTURE_wolf, NULL, &tile, angle, NULL, flipStyle);
+        SDL_RenderCopyEx(canvas, TEXTURE_wolf, &src, &tile, angle, NULL, flipStyle);
     }
 }
 

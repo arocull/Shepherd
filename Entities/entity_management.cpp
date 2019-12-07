@@ -56,6 +56,48 @@ Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos) {
 }
 
 
+
+/*Entity** GetClosestEntities(Entity* entities[MaxEntities], int xPos, int yPos) {
+    Entity** sorted = (Entity**) malloc(sizeof(Entity));
+
+    float minDist = 1000.0f;
+
+    for
+}*/
+Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos) {
+    Entity* closest = nullptr;
+
+    float dis = 1000.0f;
+    for (int i = 0; i < MaxEntities; i++) {
+        if (entities[i]) {
+            float d = dist(xPos, yPos, entities[i]->x, entities[i]->y);
+            if (d < dis) {
+                dis = d;
+                closest = entities[i];
+            }
+        }
+    }
+
+    return closest;
+}
+Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos, int ArraySize, int searchID) {
+    Entity* closest = nullptr;
+
+    int dis = 1000.0f;
+    for (int i = 0; i < ArraySize; i++) {
+        if (entities[i] && entities[i]->GetID() == searchID) {
+            int d = dist(xPos, yPos, entities[i]->x, entities[i]->y);
+            if (d < dis) {
+                dis = d;
+                closest = entities[i];
+            }
+        }
+    }
+
+    return closest;
+}
+
+
 bool HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
     if (!DEBUG_RequireSheep) return true;
 

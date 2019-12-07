@@ -5,6 +5,10 @@ General utilities for managing lists of entities
 
 #pragma once
 
+#include <stdlib.h>
+
+#include "mathutil.h"
+
 #include "Entities/entity.h"
 
 // Adds the selected entity to the given list of entities
@@ -23,6 +27,14 @@ void CleanEntities(Entity* entities[MaxEntities]);
 
 // Searches list of entities and returns the first entity it finds with given location; otherwise returns null
 Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos);
+
+// Sorts the given list of entities based off of distance
+//Entity** GetClosestEntities(Entity* entities[MaxEntities], int xPos, int yPos);
+
+// Finds the entity with the nearest location, excluding anyone at the given location
+Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos);
+// Finds the entity with the given ID that is closest to the location, excluding anyone at the given location
+Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos, int ArraySize, int searchID);
 
 /* Checks to make sure all sheep are touching the shepherd (or touching other sheep touching the shepherd)
 
