@@ -30,10 +30,11 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Entity* levelEntities[MaxEnt
         }
     }
     CleanEntities(newLevel->StoredEntities);
+    CleanEntities(levelEntities);
 
 
     //Spawn Sheep (if playerX or playerY is negative, do not spawn any)
-    if (playerX >= 0 && playerY >= 0) {
+    if (DEBUG_RequireSheep && playerX >= 0 && playerY >= 0) {
         int sheepLeft = MaxSheep;
 
         int top = playerY-1; int bottom = playerY+1; int left = playerX-1; int right = playerX+1;
@@ -89,6 +90,7 @@ Map* GenerateMapFromFile(const char* filePath) {
     mapFile.open(filePath);     //Opens file path
 
     Map* map = new Map();       //Generates new map
+    //printf("Generating map from file %s...\n", filePath);
     
     // Iterate through the map tiles, row by row 
     for (int y = 0; y < MapHeight && !mapFile.eof(); y++) {

@@ -57,6 +57,8 @@ Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos) {
 
 
 bool HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
+    if (!DEBUG_RequireSheep) return true;
+
     Entity* touchedSheep[MaxSheep+1];
     for (int i = 1; i <= MaxSheep; i++) {   //Initialize list
         touchedSheep[i] = nullptr;

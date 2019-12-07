@@ -8,6 +8,7 @@ Map::Map() {
         }
     }
 
+    StoredEntities = (Entity**) calloc(MaxEntitiesStoreable, sizeof(Entity));
     for (int i = 0; i < MaxEntitiesStoreable; i++) {
         StoredEntities[i] = nullptr;
     }
@@ -67,8 +68,6 @@ void Map::Free() {
             free(tiles[x][y]);
         }
     }
-    for (int i = 0; i < MaxEntitiesStoreable; i++) {
-        if (StoredEntities[i])
-            delete StoredEntities[i];
-    }
+    
+    delete StoredEntities;
 }

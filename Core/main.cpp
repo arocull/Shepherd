@@ -9,6 +9,7 @@ $make run
 $make debug
 
 $gdb ./build/program
+$> break FunctionNameToStopAt
 $> run
 */
 

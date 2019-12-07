@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "config.h"
 
@@ -14,7 +15,7 @@ class Map {
 
         struct Tile* tiles[MapWidth][MapHeight];
 
-        Entity* StoredEntities[MaxEntitiesStoreable];
+        Entity** StoredEntities;//[MaxEntitiesStoreable];
 
         int GetTileID(int x, int y);
         bool IsTileSolid(int x, int y);

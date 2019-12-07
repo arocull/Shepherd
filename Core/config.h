@@ -24,3 +24,10 @@
 
 // How many times a second the game ticks; essentially sets "speed" of gameplay
 #define TickRate 10
+
+
+
+// Debug //
+
+// Do we want to test a breakpoint without spawning sheep?
+#define DEBUG_RequireSheep true
