@@ -16,3 +16,6 @@ int Entity::GetID(){
 int Entity::GetHealth() {
     return Health;
 }
+void Entity::Unload() {
+    
+}

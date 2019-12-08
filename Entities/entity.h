@@ -18,6 +18,8 @@ class Entity {
         virtual int GetID();
         // Returns the amount of health the entity has
         virtual int GetHealth();
+        // Call this function when unloading the entity (storing into map)
+        virtual void Unload();
 
         int x;
         int y;

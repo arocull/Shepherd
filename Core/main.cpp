@@ -223,22 +223,32 @@ int main(int argc, char **argv) {
 
 
                 } else if (a->GetID() == 4) {   //Wolf AI, hunt down closest sheep--if none left, attack player
-                    Entity* target = GetNearestEntity(levelEntities, a->x, a->y, MaxEntities, 2);
-                    if (!target)
-                        target = player;
-                    
-                    if (target) {
-                        int dirToTargetX = (target->x - a->x);
-                        int dirToTargetY = (target->y - a->y);
-                        if (abs(dirToTargetX) >= abs(dirToTargetY))
-                            dirToTargetY = 0;
-                        else
-                            dirToTargetX = 0;
+                    Wolf* wolf = dynamic_cast<Wolf*>(a);
+                    if (wolf) {
+                        if (wolf->InStun()) {
+                            wolf->TickStun();
+                        } else if (!wolf->IsHunting()) {
+                            Entity* target = GetNearestEntity(levelEntities, a->x, a->y, MaxEntities, 2);
+                            if (!target)
+                                target = player;
+                            
+                            if (target)
+                                wolf->InitiateHunt(target);
+                            else
+                                a->animation = 0;
+                        } else {
+                            Entity* target = wolf->GetTarget();
+                            int dirToTargetX = (target->x - a->x);
+                            int dirToTargetY = (target->y - a->y);
+                            if (abs(dirToTargetX) >= abs(dirToTargetY))
+                                dirToTargetY = 0;
+                            else
+                                dirToTargetX = 0;
 
-                        Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToTargetX), -sgn(dirToTargetY));
-                        a->animation = 1;
-                    } else
-                        a->animation = 0;
+                            Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToTargetX), -sgn(dirToTargetY));
+                            a->animation = 1;
+                        }       
+                    }
                 }
             }
             // Clean Entity List

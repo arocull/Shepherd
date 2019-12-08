@@ -250,6 +250,8 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
 
         if (anim == 1)
             src.x = 64 + (ticks/2 % 2) * 32;
+        else if (anim == 2)
+            src.x = 128;
         else
             src.x = (ticks/4 % 2) * 32;
 
