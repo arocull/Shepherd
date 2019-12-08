@@ -123,7 +123,7 @@ Map* GenerateMapFromFile(const char* filePath) {
                 AppendEntity(map->StoredEntities, enemy);
             }
             
-            SetTileID(map->tiles[x][y], tileID); 
+            SetTileID(&(map->tiles[x][y]), tileID);
         }
     }
 

@@ -13,7 +13,7 @@ class Map {
     public:
         Map();
 
-        struct Tile* tiles[MapWidth][MapHeight];
+        struct Tile** tiles;
 
         Entity** StoredEntities;//[MaxEntitiesStoreable];
 
