@@ -122,10 +122,24 @@ Map* GenerateMapFromFile(const char* filePath) {
                 Wolf* enemy = new Wolf(x, y);
                 enemy->archivable = true;
                 AppendEntity(map->StoredEntities, enemy);
-            }
+            } else if (charID == '1')   // Trigger 1
+                tileID = -1;
+            else if (charID == '2')     // Trigger 2
+                tileID = -2;
+            else if (charID == '3')     // Trigger 3
+                tileID = -3;
             
             SetTileID(&(map->tiles[x][y]), tileID);
         }
+    }
+
+    mapFile.get();  // Dump last newline to get to map data
+    if (!mapFile.eof()) {
+        char digit1 = mapFile.get();
+        char digit2 = mapFile.get();
+
+        int mapID = ((int) (digit1 - '0')) * 10 + ((int) (digit2 - '0'));
+        map->SetMapID(mapID);
     }
 
     mapFile.close();

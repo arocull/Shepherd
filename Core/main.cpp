@@ -33,6 +33,8 @@ $> run
 #include "Entities/movement.h"
 #include "Map/map_loading.h"
 
+#include "Core/triggers.h"
+
 
 
 
@@ -56,7 +58,7 @@ int main(int argc, char **argv) {
 
     world[1][0] = GenerateMapFromFile("Map/Maps/OneZero");
     world[1][1] = GenerateMapFromFile("Map/Maps/OneOne");
-    world[1][2] = GenerateMapFromFile("Map/Maps/OneOne");
+    world[1][2] = GenerateMapFromFile("Map/Maps/OneTwo");
 
     world[2][0] = GenerateMapFromFile("Map/Maps/OneOne");
     world[2][1] = GenerateMapFromFile("Map/Maps/ZeroOne");
@@ -80,13 +82,13 @@ int main(int argc, char **argv) {
 
     // Load in initial level
     Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
+    window.SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
 
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
     float DeltaTime = 0;
     float GameTick = 0;
     int ticks = 0;
-
 
 
     SDL_Event event;
@@ -172,8 +174,11 @@ int main(int argc, char **argv) {
 
 
             // Check Entities for Fire
-            if (currentLevel->GetTileID(player->x, player->y) == 3)
+            int standingTile = currentLevel->GetTileID(player->x, player->y);
+            if (standingTile == 3)
                 player->HasFire = true;
+            else if (standingTile < 0)
+                DoMapTrigger(&window, currentLevel, levelEntities, abs(standingTile));
 
 
             // Toss Fireball

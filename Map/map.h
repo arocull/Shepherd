@@ -14,8 +14,11 @@ class Map {
         Map();
 
         struct Tile** tiles;
+        Entity** StoredEntities;
+        bool Triggers[3];
 
-        Entity** StoredEntities;//[MaxEntitiesStoreable];
+        void SetMapID(int Identification);
+        int GetMapID();
 
         int GetTileID(int x, int y);
         bool IsTileSolid(int x, int y);
@@ -28,5 +31,5 @@ class Map {
 
     private:
         int EntitiesStored = 0;
-        
+        int id = -1;
 };

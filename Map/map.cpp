@@ -16,7 +16,19 @@ Map::Map() {
     for (int i = 0; i < MaxEntitiesStoreable; i++) {
         StoredEntities[i] = nullptr;
     }
+
+    for (int i = 0; i < 3; i++)
+        Triggers[i] = false;
 }
+
+
+void Map::SetMapID(int Identification) {
+    id = Identification;
+}
+int Map::GetMapID() {
+    return id;
+}
+
 
 // Returns the tile ID of the given tile at X, Y
 int Map::GetTileID(int x, int y) {
