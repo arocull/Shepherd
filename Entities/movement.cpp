@@ -91,9 +91,8 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         if (hit && hit->GetID() == 2) {   //If shep, swap places
             hit->x = obj->x;
             obj->Flipped = !obj->Flipped;
-        }
-
-        obj->x = desiredX;
+        } else if (!hit || (hit && !hit->Solid))
+            obj->x = desiredX;
     }
     
     if (desiredY < 0 && *worldY+1 <= WorldHeight-1 && HasAllSheep(entities, obj)) {
@@ -106,8 +105,8 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         Entity* hit = GetEntityAtLocation(entities, obj->x, desiredY);
         if (hit && hit->GetID() == 2)   //If shep, swap places
             hit->y = obj->y;
-            
-        obj->y = desiredY;
+        else if (!hit || (hit && !hit->Solid))
+            obj->y = desiredY;
     }
     
     return;

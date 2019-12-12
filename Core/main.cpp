@@ -60,9 +60,9 @@ int main(int argc, char **argv) {
     world[1][1] = GenerateMapFromFile("Map/Maps/OneOne");
     world[1][2] = GenerateMapFromFile("Map/Maps/OneTwo");
 
-    world[2][0] = GenerateMapFromFile("Map/Maps/OneOne");
-    world[2][1] = GenerateMapFromFile("Map/Maps/ZeroOne");
-    world[2][2] = GenerateMapFromFile("Map/Maps/ZeroTwo");
+    world[2][0] = GenerateMapFromFile("Map/Maps/TwoZero");
+    world[2][1] = GenerateMapFromFile("Map/Maps/TwoOne");
+    world[2][2] = GenerateMapFromFile("Map/Maps/TwoTwo");
 
     int worldX = 0;
     int worldY = 2;

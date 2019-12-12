@@ -30,6 +30,8 @@ class Entity {
         bool HasFire = false;
         // True if we do not want this entity's default AI to tick
         bool Paused = false;
+        // Do we want this object to cause collisions?
+        bool Solid = true;
 
         // Current animation playing--0 is always idle, animations are defined per-object inside the RenderWindow class
         int animation = 0;
