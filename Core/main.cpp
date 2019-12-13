@@ -58,6 +58,10 @@ int main(int argc, char **argv) {
 
     world[1][0] = GenerateMapFromFile("Map/Maps/OneZero");
     world[1][1] = GenerateMapFromFile("Map/Maps/OneOne");
+    if (world[1][1]->StoredEntities[0]) {   // Sleeping tutorial wolf
+        world[1][1]->StoredEntities[0]->Paused = true;
+        world[1][1]->StoredEntities[0]->animation = 3;
+    }
     world[1][2] = GenerateMapFromFile("Map/Maps/OneTwo");
 
     world[2][0] = GenerateMapFromFile("Map/Maps/TwoZero");
@@ -196,7 +200,7 @@ int main(int argc, char **argv) {
 
             // Tick Entities
             for (int i = 0; i < MaxEntities; i++) {
-                if (!levelEntities[i]) continue;   //Skip checks if this is a nullpointer or uninitialized
+                if (!levelEntities[i] || levelEntities[i]->Paused) continue;   //Skip checks if this is a nullpointer or paused
                 Entity* a = levelEntities[i];
 
                 if (a->GetID() == 3) {      //Fireball, move in a straight line
