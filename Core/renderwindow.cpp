@@ -264,16 +264,18 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     SDL_Rect base;
     base.w = tileRes;
     base.h = tileRes;
-    base.x = posX*tileRes + offsetX;
-    base.y = posY*tileRes + offsetY;
+    base.x = (int) (posX+0.5f)*tileRes + offsetX;
+    base.y = (int) (posY+0.5f)*tileRes + offsetY;
+    //printf("Particle position (%f, %f) to (%i, %i)\n", posX, posY, base.x, base.y);
 
     if (id == 1) {
-        SDL_SetRenderDrawColor(canvas, 255, 255, 255, 255*percentage);
-        base.x-=base.w;
-        base.y-=base.y;
-        base.w*=3;
-        base.h*=3;
+        SDL_SetRenderDrawColor(canvas, 255, 255, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
+        base.w*=2.75;
+        base.h*=2.75;
     }
+
+    base.x-=base.w/2;
+    base.y-=base.y/2;
 
     SDL_RenderFillRect(canvas, &base);
 }

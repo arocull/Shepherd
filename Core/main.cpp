@@ -85,10 +85,9 @@ int main(int argc, char **argv) {
     for (int i = 1; i < MaxEntities; i++) {
         levelEntities[i] = nullptr;
     }
-    struct Particle* particles[MaxParticles];   // Initialize an array of particles
-    printf("particle array made\n");
-    if (particles[0])
-        printf("Particle array has particles\n");
+
+    // Initialize an array of particles
+    struct Particle* particles = (struct Particle*) calloc(MaxParticles, sizeof(Particle));
 
     // Load in initial level
     Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
@@ -201,7 +200,6 @@ int main(int argc, char **argv) {
                     
                     AppendEntity(levelEntities, new Fireball(player->x, player->y, player->lastX, player->lastY, 0));
                 } else {        // Rally Sheep / Swing Attack
-                    printf("Sheperd rallied\n");
                     player->animation = 2;
                     ActivateParticle(particles, 1, player->x, player->y);
                 }
@@ -307,11 +305,16 @@ int main(int argc, char **argv) {
                 window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation);
         }
 
-        // Draw active particles
+
+        // Draw active particles - enable blending for transparency
+        SDL_BlendMode blend;
+        SDL_GetRenderDrawBlendMode(window.canvas, &blend);
+        SDL_SetRenderDrawBlendMode(window.canvas, SDL_BLENDMODE_BLEND);
         for (int i = 0; i < MaxParticles; i++) {
-            if (particles[i] && particles[i]->active)
-                window.DrawParticle(particles[i]->x, particles[i]->y, particles[i]->id, particles[i]->lifetime/particles[i]->maxLifetime);
+            if (particles[i].active)
+                window.DrawParticle(particles[i].x, particles[i].y, particles[i].id, particles[i].lifetime/particles[i].maxLifetime);
         }
+        SDL_SetRenderDrawBlendMode(window.canvas, blend);
 
         // Draw shepherd last
         window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation);
@@ -327,7 +330,7 @@ int main(int argc, char **argv) {
     window.Close();
 
     StopParticles(particles);
-    //free(particles);
+    free(particles);
 
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
