@@ -248,15 +248,34 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
         src.w = 32;
         src.y = 0;
 
-        if (anim == 1)
+        if (anim == 1)      // Run
             src.x = 64 + (ticks/2 % 2) * 32;
-        else if (anim == 2)
+        else if (anim == 2) // Howl
             src.x = 128;
-        else
+        else if (anim == 3) // Sleep
+            src.x = 160 + (ticks/2 % 2) * 32;
+        else                // Idle
             src.x = (ticks/4 % 2) * 32;
 
         SDL_RenderCopyEx(canvas, TEXTURE_wolf, &src, &tile, angle, NULL, flipStyle);
     }
+}
+void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage) {
+    SDL_Rect base;
+    base.w = tileRes;
+    base.h = tileRes;
+    base.x = posX*tileRes + offsetX;
+    base.y = posY*tileRes + offsetY;
+
+    if (id == 1) {
+        SDL_SetRenderDrawColor(canvas, 255, 255, 255, 255*percentage);
+        base.x-=base.w;
+        base.y-=base.y;
+        base.w*=3;
+        base.h*=3;
+    }
+
+    SDL_RenderFillRect(canvas, &base);
 }
 
 

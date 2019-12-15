@@ -29,6 +29,8 @@ $> run
 #include "Entities/Subclasses/shepherd.h"
 #include "Entities/Subclasses/fireball.h"
 
+#include "Entities/particle.h"
+
 #include "Entities/entity_management.h"
 #include "Entities/movement.h"
 #include "Map/map_loading.h"
@@ -83,6 +85,10 @@ int main(int argc, char **argv) {
     for (int i = 1; i < MaxEntities; i++) {
         levelEntities[i] = nullptr;
     }
+    struct Particle* particles[MaxParticles];   // Initialize an array of particles
+    printf("particle array made\n");
+    if (particles[0])
+        printf("Particle array has particles\n");
 
     // Load in initial level
     Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
@@ -173,6 +179,7 @@ int main(int argc, char **argv) {
             if (worldX != currentWorldX || worldY != currentWorldY) {
                 currentWorldX = worldX;
                 currentWorldY = worldY;
+                StopParticles(particles);
                 currentLevel = LoadLevel(world, currentLevel, levelEntities, worldX, worldY, player->x, player->y);
             }
 
@@ -186,13 +193,18 @@ int main(int argc, char **argv) {
 
 
             // Toss Fireball
-            if (MoveFireballQueued && player->HasFire) {
+            if (MoveFireballQueued) {
                 MoveFireballQueued = false;
-                player->HasFire = false;
-                player->animation = 2;      //Fireball Toss animation
-                
-                //printf("Tossed fireball! Tick %i\n", ticks);
-                AppendEntity(levelEntities, new Fireball(player->x, player->y, player->lastX, player->lastY, 0));
+                if (player->HasFire) {          // Sling Fireball
+                    player->HasFire = false;
+                    player->animation = 2;      //Fireball Toss animation
+                    
+                    AppendEntity(levelEntities, new Fireball(player->x, player->y, player->lastX, player->lastY, 0));
+                } else {        // Rally Sheep / Swing Attack
+                    printf("Sheperd rallied\n");
+                    player->animation = 2;
+                    ActivateParticle(particles, 1, player->x, player->y);
+                }
             } else
                 MoveFireballQueued = false;
 
@@ -269,7 +281,8 @@ int main(int argc, char **argv) {
         }
 
 
-
+        // Particles
+        TickParticles(particles, DeltaTime);
 
 
         // Render
@@ -277,21 +290,33 @@ int main(int argc, char **argv) {
         SDL_RenderClear(window.canvas);
         window.UpdateSize();
         window.TickDeltaTime(DeltaTime);
+
+        // Fill background
         window.FillViewportBackground(10, 50, 10);
+
+        // Draw tiles first
         for (int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
                 window.DrawTile(x,y,currentLevel->GetTileID(x,y));
             }
         }
+
+        // Draw all entities aside from Shepherd
         for (Entity* obj : levelEntities) {
-            if(obj)
+            if (obj && obj->GetID() != 1)
                 window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation);
         }
+
+        // Draw active particles
+        for (int i = 0; i < MaxParticles; i++) {
+            if (particles[i] && particles[i]->active)
+                window.DrawParticle(particles[i]->x, particles[i]->y, particles[i]->id, particles[i]->lifetime/particles[i]->maxLifetime);
+        }
+
+        // Draw shepherd last
         window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation);
 
-        //window.WriteText(0, 0, 1680, 20, "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 1234567890 .,!?()-+*/=_");
-        //window.WriteText(0, 20, 1680, 40, "The quick brown fox jumped over the lazy dog.");
-
+        // Draw GUI
         window.DrawDialogueBox();
         
         SDL_RenderPresent(window.canvas);
@@ -300,6 +325,9 @@ int main(int argc, char **argv) {
 
     // Close window and deallocate memory
     window.Close();
+
+    StopParticles(particles);
+    //free(particles);
 
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {

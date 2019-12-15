@@ -1,8 +1,9 @@
 #pragma once
 
-#include "entity.h"
-
 #include "config.h"
+
+#include "entity.h"
+#include "entity_management.h"
 
 // Shepherd - A character that cares for and commands a flock of sheep. Typically for player.
 class Shepherd : public Entity {
@@ -14,4 +15,6 @@ class Shepherd : public Entity {
     public:
         int lastX = 0;
         int lastY = 0;
+
+        void SwingAttack(Entity** entities);
 };
