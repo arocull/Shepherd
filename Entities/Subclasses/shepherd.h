@@ -5,6 +5,8 @@
 #include "entity.h"
 #include "entity_management.h"
 
+#include "particle.h"
+
 // Shepherd - A character that cares for and commands a flock of sheep. Typically for player.
 class Shepherd : public Entity {
     public:
@@ -16,5 +18,5 @@ class Shepherd : public Entity {
         int lastX = 0;
         int lastY = 0;
 
-        void SwingAttack(Entity** entities);
+        void SwingAttack(Entity** entities, Particle* particles);
 };

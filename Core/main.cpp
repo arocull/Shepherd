@@ -199,9 +199,11 @@ int main(int argc, char **argv) {
                     player->animation = 2;      //Fireball Toss animation
                     
                     AppendEntity(levelEntities, new Fireball(player->x, player->y, player->lastX, player->lastY, 0));
+                    Particle* fire = ActivateParticle(particles, 2, player->x, player->y);
+                    fire->veloX = player->lastX*TickRate;
+                    fire->veloY = player->lastY*TickRate;
                 } else {        // Rally Sheep / Swing Attack
-                    player->animation = 2;
-                    ActivateParticle(particles, 1, player->x, player->y);
+                    player->SwingAttack(levelEntities, particles);
                 }
             } else
                 MoveFireballQueued = false;
