@@ -128,6 +128,8 @@ Map* GenerateMapFromFile(const char* filePath) {
                 tileID = -2;
             else if (charID == '3')     // Trigger 3
                 tileID = -3;
+            else if (charID == '4')     // Trigger 4 - This trigger is special in the sense it does not have a debounce
+                tileID = -4;
             
             SetTileID(&(map->tiles[x][y]), tileID);
         }

@@ -223,15 +223,27 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
 
         SDL_RenderCopyEx(canvas, TEXTURE_shepherd, &src, &tile, angle, NULL, flipStyle);
     } else if (id == 2) {  // Sheep
-        int step = ticks/2 % 4;
-        if (step == 2)
-            angle = -3.0;
-        else if (step == 1 || step == 3)
-            angle = 0.0;
-        else
-            angle = 3.0;
+        SDL_Rect src;
+        src.w = 32;
+        src.h = 32;
+        src.x = 0;
+        src.y = 0;
 
-        SDL_RenderCopyEx(canvas, TEXTURE_sheep, NULL, &tile, angle, NULL, flipStyle);
+        if (anim == 1)      // Pause / Rest
+            src.x = 64;
+        else {              // Idle / Move
+            src.x = (ticks/2 % 2) * 32;
+
+            int step = ticks/2 % 4;
+            if (step == 2)
+                angle = -3.0;
+            else if (step == 1 || step == 3)
+                angle = 0.0;
+            else
+                angle = 3.0;
+        }
+
+        SDL_RenderCopyEx(canvas, TEXTURE_sheep, &src, &tile, angle, NULL, flipStyle);
     } else if (id == 3) {   // Fireball
         int sha = (int) 20 * (sin(time*20) + 1);
         SDL_SetRenderDrawColor(canvas, 210 + sha, 100 + sha, 0, 0);
@@ -253,7 +265,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
         else if (anim == 2) // Howl
             src.x = 128;
         else if (anim == 3) // Sleep
-            src.x = 160 + (ticks/2 % 2) * 32;
+            src.x = 160 + (ticks/6 % 2) * 32;
         else                // Idle
             src.x = (ticks/4 % 2) * 32;
 
