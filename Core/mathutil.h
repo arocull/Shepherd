@@ -1,8 +1,24 @@
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
 // Math Functions
+
+template <typename T> int sgn(T val);
+
+template <typename T> T min(T val1, T val2);
+template <typename T> T max(T val1, T val2);
+
+template <typename T> int dist(T x1, T y1, T x2, T y2);
+
+
+
+float RandomF();
+int RandomI(int a, int b);
+
+
+
+
 
 /*
 sgn(n) - Gets and returns -1, 0, or 1 based off of the sign of the given value
@@ -29,25 +45,7 @@ template <typename T> T max(T val1, T val2) {
 }
 
 
-// Returns the Pythagorean distance between two points
+// Returns the Pythagorean distance between two points--works with any numerical type
 template <typename T> int dist(T x1, T y1, T x2, T y2) {
     return sqrt(pow(x2-x1, 2) + pow(y2-y1, 2));
 }
-
-
-// Lops off the left side of the string up until X point
-// Used guide at http://www.martinbroadhurst.com/trim-a-string-in-c.html
-/*char *string_leftTrim(char *str, int trimTo) {
-    size_t trimSize = sizeof(char)*trimTo;
-    
-    int i = 0;//strlen(str);
-    while (i < trimTo) {
-        str[i] = '\0';  //Set character to terminating character
-        i++;
-    }
-
-    // Move terminating characters to end of string
-    //memmove(str, str + trimSize, )
-
-    return str;
-}*/

@@ -16,9 +16,11 @@ $> run
 
 #include <SDL2/SDL.h>
 #include <cstdlib>
+#include <cstdio>
+#include <ctime>
 
-#include "config.h"
-#include "mathutil.h"
+#include "Core/config.h"
+#include "Core/mathutil.h"
 
 #include "Core/renderwindow.h"
 
@@ -51,6 +53,9 @@ int main(int argc, char **argv) {
     
     RenderWindow window = RenderWindow(800,500,"Shepherd");
     if (!window.IsInitialized()) return 3;
+
+    // Randomize seed based off of current time
+    srand(time(0));
 
     // Load world from files
     Map* world[WorldWidth][WorldHeight];
@@ -195,13 +200,7 @@ int main(int argc, char **argv) {
             if (MoveFireballQueued) {
                 MoveFireballQueued = false;
                 if (player->HasFire) {          // Sling Fireball
-                    player->HasFire = false;
-                    player->animation = 2;      //Fireball Toss animation
-                    
-                    AppendEntity(levelEntities, new Fireball(player->x, player->y, player->lastX, player->lastY, 0));
-                    Particle* fire = ActivateParticle(particles, 2, player->x, player->y);
-                    fire->veloX = player->lastX*TickRate;
-                    fire->veloY = player->lastY*TickRate;
+                    player->SlingFireball(levelEntities, particles);
                 } else {        // Rally Sheep / Swing Attack
                     player->SwingAttack(levelEntities, particles);
                 }
