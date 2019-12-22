@@ -14,9 +14,12 @@ void DoMapTrigger(RenderWindow* window, Map* map, Entity* entities[], int trigge
 
         // Staring Area
         if (id == 0 && triggerID == 1)
-            window->SetDialogueText("Your sheep will follow you around as you\nmove. Try to keep track of all of them.", 100);
+            window->SetDialogueText("Your sheep will follow you around as you\nmove. Try to keep track of all of them.", 75);
         else if (id == 0 && triggerID == 2)
-            window->SetDialogueText("You need all of your sheep gathered nearby\nbefore you can exit an area.", 100);
+            window->SetDialogueText("You need all of your sheep gathered nearby\nbefore you can exit an area.", 75);
+
+        else if (id == 1 && triggerID == 1)
+            window->SetDialogueText("You can singal for your sheep to rest \n(spacebar) while near them. You can also\nre-rally them(spacebar again).", 75);
 
         // Sleeping Wolf Area
         else if (id == 4 && triggerID == 4) {       // Force all wolves in map to sleep
@@ -29,7 +32,7 @@ void DoMapTrigger(RenderWindow* window, Map* map, Entity* entities[], int trigge
         } else if (id == 4 && triggerID == 1)
             window->SetDialogueText("Careful around that wolf...!\nWolves like to eat sheep!");
         else if (id == 4 && triggerID == 2)
-            window->SetDialogueText("It seems to be sleeping...\nYou can deal with it with a swift\nswing of your staff (spacebar).",100);
+            window->SetDialogueText("It seems to be sleeping...\nYou can deal with it with a swift swing\nor two of your staff (spacebar).",100);
 
         // Wolf Ambush Area
         else if (id == 5 && triggerID == 1)

@@ -6,22 +6,17 @@ This is heavily a work-in-progress and something I do only on my own time when I
 
 ## Packages
 
-To compile this program, you must install the SDL2 library.
-
+This game uses SDL2 as a dependency. To install this package, run:
 `$ apt install libsdl2-dev`
 
-The game compiles based off of a Makefile as well using g++, but it should hopefully handle the rest.
+The game compiles uses a Makefile to compile by executing g++ commands.
 
-Once the game is compiled, to run it, simply execute 'main' within the build/ directory to play it.
+Once the game is compiled, to run it, simply execute 'main' within the build directory to play it.
+`$ ./build/main`
 
 ## Gameplay (Currently)
 
-Use WASD to move. Your sheep will follow you around, but move at half the speed.
+There is a tutorial in place that should help instruct you on how to play and give you the basic controls. Currently there isn't much to do, but it's at least playable.
 
-In order to move to different areas around the world, you must be touching all your sheep (or touching sheep touching sheep touching sheep, etc).
-
-Standing on the magma will give you a fireball. Hit space to fling it.
-
-Hit F11 to toggle fullscreen and windowed mode (game should adjust aspect ratio automatically).
-
-Hit Escape to close the game.
+F11 can be used to toggle fullscreen and windowed mode (game should adjust aspect ratio automatically).
+Hitting Escape closes the game.
