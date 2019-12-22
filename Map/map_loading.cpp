@@ -107,29 +107,39 @@ Map* GenerateMapFromFile(const char* filePath) {
                 charID = mapFile.get();
             
 
+            bool SpawnsEntity = false;
+
+
             // Check character and set tile ID accordingly; defaults to 0 if none of these are present
-            if (charID == 'W')      //Wall
-                tileID = 1;
-            else if (charID == 'w') //Water
-                tileID = 2;
-            else if (charID == 'L') //Lava
-                tileID = 3;
-            else if (charID == 'T') //Tree
-                tileID = 4;
-            else if (charID == 'R') //Rock
-                tileID = 5;
-            else if (charID == 'h') { // ENTITY - Wolf (H for hound)
-                Wolf* enemy = new Wolf(x, y);
-                enemy->archivable = true;
-                AppendEntity(map->StoredEntities, enemy);
-            } else if (charID == '1')   // Trigger 1
-                tileID = -1;
-            else if (charID == '2')     // Trigger 2
-                tileID = -2;
-            else if (charID == '3')     // Trigger 3
-                tileID = -3;
-            else if (charID == '4')     // Trigger 4 - This trigger is special in the sense it does not have a debounce
-                tileID = -4;
+            switch (charID) {
+                case 'W': tileID = 1; break;    //Wall
+                case 'w': tileID = 2; break;    //Water
+                case 'L': tileID = 3; break;    //Lava
+                case 'T': tileID = 4; break;    //Tree
+                case 'R': tileID = 5; break;    //Rock
+
+                // Map Triggers
+                case '1':       //Trigger 1
+                case '2':       //Trigger 2
+                case '3':       //Trigger 3
+                case '4':       //Trigger 4 - Note: no debounce
+                    tileID = -(int) (charID + '0'); //Converts character to number and negates
+                    break;
+
+                // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
+                case 'h':
+                    SpawnsEntity = true;
+            }
+            if (SpawnsEntity) {
+                Entity* entity;
+                if (charID == 'h')
+                    entity = new Wolf(x, y);
+
+                if (entity) {
+                    entity->archivable = true;
+                    AppendEntity(map->StoredEntities, entity);
+                }
+            }
             
             SetTileID(&(map->tiles[x][y]), tileID);
         }
