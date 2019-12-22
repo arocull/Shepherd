@@ -7,7 +7,7 @@ void DoMapTrigger(RenderWindow* window, Map* map, Entity* entities[], int trigge
 
     
     if (!map->Triggers[triggerID]) {
-        printf("Running trigger %i for map ID %i\n", triggerID, id);
+        //printf("Running trigger %i for map ID %i\n", triggerID, id);
 
         if (triggerID <= 3)
             map->Triggers[triggerID] = true;

@@ -68,7 +68,6 @@ void RenderWindow::ToggleFullscreen() {
         fullscreen = true;
     } else {
         SDL_SetWindowFullscreen(window, 0); //Exit fullscreen
-        //SDL_SetWindowBordered(window, SDL_TRUE);
         SDL_SetWindowSize(window, windowedX, windowedY);
         fullscreen = false;
     }
@@ -154,7 +153,6 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
     tile.y = tileY*tileRes + offsetY;
 
     if (tileID == 1) {      // Wall
-        //if ((time - round(time)) <= .5 && )
         if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
             SDL_SetRenderDrawColor(canvas, 215, 215, 215, 0);
         else
@@ -278,7 +276,6 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     base.h = tileRes;
     base.x = (int) (posX+0.5f)*tileRes + offsetX;
     base.y = (int) (posY+0.5f)*tileRes + offsetY;
-    //printf("Particle position (%f, %f) to (%i, %i)\n", posX, posY, base.x, base.y);
 
     if (id == 1) {
         SDL_SetRenderDrawColor(canvas, 255, 255, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
@@ -367,7 +364,7 @@ Set 'ticks' to 0 for the text to last indefinitely or until overwritten*/
 void RenderWindow::SetDialogueText(char* text, int ticks) {
     if (dialogueText)
         free(dialogueText);
-    dialogueText = strdup(text);//strcpy(dialogueText, text);
+    dialogueText = strdup(text);
     dialogueTicksLeft = ticks;
 }
 char* RenderWindow::GetDialogueText() {

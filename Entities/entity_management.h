@@ -28,9 +28,6 @@ void CleanEntities(Entity* entities[MaxEntities]);
 // Searches list of entities and returns the first entity it finds with given location; otherwise returns null
 Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos);
 
-// Sorts the given list of entities based off of distance
-//Entity** GetClosestEntities(Entity* entities[MaxEntities], int xPos, int yPos);
-
 // Finds the entity with the nearest location, excluding anyone at the given location
 Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos);
 // Finds the entity with the given ID that is closest to the location, excluding anyone at the given location

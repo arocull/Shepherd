@@ -56,21 +56,13 @@ Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos) {
 }
 
 
-
-/*Entity** GetClosestEntities(Entity* entities[MaxEntities], int xPos, int yPos) {
-    Entity** sorted = (Entity**) malloc(sizeof(Entity));
-
-    float minDist = 1000.0f;
-
-    for
-}*/
 Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos) {
     Entity* closest = nullptr;
 
-    float dis = 1000.0f;
+    int dis = 1000;
     for (int i = 0; i < MaxEntities; i++) {
         if (entities[i]) {
-            float d = dist(xPos, yPos, entities[i]->x, entities[i]->y);
+            int d = dist(xPos, yPos, entities[i]->x, entities[i]->y);
             if (d < dis) {
                 dis = d;
                 closest = entities[i];
@@ -83,7 +75,7 @@ Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos) {
 Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos, int ArraySize, int searchID) {
     Entity* closest = nullptr;
 
-    int dis = 1000.0f;
+    int dis = 1000;
     for (int i = 0; i < ArraySize; i++) {
         if (entities[i] && entities[i]->GetID() == searchID) {
             int d = dist(xPos, yPos, entities[i]->x, entities[i]->y);
@@ -99,28 +91,27 @@ Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos, int 
 
 
 bool HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
-    if (!DEBUG_RequireSheep) return true;
+    if (!DEBUG_RequireSheep) return true;   //Return if sheep are unnecessary for leaving
 
-    Entity* touchedSheep[MaxSheep+1];
+    Entity* touchedSheep[MaxSheep+1];   //List holds all sheep + one shepherd
     for (int i = 1; i <= MaxSheep; i++) {   //Initialize list
         touchedSheep[i] = nullptr;
     }
-    touchedSheep[0] = obj;
+    touchedSheep[0] = obj;  //Count player first and finds any sheep touching him
 
     int sheep = 0;
     
+    // Iterate through list of entities and check all four sides of them for any other entities to add to the list (corners don't count!)
     for (int i = 0; i <= MaxSheep; i++) {
         if (touchedSheep[i]) {
             AppendEntityDetailed(touchedSheep, GetEntityAtLocation(entities, touchedSheep[i]->x+1,  touchedSheep[i]->y),    MaxSheep+1, 2);
             AppendEntityDetailed(touchedSheep, GetEntityAtLocation(entities, touchedSheep[i]->x,    touchedSheep[i]->y+1),  MaxSheep+1, 2);
             AppendEntityDetailed(touchedSheep, GetEntityAtLocation(entities, touchedSheep[i]->x-1,  touchedSheep[i]->y),    MaxSheep+1, 2);
             AppendEntityDetailed(touchedSheep, GetEntityAtLocation(entities, touchedSheep[i]->x,    touchedSheep[i]->y-1),  MaxSheep+1, 2);
-            if (touchedSheep[i]->GetID() == 2)
+            if (touchedSheep[i]->GetID() == 2)  //If this entity itself is a sheep, tally them
                 sheep++;
         }
     }
-
-    //printf("Sheep tally is %i sheep\n", sheep);
 
     return sheep >= MaxSheep;
 }

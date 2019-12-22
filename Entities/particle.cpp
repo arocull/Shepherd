@@ -9,7 +9,8 @@ struct Particle* ActivateParticle(Particle* particleArray, int id, int x, int y)
             break;
         }
     }
-    if (particle) {
+
+    if (particle) {     // Reset particle stats (not done upon initialization so must be done here)
         particle->lifetime = 0.0f;
         particle->maxLifetime = 0.25f;
         particle->x = x;

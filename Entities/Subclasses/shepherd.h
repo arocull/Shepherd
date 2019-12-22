@@ -19,6 +19,13 @@ class Shepherd : public Entity {
         int lastX = 0;
         int lastY = 0;
 
+        // Causes Shepherd to sling a fireball; based off last direction they moved
         void SlingFireball(Entity** entities, Particle* particles);
+
+
+        /* Shepherd does an area-of-effect attack that:
+        - Freezes or rallies nearby sheep
+        - Hurts any nearby wolves
+        */
         void SwingAttack(Entity** entities, Particle* particles);
 };

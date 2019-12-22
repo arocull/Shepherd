@@ -41,8 +41,7 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* lev
         int sheepLeft = MaxSheep;
 
         int top = playerY-1; int bottom = playerY+1; int left = playerX-1; int right = playerX+1;
-        int dir = 0;    //0 = right, 1 = down, 2 = left, 3 = up
-
+        
         // Summon sheep until all are summoned or no more available spawn points (NOTE: game will softlock if it runs out of spawn tiles)
         while (sheepLeft > 0 || (bottom == MapHeight && left == -1 && right == MapWidth && top == -1)) {
             top = max(0, top);
@@ -72,28 +71,15 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* lev
 
 
 /*
-Currently: Takes a map file and reads each character, generating a tilemap based off char
+Takes a map file and reads each character, generating a tilemap and entities based off of characters
 
 Possibly in future: read a PNG file and convert it to map data.
-
-References for future:
-https://stackoverflow.com/questions/15510507/open-a-png-file-and-read-its-hex-values-in-c
-
-https://www.zarb.org/~gc/html/libpng.html
-
-https://stackoverflow.com/questions/31079947/how-can-i-manually-read-png-files-in-c
-
-http://paulbourke.net/dataformats/bmp/
-
-https://www.youtube.com/watch?v=1Fo-5vJcB4w     //Using this
-at 7 minutes
 */
 Map* GenerateMapFromFile(const char* filePath) {
     std::fstream mapFile;       //Creates stream to read from
     mapFile.open(filePath);     //Opens file path
 
     Map* map = new Map();       //Generates new map
-    //printf("Generating map from file %s...\n", filePath);
     
     // Iterate through the map tiles, row by row 
     for (int y = 0; y < MapHeight && !mapFile.eof(); y++) {

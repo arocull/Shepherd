@@ -25,7 +25,7 @@
 #define FireballSpeed 3
 
 // How many times a second the game ticks; essentially sets "speed" of gameplay
-#define TickRate 10
+#define TickRate 8
 
 
 

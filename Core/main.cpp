@@ -65,10 +65,6 @@ int main(int argc, char **argv) {
 
     world[1][0] = GenerateMapFromFile("Map/Maps/OneZero");
     world[1][1] = GenerateMapFromFile("Map/Maps/OneOne");
-/*    if (world[1][1]->StoredEntities[0]) {   // Sleeping tutorial wolf
-        world[1][1]->StoredEntities[0]->Paused = true;
-        world[1][1]->StoredEntities[0]->animation = 3;
-    }*/
     world[1][2] = GenerateMapFromFile("Map/Maps/OneTwo");
 
     world[2][0] = GenerateMapFromFile("Map/Maps/TwoZero");
@@ -152,7 +148,6 @@ int main(int argc, char **argv) {
         if (GameTick >= 1) {
             ticks++;
             window.LogTick();
-            //SDL_Log("Game tick %i, DT %f", ticks, DeltaTime);
 
             player->animation = 0;
 

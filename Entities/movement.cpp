@@ -33,8 +33,8 @@ void Movement_ShiftEntity(Map* world, Entity* entities[MaxEntities], Entity* obj
     else if (dx > 0)
         obj->Flipped = false;
 
-    //A* pathing?
-    
+
+    //Look into A* pathing?
     if (distY > distX) {
         for (int stepY = 0; stepY < distY; stepY++) {
             if (obj->y+yChange < 0 || obj->y+yChange >= MapHeight || world->IsTileSolid(obj->x, obj->y+yChange) || GetEntityAtLocation(entities, obj->x, obj->y+yChange))
@@ -88,7 +88,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         obj->x = MapWidth-1;
     } else if (desiredX < MapWidth && desiredX >= 0 && !world->IsTileSolid(desiredX, obj->y)) {
         Entity* hit = GetEntityAtLocation(entities, desiredX, obj->y);
-        if (hit && hit->GetID() == 2) {   //If shep, swap places
+        if (hit && hit->GetID() == 2) {   //If sheep, swap places
             hit->x = obj->x;
             obj->x = desiredX;
             obj->Flipped = !obj->Flipped;
@@ -104,7 +104,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         obj->y = 0;
     } else if (desiredY < MapHeight && desiredY >= 0 && !world->IsTileSolid(obj->x, desiredY)) {
         Entity* hit = GetEntityAtLocation(entities, obj->x, desiredY);
-        if (hit && hit->GetID() == 2) {   //If shep, swap places
+        if (hit && hit->GetID() == 2) {   //If sheep, swap places
             hit->y = obj->y;
             obj->y = desiredY;
         } else if (!hit || (hit && !hit->Solid))

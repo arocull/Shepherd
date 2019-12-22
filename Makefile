@@ -17,7 +17,6 @@ vpath %.cpp $(SRC_DIR)
 
 define make-goal
 $1/%.o: %.cpp
-	@echo "this one?"
 	$(CC) $(CCFLAGS) $(INCLUDES) -c $$< -o $$@
 endef
 
