@@ -17,19 +17,27 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
         UpdateSize();
         SDL_SetWindowTitle(window, windowName);
 
-
         SetDialogueText("", 0);
+
+        TEXTURESURFACE_PROGRAM_loadscreen = SDL_LoadBMP("Textures/Loading.bmp");
+        if (TEXTURESURFACE_PROGRAM_loadscreen) {
+            TEXTURE_PROGRAM_loadscreen = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_PROGRAM_loadscreen);
+            LoadScreen();
+        }
+
+        TEXTURESURFACE_PROGRAM_icon = SDL_LoadBMP("Textures/Icon.bmp");
+        if (TEXTURESURFACE_PROGRAM_icon)
+            SDL_SetWindowIcon(window, TEXTURESURFACE_PROGRAM_icon);
+
 
 
         TEXTURESURFACE_tree = SDL_LoadBMP("Textures/Tree.bmp");
         if (TEXTURESURFACE_tree) {
-            SDL_SetWindowIcon(window, TEXTURESURFACE_tree);
             TEXTURE_tree = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_tree);
         }
 
         TEXTURESURFACE_rock = SDL_LoadBMP("Textures/Rock.bmp");
         if (TEXTURESURFACE_rock) {
-            SDL_SetWindowIcon(window, TEXTURESURFACE_rock);
             TEXTURE_rock = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_rock);
         }
 
@@ -112,6 +120,10 @@ void RenderWindow::Close() {
     if (!initialized) return;
 
     free(dialogueText);
+
+    SDL_FreeSurface(TEXTURESURFACE_PROGRAM_loadscreen);
+    SDL_DestroyTexture(TEXTURE_PROGRAM_loadscreen);
+    SDL_FreeSurface(TEXTURESURFACE_PROGRAM_icon);
 
     SDL_FreeSurface(TEXTURESURFACE_tree);
     SDL_DestroyTexture(TEXTURE_tree);
@@ -408,4 +420,8 @@ void RenderWindow::DrawDialogueBox() {
     }
 
     SDL_RenderDrawLine(canvas,0,dboxtop+dialogueBoxY,x,dboxtop+dialogueBoxY);
+}
+void RenderWindow::LoadScreen() {
+    SDL_RenderCopy(canvas, TEXTURE_PROGRAM_loadscreen, NULL, NULL);
+    SDL_RenderPresent(canvas);
 }

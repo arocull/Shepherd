@@ -53,6 +53,9 @@ class RenderWindow {
         char* dialogueText;
         int dialogueTicksLeft = 0;
 
+        SDL_Surface* TEXTURESURFACE_PROGRAM_loadscreen;
+        SDL_Texture* TEXTURE_PROGRAM_loadscreen;
+        SDL_Surface* TEXTURESURFACE_PROGRAM_icon;
 
         SDL_Surface* TEXTURESURFACE_tree;
         SDL_Texture* TEXTURE_tree;
@@ -84,6 +87,7 @@ class RenderWindow {
         void SetDialogueText(char* newText, int ticks = 50);
         char* GetDialogueText();
         void DrawDialogueBox();
+        void LoadScreen();
         
 
         bool IsInitialized();
