@@ -168,7 +168,13 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
         
         SDL_RenderFillRect(canvas, &tile);
     } else if (tileID == 4) {   //Tree
-        SDL_RenderCopy(canvas, TEXTURE_tree, NULL, &tile);
+        SDL_Rect src;
+        src.w = 32;
+        src.h = 32;
+        src.x = ((tileX + tileY)%3) * 32;
+        src.y = 0;
+
+        SDL_RenderCopyEx(canvas, TEXTURE_tree, &src, &tile, 0, NULL, SDL_FLIP_NONE);
     } else if (tileID == 5) {   //Rock
         SDL_RenderCopy(canvas, TEXTURE_rock, NULL, &tile);
     }
