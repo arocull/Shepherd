@@ -105,12 +105,10 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'R': tileID = 5; break;    //Rock
 
                 // Map Triggers
-                case '1':       //Trigger 1
-                case '2':       //Trigger 2
-                case '3':       //Trigger 3
-                case '4':       //Trigger 4 - Note: no debounce
-                    tileID = -(int) (charID + '0'); //Converts character to number and negates
-                    break;
+                case '1': tileID = -1; break;   //Trigger 1
+                case '2': tileID = -2; break;   //Trigger 2
+                case '3': tileID = -3; break;   //Trigger 3
+                case '4': tileID = -4; break;   //Trigger 4 - Note: no debounce
 
                 // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
                 case 'h':
