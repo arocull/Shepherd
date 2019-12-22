@@ -75,7 +75,7 @@ class RenderWindow {
     public:
         void FillViewportBackground(int r, int g, int b);
         void DrawTile(int tileX, int tileY, int tileID);
-        void DrawEntity(int posX, int posY, int id, bool flip, int animation);
+        void DrawEntity(int posX, int posY, int id, bool flip, int animation, int metadata);
         void DrawParticle(float posX, float posY, int id, float percentage);
 
         void DrawLetter(int posX, int posY, int sizeX, int sizeY, char letter);

@@ -173,7 +173,7 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
         SDL_RenderCopy(canvas, TEXTURE_rock, NULL, &tile);
     }
 }
-void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
+void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, int meta) {
     SDL_Rect tile;
     tile.w = tileRes;
     tile.h = tileRes;
@@ -241,7 +241,14 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim) {
                 angle = 3.0;
         }
 
+        // Draw basic sheep
         SDL_RenderCopyEx(canvas, TEXTURE_sheep, &src, &tile, angle, NULL, flipStyle);
+
+        // Overlay blood
+        if (meta <= 1) {
+            src.y+=32;
+            SDL_RenderCopyEx(canvas, TEXTURE_sheep, &src, &tile, angle, NULL, flipStyle);
+        }
     } else if (id == 3) {   // Fireball
         int sha = (int) 20 * (sin(time*20) + 1);
         SDL_SetRenderDrawColor(canvas, 210 + sha, 100 + sha, 0, 0);

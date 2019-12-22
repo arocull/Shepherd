@@ -38,9 +38,15 @@ void RemoveEntity(Entity* entities[MaxEntities], Entity* delEntity) {
 
 void CleanEntities(Entity* entities[MaxEntities]) {
     for (int i = MaxEntities-1; i > 0; i--) {
-        if (!entities[i-1] && entities[i]) {
-            entities[i-1] = entities[i];
-            entities[i] = nullptr;
+        if (entities[i]) {
+            if (entities[i]->GetHealth() <= 0) {
+                delete entities[i];
+                entities[i] = nullptr;
+
+            } else if (!entities[i-1]) {
+                entities[i-1] = entities[i];
+                entities[i] = nullptr;
+            }
         }
     }
 }

@@ -13,6 +13,8 @@ template <typename T> int dist(T x1, T y1, T x2, T y2);
 
 
 
+float distF(float x1, float y1, float x2, float y2);
+
 float RandomF();
 int RandomI(int a, int b);
 

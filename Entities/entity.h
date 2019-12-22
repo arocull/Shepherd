@@ -21,7 +21,13 @@ class Entity {
         // Call this function when unloading the entity (storing into map)
         virtual void Unload();
 
+        // Called when the entity takes damage; returns true if killed
+        virtual bool TakeDamage(int dmgAmount, Entity* attacker);
+
+
+        // Horizontal position of Entity
         int x;
+        // Vertical position of Entity
         int y;
 
         // Flips sprite horizontally while rendering
@@ -35,6 +41,8 @@ class Entity {
 
         // Current animation playing--0 is always idle, animations are defined per-object inside the RenderWindow class
         int animation = 0;
+        // Animation Metadata; entity-specific data for the renderer to interpret when drawing entities or animations
+        int animationMetadata = 0;
 
         // If true, entity can be saved to or removed from levels upon entering and leaving
         bool archivable = false;

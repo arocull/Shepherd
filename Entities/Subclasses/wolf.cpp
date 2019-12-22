@@ -15,8 +15,8 @@ Wolf::Wolf(int xPos, int yPos) {
 // Called upon unloading--overriden from base entity class
 // Resets the wolf's stun and forcefully ends their hunt
 void Wolf::Unload() {
-    stun = 0;
     EndHunt();
+    stun = 0;
 }
 
 

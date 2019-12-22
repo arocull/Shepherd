@@ -262,6 +262,11 @@ int main(int argc, char **argv) {
                             else
                                 dirToTargetX = 0;
 
+                            if (distF((float) wolf->x, (float) wolf->y, (float) target->x, (float) target->y) <= 1.1f) {
+                                target->TakeDamage(1, wolf);
+                                wolf->EndHunt();
+                            }
+
                             Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToTargetX), -sgn(dirToTargetY));
                             a->animation = 1;
                         }       
@@ -300,7 +305,7 @@ int main(int argc, char **argv) {
         // Draw all entities aside from Shepherd
         for (Entity* obj : levelEntities) {
             if (obj && obj->GetID() != 1)
-                window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation);
+                window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation, obj->animationMetadata);
         }
 
 
@@ -315,7 +320,7 @@ int main(int argc, char **argv) {
         SDL_SetRenderDrawBlendMode(window.canvas, blend);
 
         // Draw shepherd last
-        window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation);
+        window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation, player->animationMetadata);
 
         // Draw GUI
         window.DrawDialogueBox();

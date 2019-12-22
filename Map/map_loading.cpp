@@ -52,7 +52,7 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* lev
             for (int y = top; y <= bottom; y++) {
                 for (int x = left; x <= right; x++) {
                     if (LoadLevel_IsSpawnable(newLevel, levelEntities, x, y) && sheepLeft > 0 && !(x == playerX && y == playerY)) {
-                        AppendEntity(levelEntities, new Entity(x, y, 2));
+                        AppendEntity(levelEntities, new Sheep(x, y));
                         sheepLeft--;
                     }
                 }

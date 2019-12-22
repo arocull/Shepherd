@@ -48,8 +48,8 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles) {
                 if (obj->GetID() == 2) {  //If sheep, toggle pause
                     obj->Paused = NewPause;
                     obj->animation = 1;
-                    printf("Found sheep at %i, %i and set toggle to %i\n", w, z, obj->Paused ? 1 : 0);
-                }
+                } else if (obj->GetID() == 4)
+                    obj->TakeDamage(1, this);
             }
         }
     }
