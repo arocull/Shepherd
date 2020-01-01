@@ -19,6 +19,8 @@ class Map {
 
         void SetMapID(int Identification);
         int GetMapID();
+        void SetMapBiome(char b);
+        char GetMapBiome();
 
         int GetTileID(int x, int y);
         bool IsTileSolid(int x, int y);
@@ -32,4 +34,5 @@ class Map {
     private:
         int EntitiesStored = 0;
         int id = -1;
+        char biome = 'F';
 };

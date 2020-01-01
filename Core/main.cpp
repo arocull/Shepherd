@@ -59,17 +59,17 @@ int main(int argc, char **argv) {
 
     // Load world from files
     Map* world[WorldWidth][WorldHeight];
-    world[0][0] = GenerateMapFromFile("Map/Maps/ZeroZero");
-    world[0][1] = GenerateMapFromFile("Map/Maps/ZeroOne");
-    world[0][2] = GenerateMapFromFile("Map/Maps/ZeroTwo");
+    world[0][2] = GenerateMapFromFile("Map/Maps/Desert/Desert1");
+    world[0][1] = GenerateMapFromFile("Map/Maps/Desert/Desert2");
+    world[0][0] = GenerateMapFromFile("Map/Maps/Desert/Desert3");
 
-    world[1][0] = GenerateMapFromFile("Map/Maps/OneZero");
-    world[1][1] = GenerateMapFromFile("Map/Maps/OneOne");
-    world[1][2] = GenerateMapFromFile("Map/Maps/OneTwo");
+    world[1][2] = GenerateMapFromFile("Map/Maps/Desert/Desert4");
+    world[1][1] = GenerateMapFromFile("Map/Maps/Desert/Desert5");
+    world[1][0] = GenerateMapFromFile("Map/Maps/Desert/Desert6");
 
-    world[2][0] = GenerateMapFromFile("Map/Maps/TwoZero");
-    world[2][1] = GenerateMapFromFile("Map/Maps/TwoOne");
-    world[2][2] = GenerateMapFromFile("Map/Maps/TwoTwo");
+    world[2][2] = GenerateMapFromFile("Map/Maps/Desert/Desert7");
+    world[2][1] = GenerateMapFromFile("Map/Maps/Desert/Desert8");
+    world[2][0] = GenerateMapFromFile("Map/Maps/Desert/Desert9");
 
     int worldX = 0;
     int worldY = 2;
@@ -292,8 +292,14 @@ int main(int argc, char **argv) {
         window.UpdateSize();
         window.TickDeltaTime(DeltaTime);
 
-        // Fill background
-        window.FillViewportBackground(10, 50, 10);
+        // Fill background based off of biome
+        switch (currentLevel->GetMapBiome()) {
+            case 'D':   // Desert
+                window.FillViewportBackground(220, 220, 100);
+                break;
+            default:    // Default / Forest
+                window.FillViewportBackground(10, 60, 20);
+        }
 
         // Draw tiles first
         for (int x = 0; x < MapWidth; x++) {

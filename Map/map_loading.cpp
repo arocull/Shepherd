@@ -136,6 +136,10 @@ Map* GenerateMapFromFile(const char* filePath) {
 
         int mapID = ((int) (digit1 - '0')) * 10 + ((int) (digit2 - '0'));
         map->SetMapID(mapID);
+
+        char biome = mapFile.get();
+        if (!mapFile.eof())
+            map->SetMapBiome(biome);
     }
 
     mapFile.close();

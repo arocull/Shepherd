@@ -28,6 +28,13 @@ void Map::SetMapID(int Identification) {
 int Map::GetMapID() {
     return id;
 }
+void Map::SetMapBiome(char b) {
+    biome = b;
+}
+char Map::GetMapBiome() {
+    return biome;
+}
+
 
 
 // Returns the tile ID of the given tile at X, Y

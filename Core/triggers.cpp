@@ -12,6 +12,7 @@ void DoMapTrigger(RenderWindow* window, Map* map, Entity* entities[], int trigge
         if (triggerID <= 3)
             map->Triggers[triggerID] = true;
 
+        /* Tutorial
         // Staring Area
         if (id == 0 && triggerID == 1)
             window->SetDialogueText("Your sheep will follow you around as you\nmove. Try to keep track of all of them.", 75);
@@ -40,6 +41,6 @@ void DoMapTrigger(RenderWindow* window, Map* map, Entity* entities[], int trigge
 
         // Tutorial End
         else if (id == 8 && triggerID == 1)
-            window->SetDialogueText("Congratulations on a job well done.\nTutorial complete!",100);
+            window->SetDialogueText("Congratulations on a job well done.\nTutorial complete!",100);*/
     }
 }
