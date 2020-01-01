@@ -41,6 +41,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_rock = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_rock);
         }
 
+        TEXTURESURFACE_pillar = SDL_LoadBMP("Textures/Pillar.bmp");
+        if (TEXTURESURFACE_pillar) {
+            TEXTURE_pillar = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_pillar);
+        }
+
         TEXTURESURFACE_sheep = SDL_LoadBMP("Textures/Sheep.bmp");
         if (TEXTURESURFACE_sheep) {
             TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
@@ -129,6 +134,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_tree);
     SDL_FreeSurface(TEXTURESURFACE_rock);
     SDL_DestroyTexture(TEXTURE_rock);
+    SDL_FreeSurface(TEXTURESURFACE_pillar);
+    SDL_DestroyTexture(TEXTURE_pillar);
     SDL_FreeSurface(TEXTURESURFACE_sheep);
     SDL_DestroyTexture(TEXTURE_sheep);
     SDL_FreeSurface(TEXTURESURFACE_wolf);
@@ -164,7 +171,8 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
     tile.x = tileX*tileRes + offsetX;
     tile.y = tileY*tileRes + offsetY;
 
-    if (tileID == 1) {      // Wall
+    
+    if (tileID == 1) {          // Wall
         if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
             SDL_SetRenderDrawColor(canvas, 215, 215, 215, 0);
         else
@@ -172,23 +180,38 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
         SDL_RenderFillRect(canvas, &tile);
     } else if (tileID == 2) {   //Water
         SDL_SetRenderDrawColor(canvas, 0, 30, 200 + (int) (sin(time + (sqrt(pow(tileX,2) + pow(tileY,2)))) * 20), 0);
-
         SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 3) {   //Magma
+    } else if (tileID == 3) {    // Magma
         float z = sqrt(pow(tileX,2) + pow(tileY,2));
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2 + z) * 30), 80 + (int) (sin(time/3 + z) * 20), 20, 0);
-        
         SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 4) {   //Tree
+    } else if (tileID == 4) {     //Tree
         SDL_Rect src;
         src.w = 32;
         src.h = 32;
         src.x = ((tileX + tileY)%3) * 32;
         src.y = 0;
-
         SDL_RenderCopyEx(canvas, TEXTURE_tree, &src, &tile, 0, NULL, SDL_FLIP_NONE);
-    } else if (tileID == 5) {   //Rock
+    } else if (tileID == 5) {    //Rock
         SDL_RenderCopy(canvas, TEXTURE_rock, NULL, &tile);
+    } else if (tileID == 6) {    //Pillar
+        SDL_RenderCopy(canvas, TEXTURE_pillar, NULL, &tile);
+    } else if (tileID == 7) {   //Empty Puzzle Piece
+        SDL_SetRenderDrawColor(canvas, 90, 90, 90, 0);
+        SDL_RenderFillRect(canvas, &tile);
+    } else if (tileID == 8) {   //Pressure Plate
+        tile.w = 4*tileRes/5;
+        tile.h = tile.w;
+        tile.x+=tileRes/10;
+        tile.y+=tileRes/10;
+        SDL_SetRenderDrawColor(canvas, 130, 130, 130, 0);
+        SDL_RenderFillRect(canvas, &tile);
+    } else if (tileID == 9) {   //Fake Wall
+        if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
+            SDL_SetRenderDrawColor(canvas, 205, 205, 205, 0);
+        else
+            SDL_SetRenderDrawColor(canvas, 225, 225, 225, 0);
+        SDL_RenderFillRect(canvas, &tile);
     }
 }
 void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, int meta) {

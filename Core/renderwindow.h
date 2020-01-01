@@ -63,6 +63,9 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_rock;
         SDL_Texture* TEXTURE_rock;
 
+        SDL_Surface* TEXTURESURFACE_pillar;
+        SDL_Texture* TEXTURE_pillar;
+
         SDL_Surface* TEXTURESURFACE_sheep;
         SDL_Texture* TEXTURE_sheep;
 

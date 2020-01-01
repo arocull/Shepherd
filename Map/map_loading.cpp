@@ -103,6 +103,10 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'L': tileID = 3; break;    //Lava
                 case 'T': tileID = 4; break;    //Tree
                 case 'R': tileID = 5; break;    //Rock
+                case 'P': tileID = 6; break;    //Pillar
+                case 'e': tileID = 7; break;    //Empty Puzzle Peace
+                case 'p': tileID = 8; break;    //Pressure Plate
+                case 'F': tileID = 9; break;    //Fake Wall
 
                 // Map Triggers
                 case '1': tileID = -1; break;   //Trigger 1
