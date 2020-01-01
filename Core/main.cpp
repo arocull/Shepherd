@@ -57,6 +57,13 @@ int main(int argc, char **argv) {
     // Randomize seed based off of current time
     srand(time(0));
 
+    SDL_Event event;
+    float LastTick = 0;
+    float CurrentTick = SDL_GetPerformanceCounter();
+    float DeltaTime = 0;
+    float GameTick = 0;
+    int ticks = 0;
+
     // Load world from files
     Map* world[WorldWidth][WorldHeight];
     world[0][2] = GenerateMapFromFile("Map/Maps/Desert/Desert1");
@@ -71,37 +78,24 @@ int main(int argc, char **argv) {
     world[2][1] = GenerateMapFromFile("Map/Maps/Desert/Desert8");
     world[2][0] = GenerateMapFromFile("Map/Maps/Desert/Desert9");
 
-    int worldX = 0;
-    int worldY = 2;
+    int worldX = 1;
+    int worldY = 1;
     int currentWorldX = worldX;
     int currentWorldY = worldY;
     
-
-    // Summon player
-    Shepherd* player = new Shepherd(15, 5);
-
-    // Initialize entity list
     Entity* levelEntities[MaxEntities];
+    struct Particle* particles = (struct Particle*) calloc(MaxParticles, sizeof(Particle));
+
+    Shepherd* player = new Shepherd(20, 8);
     levelEntities[0] = player;
     for (int i = 1; i < MaxEntities; i++) {
         levelEntities[i] = nullptr;
     }
 
-    // Initialize an array of particles
-    struct Particle* particles = (struct Particle*) calloc(MaxParticles, sizeof(Particle));
-
-    // Load in initial level
     Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
-    window.SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
-
-    float LastTick = 0;
-    float CurrentTick = SDL_GetPerformanceCounter();
-    float DeltaTime = 0;
-    float GameTick = 0;
-    int ticks = 0;
+    Trigger_GameStart(&window, currentLevel, levelEntities);
 
 
-    SDL_Event event;
     while (true) {
         LastTick = CurrentTick;
         CurrentTick = SDL_GetPerformanceCounter();
@@ -149,16 +143,18 @@ int main(int argc, char **argv) {
             ticks++;
             window.LogTick();
 
-            player->animation = 0;
+            if (!player->Paused) {
+                player->animation = 0;
 
-            if (MoveUp)
-                Movement_ShiftPlayer(currentLevel, levelEntities, player, 0, 1, &worldX, &worldY);
-            else if (MoveDown)
-                Movement_ShiftPlayer(currentLevel, levelEntities, player, 0, -1, &worldX, &worldY);
-            else if (MoveRight)
-                Movement_ShiftPlayer(currentLevel, levelEntities, player, 1, 0, &worldX, &worldY);
-            else if (MoveLeft)
-                Movement_ShiftPlayer(currentLevel, levelEntities, player, -1, 0, &worldX, &worldY);
+                if (MoveUp)
+                    Movement_ShiftPlayer(currentLevel, levelEntities, player, 0, 1, &worldX, &worldY);
+                else if (MoveDown)
+                    Movement_ShiftPlayer(currentLevel, levelEntities, player, 0, -1, &worldX, &worldY);
+                else if (MoveRight)
+                    Movement_ShiftPlayer(currentLevel, levelEntities, player, 1, 0, &worldX, &worldY);
+                else if (MoveLeft)
+                    Movement_ShiftPlayer(currentLevel, levelEntities, player, -1, 0, &worldX, &worldY);
+            }
 
             if (Move_QueueClear)
                 Movement_Clear();
@@ -180,6 +176,7 @@ int main(int argc, char **argv) {
                 currentWorldY = worldY;
                 StopParticles(particles);
                 currentLevel = LoadLevel(world, currentLevel, levelEntities, worldX, worldY, player->x, player->y);
+                Trigger_LevelLoaded(&window, currentLevel, levelEntities);
             }
 
 
@@ -188,15 +185,17 @@ int main(int argc, char **argv) {
             if (standingTile == 3)
                 player->HasFire = true;
             else if (standingTile < 0)
-                DoMapTrigger(&window, currentLevel, levelEntities, abs(standingTile));
+                Trigger_OnTile(&window, currentLevel, levelEntities, abs(standingTile));
 
 
             // Toss Fireball
             if (MoveFireballQueued) {
                 MoveFireballQueued = false;
+
                 if (player->HasFire) {          // Sling Fireball
                     player->SlingFireball(levelEntities, particles);
                 } else {        // Rally Sheep / Swing Attack
+                    Trigger_StaffSwing(&window, currentLevel, levelEntities);
                     player->SwingAttack(levelEntities, particles);
                 }
             } else

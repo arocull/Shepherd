@@ -1,19 +1,53 @@
 #include "Core/triggers.h"
 
-void DoMapTrigger(RenderWindow* window, Map* map, Entity* entities[], int triggerID) {
+void Trigger_OnTile(RenderWindow* window, Map* map, Entity* entities[], int triggerID) {
     int id = map->GetMapID();
 
     triggerID = max(1,min(triggerID, 4));
 
     
     if (!map->Triggers[triggerID]) {
-        //printf("Running trigger %i for map ID %i\n", triggerID, id);
-
         if (triggerID <= 3)
             map->Triggers[triggerID] = true;
 
-        /* Tutorial
+        
         // Staring Area
+        if (id == 5 && triggerID == 1)
+            window->SetDialogueText("Your sheep will always follow you.\nTry to keep track of all of them.", 75);
+        else if (id == 5 && triggerID == 2)
+            window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
+    }
+}
+void Trigger_GameStart(RenderWindow* window, Map* map, Entity* entities[]) {
+    // Starting Level Cinematic
+    for (int i = 0; i < MaxEntities; i++) {
+        Entity* ent = entities[i];
+        if (ent) {
+            ent->Paused = true;
+            if (ent->GetID() == 2)
+                ent->animation = 1;
+            else if (ent->GetID() == 1)
+                ent->animation = 3;
+        }
+    }
+    window->SetDialogueText("\nHit spacebar to rally your sheep.", 0);
+}
+void Trigger_StaffSwing(RenderWindow* window, Map* map, Entity* entities[]) {
+
+    // On starting area, if the player has not done so yet, instruct them on how to move
+    if (map->GetMapID() == 5 && map->Triggers[3] == false) {
+        map->Triggers[3] == true;
+        entities[0]->Paused = false;
+        window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
+    }
+}
+void Trigger_LevelLoaded(RenderWindow* window, Map* map, Entity* entities[]) {
+
+}
+
+
+
+/* Tutorial Triggers
         if (id == 0 && triggerID == 1)
             window->SetDialogueText("Your sheep will follow you around as you\nmove. Try to keep track of all of them.", 75);
         else if (id == 0 && triggerID == 2)
@@ -41,6 +75,5 @@ void DoMapTrigger(RenderWindow* window, Map* map, Entity* entities[], int trigge
 
         // Tutorial End
         else if (id == 8 && triggerID == 1)
-            window->SetDialogueText("Congratulations on a job well done.\nTutorial complete!",100);*/
-    }
-}
+            window->SetDialogueText("Congratulations on a job well done.\nTutorial complete!",100);
+*/

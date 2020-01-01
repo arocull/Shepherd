@@ -208,6 +208,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
 
         switch (anim) {
             case 2:
+            case 3:
                 tile.x += tile.w/6;
                 tile.w *= (float) 2 / (float) 3;
                 break;
@@ -227,7 +228,10 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
             angle = (((double) step) - 0.5)*5;
         } else if (anim == 2) {
             src.w = 23;
-            src.x = 32; 
+            src.x = 32;
+        } else if (anim == 3) {
+            src.w = 24;
+            src.x = 55;
         } else {
             src.w = 10;
             if (step == 1)
