@@ -50,7 +50,7 @@ class RenderWindow {
         int dialogueBoxY;
         int dialogueBoxLineHeight;
         bool dialogueBoxVisible = true;
-        char* dialogueText;
+        char* dialogueText = NULL;
         int dialogueTicksLeft = 0;
 
         SDL_Surface* TEXTURESURFACE_PROGRAM_loadscreen;
