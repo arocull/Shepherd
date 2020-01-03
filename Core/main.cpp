@@ -24,6 +24,8 @@ $> run
 
 #include "Core/renderwindow.h"
 
+#include "Audio/sound_service.h"
+
 #include "Map/tile.h"
 #include "Map/map.h"
 
@@ -54,8 +56,10 @@ int main(int argc, char **argv) {
     RenderWindow window = RenderWindow(800,500,"Shepherd");
     if (!window.IsInitialized()) return 3;
 
+    SoundService soundService = SoundService();
+
     // Randomize seed based off of current time
-    srand(time(0));
+    //srand(time(0));
 
     SDL_Event event;
     float LastTick = 0;
@@ -94,6 +98,8 @@ int main(int argc, char **argv) {
 
     Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
     Trigger_GameStart(&window, currentLevel, levelEntities);
+
+    soundService.PlaySound("Audio/Resources/EvilPaprika.wav");
 
 
     while (true) {
@@ -331,11 +337,13 @@ int main(int argc, char **argv) {
         window.DrawDialogueBox();
         
         SDL_RenderPresent(window.canvas);
+        soundService.Tick(DeltaTime);
     }
 
 
     // Close window and deallocate memory
     window.Close();
+    soundService.CloseSoundService();
 
     StopParticles(particles);
     free(particles);

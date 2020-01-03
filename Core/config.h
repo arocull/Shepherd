@@ -18,6 +18,8 @@
 #define MaxEntitiesStoreable 10
 // Maximum number of particles that can be active at a time
 #define MaxParticles 10
+// Maximum number of sounds that can be playing at a time
+#define MaxSounds 10
 // Amount of sheep the player must care for
 #define MaxSheep 5
 
