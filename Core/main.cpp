@@ -97,9 +97,7 @@ int main(int argc, char **argv) {
     }
 
     Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
-    Trigger_GameStart(&window, currentLevel, levelEntities);
-
-    soundService.PlaySound("Audio/Resources/EvilPaprika.wav");
+    Trigger_GameStart(&window, &soundService, currentLevel, levelEntities);
 
 
     while (true) {
@@ -182,7 +180,7 @@ int main(int argc, char **argv) {
                 currentWorldY = worldY;
                 StopParticles(particles);
                 currentLevel = LoadLevel(world, currentLevel, levelEntities, worldX, worldY, player->x, player->y);
-                Trigger_LevelLoaded(&window, currentLevel, levelEntities);
+                Trigger_LevelLoaded(&window, &soundService, currentLevel, levelEntities);
             }
 
 
@@ -191,7 +189,7 @@ int main(int argc, char **argv) {
             if (standingTile == 3)
                 player->HasFire = true;
             else if (standingTile < 0)
-                Trigger_OnTile(&window, currentLevel, levelEntities, abs(standingTile));
+                Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
 
 
             // Toss Fireball
@@ -201,7 +199,7 @@ int main(int argc, char **argv) {
                 if (player->HasFire) {          // Sling Fireball
                     player->SlingFireball(levelEntities, particles);
                 } else {        // Rally Sheep / Swing Attack
-                    Trigger_StaffSwing(&window, currentLevel, levelEntities);
+                    Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
                     player->SwingAttack(levelEntities, particles);
                 }
             } else

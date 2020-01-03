@@ -1,6 +1,6 @@
 #include "Core/triggers.h"
 
-void Trigger_OnTile(RenderWindow* window, Map* map, Entity* entities[], int triggerID) {
+void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID) {
     int id = map->GetMapID();
 
     triggerID = max(1,min(triggerID, 4));
@@ -18,7 +18,7 @@ void Trigger_OnTile(RenderWindow* window, Map* map, Entity* entities[], int trig
             window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
     }
 }
-void Trigger_GameStart(RenderWindow* window, Map* map, Entity* entities[]) {
+void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     // Starting Level Cinematic
     for (int i = 0; i < MaxEntities; i++) {
         Entity* ent = entities[i];
@@ -31,17 +31,20 @@ void Trigger_GameStart(RenderWindow* window, Map* map, Entity* entities[]) {
         }
     }
     window->SetDialogueText("\nHit spacebar to rally your sheep.", 0);
+
+    soundService->PlaySound("Audio/Resources/AmbientWind.wav");
 }
-void Trigger_StaffSwing(RenderWindow* window, Map* map, Entity* entities[]) {
+void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 
     // On starting area, if the player has not done so yet, instruct them on how to move
     if (map->GetMapID() == 5 && map->Triggers[3] == false) {
         map->Triggers[3] == true;
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
+        soundService->FadeVolume(0.2f, 2.5f);
     }
 }
-void Trigger_LevelLoaded(RenderWindow* window, Map* map, Entity* entities[]) {
+void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 
 }
 

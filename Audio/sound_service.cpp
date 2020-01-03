@@ -1,5 +1,9 @@
 #include "Audio/sound_service.h"
 
+
+int AudioVolume = 128;
+
+
 SoundService::SoundService() {
     
 }
@@ -9,13 +13,25 @@ void SoundService::CloseSoundService() {
 }
 
 
-
 void SoundService::Tick(float DeltaTime) {
+    if (TimeToDesiredVolume > 0) {
+        TimeToDesiredVolume-=DeltaTime;
+        float percent = 1.0f - (TimeToDesiredVolume / TimeToDesiredVolumeStart);
+        Volume = VolumeStart*(1.0f-percent) + VolumeDesired*percent;
+        AudioVolume = max(min((int) (SDL_MIX_MAXVOLUME*log(SDL_MIX_MAXVOLUME*Volume + 1.0f)/4.87f), SDL_MIX_MAXVOLUME), 0);
+    }
+
     if (PlayingAudio) {
         if (((struct SoundData*)currentSound.userdata)->audio_len <= 0) {
             StopSound(&currentSound);
         }
     }
+}
+void SoundService::FadeVolume(float desired, float time) {
+    VolumeDesired = desired;
+    VolumeStart = Volume;
+    TimeToDesiredVolume = time;
+    TimeToDesiredVolumeStart = time;
 }
 
 
@@ -75,8 +91,8 @@ void SoundService_AudioCallback(void *userdata, unsigned char* stream, int len) 
 	
 	len = ( len > data->audio_len ? data->audio_len : len );
 	SDL_memcpy(stream, data->audio_pos, len); 						// simply copy from one buffer into the other
-	SDL_MixAudio(stream, data->audio_pos, len, SDL_MIX_MAXVOLUME);	// mix from one buffer into another
-	
+	SDL_MixAudio(stream, data->audio_pos, len, AudioVolume);	// mix from one buffer into another
+
 	data->audio_pos += len;
 	data->audio_len -= len;
 }
