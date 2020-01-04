@@ -11,6 +11,7 @@
 #include "Entities/entity.h"
 #include "Entities/Subclasses/sheep.h"
 #include "Entities/Subclasses/wolf.h"
+#include "Entities/Subclasses/crate.h"
 #include "Entities/entity_management.h"
 
 /*

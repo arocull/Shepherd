@@ -46,6 +46,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_pillar = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_pillar);
         }
 
+        TEXTURESURFACE_crate = SDL_LoadBMP("Textures/Crate.bmp");
+        if (TEXTURESURFACE_crate) {
+            TEXTURE_crate = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_crate);
+        }
+
         TEXTURESURFACE_sheep = SDL_LoadBMP("Textures/Sheep.bmp");
         if (TEXTURESURFACE_sheep) {
             TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
@@ -136,6 +141,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_rock);
     SDL_FreeSurface(TEXTURESURFACE_pillar);
     SDL_DestroyTexture(TEXTURE_pillar);
+    SDL_FreeSurface(TEXTURESURFACE_crate);
+    SDL_DestroyTexture(TEXTURE_crate);
     SDL_FreeSurface(TEXTURESURFACE_sheep);
     SDL_DestroyTexture(TEXTURE_sheep);
     SDL_FreeSurface(TEXTURESURFACE_wolf);
@@ -211,6 +218,9 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
             SDL_SetRenderDrawColor(canvas, 205, 205, 205, 0);
         else
             SDL_SetRenderDrawColor(canvas, 225, 225, 225, 0);
+        SDL_RenderFillRect(canvas, &tile);
+    } else if (tileID == 10) {  //Empty Tile
+        SDL_SetRenderDrawColor(canvas, 0, 0, 0, 0);
         SDL_RenderFillRect(canvas, &tile);
     }
 }
@@ -320,6 +330,8 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
             src.x = (ticks/4 % 2) * 32;
 
         SDL_RenderCopyEx(canvas, TEXTURE_wolf, &src, &tile, angle, NULL, flipStyle);
+    } else if (id == 5) {   // Crate
+        SDL_RenderCopy(canvas, TEXTURE_crate, NULL, &tile);
     }
 }
 void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage) {

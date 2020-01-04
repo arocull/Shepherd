@@ -16,6 +16,14 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
             window->SetDialogueText("Your sheep will always follow you.\nTry to keep track of all of them.", 75);
         else if (id == 5 && triggerID == 2)
             window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
+        else if (id == 9 && triggerID == 1)
+            window->SetDialogueText("You can push crates around by walking\ninto them. Crates, like you and your sheep,weigh down pressure plates.", 80);
+        else if (id == 9 && triggerID == 2)
+            window->SetDialogueText("Crates cannot be pushed off of surfaces.", 50);
+        else if (id == 11 && triggerID == 1)
+            window->SetDialogueText("These torches are covered in strange\nglyphs, but you sense they might be\nrelated to the nearby ruins.", 125);
+        else if (id == 11 && triggerID ==2)
+            window->SetDialogueText("The glyphs on the door are from an unknown\nand ancient language.", 75);
     }
 }
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
@@ -37,7 +45,7 @@ void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* ma
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 
     // On starting area, if the player has not done so yet, instruct them on how to move
-    if (map->GetMapID() == 5 && map->Triggers[3] == false) {
+    if (map->GetMapID() == 5 && (map->Triggers[3] == false || (entities[0] && entities[0]->Paused == false))) {
         map->Triggers[3] == true;
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);

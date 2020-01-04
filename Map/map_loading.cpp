@@ -104,9 +104,10 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'T': tileID = 4; break;    //Tree
                 case 'R': tileID = 5; break;    //Rock
                 case 'P': tileID = 6; break;    //Pillar
-                case 'e': tileID = 7; break;    //Empty Puzzle Peace
+                case 'e': tileID = 7; break;    //Empty Puzzle Piece
                 case 'p': tileID = 8; break;    //Pressure Plate
                 case 'F': tileID = 9; break;    //Fake Wall
+                case 'E': tileID = 10; break;   //Empty Tile (black)
 
                 // Map Triggers
                 case '1': tileID = -1; break;   //Trigger 1
@@ -115,13 +116,17 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case '4': tileID = -4; break;   //Trigger 4 - Note: no debounce
 
                 // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
-                case 'h':
+                case 'c':       // Crate (with Empty Puzzle Piece tile beneath)
+                    tileID = 7;
+                case 'h':       // Wolf (or Hound)
                     SpawnsEntity = true;
             }
             if (SpawnsEntity) {
                 Entity* entity;
                 if (charID == 'h')
                     entity = new Wolf(x, y);
+                else if (charID == 'c')
+                    entity = new Crate(x, y);
 
                 if (entity) {
                     entity->archivable = true;

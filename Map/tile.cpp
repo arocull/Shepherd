@@ -18,6 +18,7 @@ void SetTileID(struct Tile* tile, int newID) {
         case 4:     //Tree
         case 5:     //Rock
         case 6:     //Pillar
+        case 10:    //Empty Tile
             tile->solid = true;
             break;
         case 2:     //Water

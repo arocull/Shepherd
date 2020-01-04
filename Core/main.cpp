@@ -82,6 +82,10 @@ int main(int argc, char **argv) {
     world[2][1] = GenerateMapFromFile("Map/Maps/Desert/Desert8");
     world[2][0] = GenerateMapFromFile("Map/Maps/Desert/Desert9");
 
+    world[3][2] = GenerateMapFromFile("Map/Maps/Desert/Desert10");
+    world[3][1] = GenerateMapFromFile("Map/Maps/Desert/Desert11");
+    world[3][0] = GenerateMapFromFile("Map/Maps/Desert/Desert10");
+
     int worldX = 1;
     int worldY = 1;
     int currentWorldX = worldX;
@@ -207,10 +211,14 @@ int main(int argc, char **argv) {
 
 
 
-            // Tick Entities
+            // Tick Entities and Tally Pressure Plates
+            currentLevel->PressurePlatesPressed = 0;
             for (int i = 0; i < MaxEntities; i++) {
                 if (!levelEntities[i] || levelEntities[i]->Paused) continue;   //Skip checks if this is a nullpointer or paused
                 Entity* a = levelEntities[i];
+
+                if (currentLevel->GetTileID(a->x, a->y) == 8)
+                    currentLevel->PressurePlatesPressed++;
 
                 if (a->GetID() == 3) {      //Fireball, move in a straight line
                     Fireball* fireball = dynamic_cast<Fireball*>(a);
