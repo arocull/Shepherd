@@ -21,7 +21,7 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         else if (id == 9 && triggerID == 2)
             window->SetDialogueText("Crates cannot be pushed off of surfaces.", 50);
         else if (id == 11 && triggerID == 1)
-            window->SetDialogueText("These torches are covered in strange\nglyphs, but you sense they might be\nrelated to the nearby ruins.", 125);
+            window->SetDialogueText("These torches are covered in odd glyphs,\nbut you sense they might be related\nto the nearby ruins.", 125);
         else if (id == 11 && triggerID ==2)
             window->SetDialogueText("The glyphs on the door are from an unknown\nand ancient language.", 75);
     }
@@ -51,6 +51,16 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolume(0.2f, 2.5f);
     }
+}
+void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
+    if (map->GetMapID() == 5 && (entities[0] && !entities[0]->Paused))
+        window->SetDialogueText("A hungry sheep bleats timidly. You wonder\nworriedly on when you will be able to\nfeed them again.", 100);
+    else if (map->GetMapID() == 8)
+        window->SetDialogueText("Looking forward, a pyramid looms over you.\nBehind it are some mountains, hopefully\nwith greener pastures on the other side.", 100);
+    else if (map->GetMapID() == 9)
+        window->SetDialogueText("Crates can be pushed by moving into them.", 100);
+    else if (map->GetMapID() == 11)
+        window->SetDialogueText("The pyramid entrance is somewhat ominous,\nand you sense a faint, supernatural presence.", 100);
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 

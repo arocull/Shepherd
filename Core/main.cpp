@@ -147,9 +147,15 @@ int main(int argc, char **argv) {
 
         // Game Logic
         GameTick+=DeltaTime*TickRate;
-        if (GameTick >= 1) {
+        if (GameTick <= 0.5f && Move_QueueClear)    // Prevent any 'sliding'
+            Movement_Clear();
+        else if (GameTick >= 1) {
             ticks++;
             window.LogTick();
+
+            player->ticksIdled++;
+            if (player->ticksIdled == TicksUntilIdle)
+                Trigger_Idled(&window, &soundService, currentLevel, levelEntities);
 
             if (!player->Paused) {
                 player->animation = 0;
@@ -206,6 +212,7 @@ int main(int argc, char **argv) {
                     Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
                     player->SwingAttack(levelEntities, particles);
                 }
+                player->ticksIdled = 0;
             } else
                 MoveFireballQueued = false;
 

@@ -116,6 +116,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
     obj->lastX = dx;
     obj->lastY = dy;
     obj->animation = 1;     //Set animation to walking
+    obj->ticksIdled = 0;
 
     if (desiredX >= MapWidth && *worldX+1 <= WorldWidth-1 && HasAllSheep(entities, obj)) {
         *worldX = *worldX+1;

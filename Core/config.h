@@ -18,8 +18,6 @@
 #define MaxEntitiesStoreable 10
 // Maximum number of particles that can be active at a time
 #define MaxParticles 10
-// Maximum number of sounds that can be playing at a time
-//#define MaxSounds 10
 // Amount of sheep the player must care for
 #define MaxSheep 5
 
@@ -28,6 +26,9 @@
 
 // How many times a second the game ticks; essentially sets "speed" of gameplay
 #define TickRate 8
+// How many ticks can the player be idle before they are considered "idle?"
+// - Note: TicksUntilIdle / TickRate = x seconds idle
+#define TicksUntilIdle 112
 
 
 
@@ -35,4 +36,5 @@
 
 // Do we want to test a breakpoint without spawning sheep?
 #define DEBUG_RequireSheep true
+// Set to true if you want to disable playing audio via SoundService
 #define DEBUG_AudioDisabled true

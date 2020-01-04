@@ -19,6 +19,9 @@ void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* ma
 // Triggered whenever the player swings their staff--Allows unique functionality for specific maps and helps with tutorials
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 
+// Triggered whenever the player idles for TicksUntilIdle amount of ticks
+void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
+
 // Triggered whenever a given area is loaded
 // Note: Only triggered when the leveal is manually navigated to by player
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);

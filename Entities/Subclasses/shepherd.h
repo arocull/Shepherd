@@ -19,6 +19,8 @@ class Shepherd : public Entity {
         int lastX = 0;
         int lastY = 0;
 
+        int ticksIdled = 0;
+
         // Causes Shepherd to sling a fireball; based off last direction they moved
         void SlingFireball(Entity** entities, Particle* particles);
 
