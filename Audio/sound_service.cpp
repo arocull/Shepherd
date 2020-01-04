@@ -37,7 +37,7 @@ void SoundService::FadeVolume(float desired, float time) {
 
 
 SDL_AudioSpec* SoundService::PlaySound(char* FilePath) {
-    if (PlayingAudio == true)
+    if (PlayingAudio == true || DEBUG_AudioDisabled)
         return nullptr;
     else {
         currentSound = LoadSound(FilePath);
@@ -78,6 +78,10 @@ void SoundService::StopSound(SDL_AudioSpec* sound) {
 	free(data);
 
     PlayingAudio = false;
+}
+void SoundService::StopAllSounds() {
+    if (PlayingAudio)
+        StopSound(&currentSound);
 }
 
 
