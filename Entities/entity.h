@@ -34,10 +34,14 @@ class Entity {
         bool Flipped = false;
         // True if object is on fire
         bool HasFire = false;
+        // True if object has frostflame
+        bool HasFrost = false;
         // True if we do not want this entity's default AI to tick
         bool Paused = false;
         // Do we want this object to cause collisions?
         bool Solid = true;
+        // Is this object ontop of a pressure plate?
+        bool OnPressurePlate = false;
 
         // Current animation playing--0 is always idle, animations are defined per-object inside the RenderWindow class
         int animation = 0;

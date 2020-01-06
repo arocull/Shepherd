@@ -5,7 +5,10 @@
 #include "mathutil.h"
 
 #include "Core/renderwindow.h"
+
 #include "Audio/sound_service.h"
+
+#include "Entities/particle.h"
 
 #include "Map/map.h"
 #include "Entities/entity.h"
@@ -22,6 +25,15 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
 // Triggered whenever the player idles for TicksUntilIdle amount of ticks
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 
+// Triggered whenever the pressure plate states of a level changes, a torch is lit or extinguished, or a lever is flipped
+void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]);
+
 // Triggered whenever a given area is loaded
-// Note: Only triggered when the leveal is manually navigated to by player
-void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
+// Allows access to whole world to check for other puzzles being solved
+// Note: Only triggered when the level is manually navigated to by the player
+void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]);
+
+
+
+// Checks to see if all crates within a level are ontop of pressure plates (might not be useable for more unique crate puzzles)
+bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfEntities = MaxEntities);

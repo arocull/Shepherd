@@ -23,6 +23,7 @@ class Map {
         void SetMapBiome(char b);
         char GetMapBiome();
 
+        void SetTile(int x, int y, int newID);
         int GetTileID(int x, int y);
         bool IsTileSolid(int x, int y);
         bool IsTileLiquid(int x, int y);

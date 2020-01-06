@@ -17,7 +17,7 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         else if (id == 5 && triggerID == 2)
             window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
         else if (id == 9 && triggerID == 1)
-            window->SetDialogueText("You can push crates around by walking\ninto them. Crates, like you and your sheep,weigh down pressure plates.", 80);
+            window->SetDialogueText("You can push crates around by walking\ninto them. Crates, like you and your sheep,\nweigh down pressure plates.", 80);
         else if (id == 9 && triggerID == 2)
             window->SetDialogueText("Crates cannot be pushed off of surfaces.", 50);
         else if (id == 11 && triggerID == 1)
@@ -56,45 +56,55 @@ void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, E
     if (map->GetMapID() == 5 && (entities[0] && !entities[0]->Paused))
         window->SetDialogueText("A hungry sheep bleats timidly. You wonder\nworriedly on when you will be able to\nfeed them again.", 100);
     else if (map->GetMapID() == 8)
-        window->SetDialogueText("Looking forward, a pyramid looms over you.\nBehind it are some mountains, hopefully\nwith greener pastures on the other side.", 100);
+        window->SetDialogueText("Looking forward, a pyramid looms over you.\nBehind are some mountains, hopefully\nwith greener pastures on the other side.", 100);
     else if (map->GetMapID() == 9)
         window->SetDialogueText("Crates can be pushed by moving into them.", 100);
     else if (map->GetMapID() == 11)
         window->SetDialogueText("The pyramid entrance is somewhat ominous,\nand you sense a faint, supernatural presence.", 100);
 }
-void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
+void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
+    if (map->GetMapID() == 9 && Trigger_Internal_CheckAllCrates(entities, map) && entities[0])
+        ActivateParticle(particles, 2, entities[0]->x, entities[0]->y);
+}
+void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
+    
+    
+    if (map->GetMapID() == 11) {    // Pyramid Gateway
+        int DoorRequirements = 0;
 
+        if (Trigger_Internal_CheckAllCrates(world[2][0]->StoredEntities, world[2][0], MaxEntitiesStoreable)) {
+            map->SetTile(15, 10, 4);
+            DoorRequirements++;
+        } else
+            map->SetTile(15, 10, 6);
+
+        if (DoorRequirements == 4) {    //If all requirements are met, open the door
+            map->FillRectangle(26, 5, 27, 10, 0);
+            map->FillRectangle(27, 6, 28, 9, 0);
+        }
+    }
 }
 
 
 
+
+bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfEntities) {
+    for (int i = 0; i < NumberOfEntities; i++) {
+        if (entities[i] && entities[i]->GetID() == 5 && map->GetTileID(entities[i]->x, entities[i]->y) != 8)
+            return false;
+    }
+
+    return true;
+}
+
 /* Tutorial Triggers
-        if (id == 0 && triggerID == 1)
-            window->SetDialogueText("Your sheep will follow you around as you\nmove. Try to keep track of all of them.", 75);
-        else if (id == 0 && triggerID == 2)
-            window->SetDialogueText("You need all of your sheep gathered nearby\nbefore you can exit an area.", 75);
-
-        else if (id == 1 && triggerID == 1)
-            window->SetDialogueText("You can singal for your sheep to rest \n(spacebar) while near them. You can also\nre-rally them(spacebar again).", 75);
-
         // Sleeping Wolf Area
-        else if (id == 4 && triggerID == 4) {       // Force all wolves in map to sleep
+        if (id == 4 && triggerID == 4) {       // Force all wolves in map to sleep
             for (int i = 0; i < MaxEntities; i++) {
                 if (entities[i] && entities[i]->GetID() == 4) {
                     entities[i]->Paused = true;
                     entities[i]->animation = 3;
                 }
             }
-        } else if (id == 4 && triggerID == 1)
-            window->SetDialogueText("Careful around that wolf...!\nWolves like to eat sheep!");
-        else if (id == 4 && triggerID == 2)
-            window->SetDialogueText("It seems to be sleeping...\nYou can deal with it with a swift swing\nor two of your staff (spacebar).",100);
-
-        // Wolf Ambush Area
-        else if (id == 5 && triggerID == 1)
-            window->SetDialogueText("Ambush!\nProtect your sheep!");
-
-        // Tutorial End
-        else if (id == 8 && triggerID == 1)
-            window->SetDialogueText("Congratulations on a job well done.\nTutorial complete!",100);
+        }
 */

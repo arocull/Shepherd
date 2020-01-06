@@ -190,7 +190,7 @@ int main(int argc, char **argv) {
                 currentWorldY = worldY;
                 StopParticles(particles);
                 currentLevel = LoadLevel(world, currentLevel, levelEntities, worldX, worldY, player->x, player->y);
-                Trigger_LevelLoaded(&window, &soundService, currentLevel, levelEntities);
+                Trigger_LevelLoaded(&window, &soundService, world, currentLevel, levelEntities);
             }
 
 
@@ -219,13 +219,25 @@ int main(int argc, char **argv) {
 
 
             // Tick Entities and Tally Pressure Plates
+            bool PressurePlatesChanged = false;
             currentLevel->PressurePlatesPressed = 0;
             for (int i = 0; i < MaxEntities; i++) {
                 if (!levelEntities[i] || levelEntities[i]->Paused) continue;   //Skip checks if this is a nullpointer or paused
                 Entity* a = levelEntities[i];
 
-                if (currentLevel->GetTileID(a->x, a->y) == 8)
+                if (currentLevel->GetTileID(a->x, a->y) == 8) {
+                    if (!a->OnPressurePlate) {
+                        a->OnPressurePlate = true;
+                        Particle* clickEffect = ActivateParticle(particles, 3, a->x, a->y);
+                        clickEffect->maxLifetime = 0.1f;
+
+                        PressurePlatesChanged = true;
+                    }
                     currentLevel->PressurePlatesPressed++;
+                } else if (a->OnPressurePlate) {
+                    a->OnPressurePlate = false;
+                    PressurePlatesChanged = true;
+                }
 
                 if (a->GetID() == 3) {      //Fireball, move in a straight line
                     Fireball* fireball = dynamic_cast<Fireball*>(a);
@@ -294,6 +306,9 @@ int main(int argc, char **argv) {
             // Clean Entity List
             CleanEntities(levelEntities);
 
+            if (PressurePlatesChanged)
+                Trigger_PuzzleInput(&window, &soundService, particles, currentLevel, levelEntities);
+
 
 
             GameTick = 0;
@@ -313,7 +328,13 @@ int main(int argc, char **argv) {
         // Fill background based off of biome
         switch (currentLevel->GetMapBiome()) {
             case 'D':   // Desert
-                window.FillViewportBackground(220, 220, 100);
+                window.FillViewportBackground(210, 200, 80);
+                break;
+            case 'M':   // Mountain
+                window.FillViewportBackground(20, 20, 20);
+                break;
+            case 'S':   // Snowy
+                window.FillViewportBackground(200, 210, 220);
                 break;
             default:    // Default / Forest
                 window.FillViewportBackground(10, 60, 20);

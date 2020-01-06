@@ -341,11 +341,19 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     base.x = (int) (posX+0.5f)*tileRes + offsetX;
     base.y = (int) (posY+0.5f)*tileRes + offsetY;
 
-    if (id == 1) {
+    if (id == 1) {              // Swing
         SDL_SetRenderDrawColor(canvas, 255, 255, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = tileRes*2.75;
-        base.h = tileRes*2.75;
-    } else if (id == 2) {
+        base.h = base.w;
+    } else if (id == 2) {       // Puzzle Solved Click
+        SDL_SetRenderDrawColor(canvas, 190, 255, 200, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
+        base.w = tileRes*3*sqrt(percentage);
+        base.h = base.w;
+    } else if (id == 3) {       // Pressure Plate Click
+        SDL_SetRenderDrawColor(canvas, 255, 255, 100, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
+        base.w = tileRes*1.5*percentage;
+        base.h = base.w;
+    } else if (id == 4) {       // Fire
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, 200);
         base.w/=3;
         base.h/=3;

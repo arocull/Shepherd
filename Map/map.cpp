@@ -36,7 +36,10 @@ char Map::GetMapBiome() {
 }
 
 
-
+// Sets the tile properties of the tile at X, Y based off the given ID
+void Map::SetTile(int x, int y, int newID) {
+    SetTileID(&tiles[x][y], newID);
+}
 // Returns the tile ID of the given tile at X, Y
 int Map::GetTileID(int x, int y) {
     return tiles[x][y].id;
