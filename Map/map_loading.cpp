@@ -119,6 +119,7 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'c':       // Crate (with Empty Puzzle Piece tile beneath)
                     tileID = 7;
                 case 'h':       // Wolf (or Hound)
+                case 't':       // Torch
                     SpawnsEntity = true;
             }
             if (SpawnsEntity) {
@@ -127,6 +128,8 @@ Map* GenerateMapFromFile(const char* filePath) {
                     entity = new Wolf(x, y);
                 else if (charID == 'c')
                     entity = new Crate(x, y);
+                else if (charID == 't')
+                    entity = new Torch(x, y);
 
                 if (entity) {
                     entity->archivable = true;

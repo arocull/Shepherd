@@ -48,8 +48,23 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles) {
                 if (obj->GetID() == 2) {  //If sheep, toggle pause
                     obj->Paused = NewPause;
                     obj->animation = 1;
-                } else if (obj->GetID() == 4)
+                } else if (obj->GetID() == 4)   //If wolf, deal damage
                     obj->TakeDamage(1, this);
+                else if (obj->GetID() == 6) {
+                    Torch* t = dynamic_cast<Torch*>(obj);
+                    if (t) {
+                        if (!HasFire && !HasFrost && t->FireUsable) {
+                            HasFire = obj->HasFire;
+                            HasFrost = obj->HasFrost;
+                            t->Extinguish();
+                        } else if (!t->Extinguishable && (HasFire || HasFrost)) {
+                            t->HasFire = HasFire;
+                            t->HasFrost = HasFrost;
+                        }
+                        
+                        t->UpdateAnimationData();
+                    }
+                }
             }
         }
     }

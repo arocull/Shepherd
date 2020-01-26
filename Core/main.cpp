@@ -201,6 +201,13 @@ int main(int argc, char **argv) {
             else if (standingTile < 0)
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
 
+            if (player->HasFire)
+                player->animationMetadata = 1;
+            else if (player->HasFrost)
+                player->animationMetadata = 2;
+            else
+                player->animationMetadata = 0;
+
 
             // Toss Fireball
             if (MoveFireballQueued) {
@@ -224,6 +231,9 @@ int main(int argc, char **argv) {
             for (int i = 0; i < MaxEntities; i++) {
                 if (!levelEntities[i] || levelEntities[i]->Paused) continue;   //Skip checks if this is a nullpointer or paused
                 Entity* a = levelEntities[i];
+
+                if (a->HasFire && a->HasFrost)
+                    a->HasFrost = false;
 
                 if (currentLevel->GetTileID(a->x, a->y) == 8) {
                     if (!a->OnPressurePlate) {

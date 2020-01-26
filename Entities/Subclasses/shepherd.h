@@ -4,6 +4,7 @@
 
 #include "Entities/entity.h"
 #include "Entities/Subclasses/fireball.h"
+#include "Entities/Subclasses/torch.h"
 #include "Entities/entity_management.h"
 
 #include "Entities/particle.h"

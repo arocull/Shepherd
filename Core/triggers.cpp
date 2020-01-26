@@ -72,11 +72,25 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
     if (map->GetMapID() == 11) {    // Pyramid Gateway
         int DoorRequirements = 0;
 
-        if (Trigger_Internal_CheckAllCrates(world[2][0]->StoredEntities, world[2][0], MaxEntitiesStoreable)) {
-            map->SetTile(15, 10, 4);
-            DoorRequirements++;
-        } else
-            map->SetTile(15, 10, 6);
+        Entity* torch4Obj = GetEntityAtLocation(entities, 15, 10);
+        
+
+        if (torch4Obj) {
+            if (Trigger_Internal_CheckAllCrates(world[2][0]->StoredEntities, world[2][0], MaxEntitiesStoreable)) {
+                torch4Obj->HasFire = true;
+                DoorRequirements++;
+            } else
+                torch4Obj->HasFire = false;
+
+            Torch* torch4 = dynamic_cast<Torch*>(torch4Obj);
+            if (torch4) {
+                torch4->Extinguishable = false;
+                torch4->FireUsable = false;
+                torch4->UpdateAnimationData();
+            }
+        }
+
+
 
         if (DoorRequirements == 4) {    //If all requirements are met, open the door
             map->FillRectangle(26, 5, 27, 10, 0);

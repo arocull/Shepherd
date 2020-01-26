@@ -7,11 +7,13 @@
 #include "Core/renderwindow.h"
 
 #include "Audio/sound_service.h"
-
-#include "Entities/particle.h"
+#include "Entities/entity_management.h"
 
 #include "Map/map.h"
+
+#include "Entities/particle.h"
 #include "Entities/entity.h"
+#include "Entities/Subclasses/torch.h"
 
 // Triggered whenever the player steps on a trigger tile or a pressure plate is pressed
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
