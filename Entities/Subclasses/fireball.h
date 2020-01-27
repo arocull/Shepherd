@@ -1,8 +1,12 @@
 #pragma once
 
-#include "entity.h"
+#include "Core/config.h"
 
-#include "config.h"
+#include "Entities/entity.h"
+#include "Entities/Subclasses/torch.h"
+#include "Entities/particle.h"
+#include "Entities/entity_management.h"
+
 
 class Fireball : public Entity {
     public:
@@ -11,5 +15,5 @@ class Fireball : public Entity {
         int speedX;
         int speedY;
 
-        int fireType;
+        void Burst(Entity** entities, Particle* particles);
 };

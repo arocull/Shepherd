@@ -389,7 +389,11 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     } else if (id == 4) {       // Fire
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, 200);
         base.w/=3;
-        base.h/=3;
+        base.h = base.w;
+    } else if (id == 5) {       // Fire Burst
+        SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, (int) 200*(1.0f-percentage));
+        base.w = (int) tileRes*2.75*(sin(PI*percentage)+1.0)/2;
+        base.h = base.w;
     }
 
     base.x-=(base.w-tileRes)/2;

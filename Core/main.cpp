@@ -32,6 +32,7 @@ $> run
 #include "Entities/entity.h"
 #include "Entities/Subclasses/shepherd.h"
 #include "Entities/Subclasses/fireball.h"
+#include "Entities/Subclasses/torch.h"
 
 #include "Entities/particle.h"
 
@@ -257,10 +258,10 @@ int main(int argc, char **argv) {
                         int fY = a->y;
                         Movement_ShiftEntity(currentLevel, levelEntities, a, fireball->speedX, fireball->speedY);
 
-                        // Set things on fire
+                        // Set things on fire that the fireball is ontop of
 
                         if (a->x == fX && a->y == fY) {     // Destroy fireball if did not move
-                            RemoveEntity(levelEntities, fireball);
+                            fireball->Burst(levelEntities, particles);
                             continue;
                         }
                     }

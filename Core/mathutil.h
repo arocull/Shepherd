@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#define PI 3.14158265
+
 // Math Functions
 
 template <typename T> int sgn(T val);

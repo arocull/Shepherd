@@ -31,7 +31,7 @@ bool Movement_CheckCollision(Map* world, Entity* entities[MaxEntities], int x, i
 bool Movement_CheckCollisionOnTiles(Map* world, Entity* entities[MaxEntities], int x, int y, int tileID);
 
 
-// Push entity distance X and Y; stops upon running into wall or foreign entity
+// Push entity distance X and Y; stops upon running into wall or foreign entity 
 void Movement_ShiftEntity(Map* world, Entity* entities[MaxEntities], Entity* obj, int dx, int dy);
 
 // Push entity distance X and Y; refuses to go anywhere but designated tile ID or pressure plates; stops upon running into solid entities
