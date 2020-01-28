@@ -39,7 +39,7 @@ void RemoveEntity(Entity* entities[MaxEntities], Entity* delEntity) {
 void CleanEntities(Entity* entities[MaxEntities]) {
     for (int i = MaxEntities-1; i > 0; i--) {
         if (entities[i]) {
-            if (entities[i]->GetHealth() <= 0) {
+            if (entities[i]->GetHealth() <= 0 && entities[i]->GetID() != 1) {
                 delete entities[i];
                 entities[i] = nullptr;
 

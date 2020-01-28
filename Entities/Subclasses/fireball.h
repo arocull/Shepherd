@@ -3,8 +3,12 @@
 #include "Core/config.h"
 
 #include "Entities/entity.h"
+
 #include "Entities/Subclasses/torch.h"
+#include "Entities/Subclasses/crate.h"
+
 #include "Entities/particle.h"
+
 #include "Entities/entity_management.h"
 
 

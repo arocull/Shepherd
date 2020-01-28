@@ -10,6 +10,10 @@ Torch::Torch(int xPos, int yPos) {
     HasFire = true;
     UpdateAnimationData();
 }
+void Torch::Tick() {
+    UpdateAnimationData();
+}
+
 
 void Torch::UpdateAnimationData() {
     if (HasFire)

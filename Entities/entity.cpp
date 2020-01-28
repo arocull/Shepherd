@@ -19,6 +19,9 @@ int Entity::GetHealth() {
 void Entity::Unload() {
     
 }
+void Entity::Tick() {
+
+}
 bool Entity::TakeDamage(int dmgAmount, Entity* attacker) {
     Health-=dmgAmount;
 

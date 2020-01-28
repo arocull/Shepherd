@@ -15,11 +15,13 @@ class Entity {
 
     public:
         // Returns the entity ID
-        virtual int GetID();
+        int GetID();
         // Returns the amount of health the entity has
-        virtual int GetHealth();
+        int GetHealth();
         // Call this function when unloading the entity (storing into map)
         virtual void Unload();
+        // Call this function every tick (handles internal entity functions)
+        virtual void Tick();
 
         // Called when the entity takes damage; returns true if killed
         virtual bool TakeDamage(int dmgAmount, Entity* attacker);

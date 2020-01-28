@@ -217,8 +217,8 @@ int main(int argc, char **argv) {
                 if (player->HasFire) {          // Sling Fireball
                     player->SlingFireball(levelEntities, particles);
                 } else {        // Rally Sheep / Swing Attack
-                    Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
                     player->SwingAttack(levelEntities, particles);
+                    Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
                 }
                 player->ticksIdled = 0;
             } else
@@ -233,6 +233,7 @@ int main(int argc, char **argv) {
                 if (!levelEntities[i] || levelEntities[i]->Paused) continue;   //Skip checks if this is a nullpointer or paused
                 Entity* a = levelEntities[i];
 
+                a->Tick();
                 if (a->HasFire && a->HasFrost)
                     a->HasFrost = false;
 

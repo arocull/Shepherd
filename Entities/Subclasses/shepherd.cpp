@@ -61,8 +61,6 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles) {
                             t->HasFire = HasFire;
                             t->HasFrost = HasFrost;
                         }
-                        
-                        t->UpdateAnimationData();
                     }
                 }
             }

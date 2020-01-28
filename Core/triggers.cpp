@@ -16,6 +16,10 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
             window->SetDialogueText("Your sheep will always follow you.\nTry to keep track of all of them.", 75);
         else if (id == 5 && triggerID == 2)
             window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
+        else if (id == 7 && triggerID == 1)
+            window->SetDialogueText("Swing your staff while near torches\nto pick up their flames.", 75);
+        else if (id == 7 && triggerID == 4 && entities[0])
+            entities[0]->HasFire = false;
         else if (id == 9 && triggerID == 1)
             window->SetDialogueText("You can push crates around by walking\ninto them. Crates, like you and your sheep,\nweigh down pressure plates.", 80);
         else if (id == 9 && triggerID == 2)
@@ -50,7 +54,8 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolume(0.2f, 2.5f);
-    }
+    } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
+        window->SetDialogueText("Walk towards the unlit torch and swing\nyour staff to toss a fireball. If you\nmiss, simply pick up the flame again.", 125);
 }
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     if (map->GetMapID() == 5 && (entities[0] && !entities[0]->Paused))
@@ -67,14 +72,44 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         ActivateParticle(particles, 2, entities[0]->x, entities[0]->y);
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
-    
-    
-    if (map->GetMapID() == 11) {    // Pyramid Gateway
+    map->TimesLoaded++;
+
+    if (map->GetMapID() == 7 && map->TimesLoaded <= 1) {
+        Entity* torch1 = GetEntityAtLocation(entities, 8, 4);
+        Entity* torch2 = GetEntityAtLocation(entities, 35, 4);
+
+        if (torch1) {
+            Torch* t1 = dynamic_cast<Torch*>(torch1);
+            if (t1)
+                t1->Extinguishable = false;
+        }
+        if (torch2) {
+            Torch* t2 = dynamic_cast<Torch*>(torch2);
+            if (t2)
+                t2->HasFire = false;
+        }
+
+
+    } else if (map->GetMapID() == 11) {    // Pyramid Gateway
         int DoorRequirements = 0;
 
+        Entity* torch3Obj = GetEntityAtLocation(entities, 15, 4);
         Entity* torch4Obj = GetEntityAtLocation(entities, 15, 10);
         
 
+        if (torch3Obj) {
+            if (GetEntityAtLocation(world[2][2]->StoredEntities, 35, 4)->HasFire) {
+                torch3Obj->HasFire = true;
+                DoorRequirements++;
+            } else
+                torch3Obj->HasFire = false;
+            
+            Torch* torch3 = dynamic_cast<Torch*>(torch3Obj);
+            if (torch3) {
+                torch3->Extinguishable = false;
+                torch3->FireUsable = false;
+            }
+        }
         if (torch4Obj) {
             if (Trigger_Internal_CheckAllCrates(world[2][0]->StoredEntities, world[2][0], MaxEntitiesStoreable)) {
                 torch4Obj->HasFire = true;
@@ -86,7 +121,6 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
             if (torch4) {
                 torch4->Extinguishable = false;
                 torch4->FireUsable = false;
-                torch4->UpdateAnimationData();
             }
         }
 

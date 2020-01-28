@@ -8,6 +8,8 @@ class Torch : public Entity {
     public:
         Torch(int xPos, int yPos);
 
+        virtual void Tick() override;
+
         // Do we want the torch to have a glowing effect (gives 'activated' sort of feel)?
         bool glow = false;
 
@@ -18,6 +20,7 @@ class Torch : public Entity {
 
         // Updates animation data for whenever torch is manipulated.
         void UpdateAnimationData();
+        
         // Extinguishes the torch (both fire and frost)
         // - Only works if the torch can be extinguished (unless overriden)
         void Extinguish(bool Override = false);
