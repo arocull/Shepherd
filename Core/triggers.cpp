@@ -12,7 +12,9 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
 
         
         // Staring Area
-        if (id == 5 && triggerID == 1)
+        if (id == 1 && triggerID == 1)
+            window->SetDialogueText("Pressure plates can be weighed down\nby standing on them.");
+        else if (id == 5 && triggerID == 1)
             window->SetDialogueText("Your sheep will always follow you.\nTry to keep track of all of them.", 75);
         else if (id == 5 && triggerID == 2)
             window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
@@ -26,7 +28,7 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
             window->SetDialogueText("Crates cannot be pushed off of surfaces.", 50);
         else if (id == 11 && triggerID == 1)
             window->SetDialogueText("These torches are covered in odd glyphs,\nbut you sense they might be related\nto the nearby ruins.", 125);
-        else if (id == 11 && triggerID ==2)
+        else if (id == 11 && triggerID == 2)
             window->SetDialogueText("The glyphs on the door are from an unknown\nand ancient language.", 75);
     }
 }
@@ -68,8 +70,24 @@ void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, E
         window->SetDialogueText("The pyramid entrance is somewhat ominous,\nand you sense a faint, supernatural presence.", 100);
 }
 void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
-    if (map->GetMapID() == 9 && Trigger_Internal_CheckAllCrates(entities, map) && entities[0])
-        ActivateParticle(particles, 2, entities[0]->x, entities[0]->y);
+    bool PuzzleComplete = false;
+
+    if (map->GetMapID() == 1 && map->PressurePlatesPressed == 1 && !map->Triggers[2])
+        window->SetDialogueText("Perhaps a glance at your surroundings may\nhelp provide a solution.", 75);
+    else if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2 && !map->Triggers[2]) {
+        PuzzleComplete = true;
+        map->Triggers[2] = true;
+    } else if (map->GetMapID() == 1 && GetEntityAtLocation(entities, 35, 4) && GetEntityAtLocation(entities, 35, 4)->HasFire)
+        PuzzleComplete = true;
+    else if (map->GetMapID() == 9 && Trigger_Internal_CheckAllCrates(entities, map, MaxEntities) && entities[0])
+        PuzzleComplete = true;
+    
+    if (PuzzleComplete == true) {
+        Particle* a = ActivateParticle(particles, 2, entities[0]->x, entities[0]->y);
+        a->maxLifetime = 0.5f;
+    }
+
+    //printf("Puzzle input changed, %i plates pressed, %d solved\n", map->PressurePlatesPressed, PuzzleComplete);
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
     map->TimesLoaded++;
@@ -93,10 +111,33 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
     } else if (map->GetMapID() == 11) {    // Pyramid Gateway
         int DoorRequirements = 0;
 
+        Entity* torch1Obj = GetEntityAtLocation(entities, 9, 4);
+        Entity* torch2Obj = GetEntityAtLocation(entities, 9, 10);
         Entity* torch3Obj = GetEntityAtLocation(entities, 15, 4);
         Entity* torch4Obj = GetEntityAtLocation(entities, 15, 10);
         
 
+        if (torch1Obj) {
+            if (world[0][2]->Triggers[2]) {
+                torch1Obj->HasFire = true;
+                DoorRequirements++;
+            } else
+                torch1Obj->HasFire = false;
+            
+            Torch* torch1 = dynamic_cast<Torch*>(torch1Obj);
+            if (torch1) {
+                torch1->Extinguishable = false;
+                torch1->FireUsable = false;
+            }
+        }
+        if (torch2Obj) {
+            
+            Torch* torch2 = dynamic_cast<Torch*>(torch2Obj);
+            if (torch2) {
+                torch2->Extinguishable = false;
+                torch2->FireUsable = false;
+            }
+        }
         if (torch3Obj) {
             if (GetEntityAtLocation(world[2][2]->StoredEntities, 35, 4)->HasFire) {
                 torch3Obj->HasFire = true;

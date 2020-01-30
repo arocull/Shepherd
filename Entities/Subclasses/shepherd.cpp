@@ -10,6 +10,17 @@ Shepherd::Shepherd(int spawnX, int spawnY) {
     y = spawnY;
 }
 
+
+void Shepherd::Tick() {
+    if (HasFire)
+        animationMetadata = 1;
+    else if (HasFrost)
+        animationMetadata = 2;
+    else
+        animationMetadata = 0;
+}
+
+
 void Shepherd::SlingFireball(Entity** entities, Particle* particles) {
     HasFire = false;
     animation = 2;      //Fireball Toss animation

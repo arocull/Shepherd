@@ -155,10 +155,10 @@ int main(int argc, char **argv) {
             window.LogTick();
 
             player->ticksIdled++;
-            if (player->ticksIdled == TicksUntilIdle)
+            if (player->ticksIdled == TicksUntilIdle)   //If the player sits still, feed them hints or story
                 Trigger_Idled(&window, &soundService, currentLevel, levelEntities);
 
-            if (!player->Paused) {
+            if (!player->Paused) {      //If they player is not paused, let them move if input is given
                 player->animation = 0;
 
                 if (MoveUp)
@@ -202,14 +202,6 @@ int main(int argc, char **argv) {
             else if (standingTile < 0)
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
 
-            if (player->HasFire)
-                player->animationMetadata = 1;
-            else if (player->HasFrost)
-                player->animationMetadata = 2;
-            else
-                player->animationMetadata = 0;
-
-
             // Toss Fireball
             if (MoveFireballQueued) {
                 MoveFireballQueued = false;
@@ -230,7 +222,7 @@ int main(int argc, char **argv) {
             bool PressurePlatesChanged = false;
             currentLevel->PressurePlatesPressed = 0;
             for (int i = 0; i < MaxEntities; i++) {
-                if (!levelEntities[i] || levelEntities[i]->Paused) continue;   //Skip checks if this is a nullpointer or paused
+                if (!levelEntities[i]) continue;   //Skip checks if this is a nullpointer or paused
                 Entity* a = levelEntities[i];
 
                 a->Tick();
@@ -251,6 +243,10 @@ int main(int argc, char **argv) {
                     PressurePlatesChanged = true;
                 }
 
+                if (a->Paused) continue;
+
+                
+
                 if (a->GetID() == 3) {      //Fireball, move in a straight line
                     Fireball* fireball = dynamic_cast<Fireball*>(a);
 
@@ -268,7 +264,7 @@ int main(int argc, char **argv) {
                     }
 
 
-                } else if (a->GetID() == 2 && (ticks % 2) == 0) {   //Sheep AI; follow player every other tick
+                } else if (a->GetID() == 2/* && (ticks % 2) == 0*/) {   //Sheep AI; follow player every other tick
                     a->animation = 0;
 
                     int dirToPlayerX = (player->x - a->x);
