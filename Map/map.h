@@ -13,11 +13,12 @@ class Map {
     public:
         Map();
 
-        struct Tile** tiles;
-        Entity** StoredEntities;
-        bool Triggers[3];
-        int PressurePlatesPressed = 0;
-        bool HasLoaded = false;
+        struct Tile** tiles;            // 2D Array of map tiles
+        Entity** StoredEntities;        // Unloaded entities stored within the map data
+        bool Triggers[3];               // Booleans for trigger variables
+        int PressurePlatesPressed = 0;  // The number of pressure plates currently weighed down at the current frame
+        bool HasLoaded = false;         // Is set to true once a map has been physically loaded
+        bool PuzzleStatus = false;      // Has the puzzle on this level been completed?
 
         void SetMapID(int Identification);
         int GetMapID();
@@ -36,6 +37,6 @@ class Map {
 
     private:
         int EntitiesStored = 0;
-        int id = -1;
-        char biome = 'F';
+        int id = -1;                // Map ID, can be anything--repeats are fine. This is read by triggers to tell what level is what.
+        char biome = 'F';           // What color should we render the background as?
 };

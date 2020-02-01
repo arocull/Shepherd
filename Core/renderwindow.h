@@ -53,6 +53,9 @@ class RenderWindow {
         char* dialogueText = NULL;
         int dialogueTicksLeft = 0;
 
+        int statusBarY;
+        bool statusBarVisible = false;
+
         SDL_Surface* TEXTURESURFACE_PROGRAM_loadscreen;
         SDL_Texture* TEXTURE_PROGRAM_loadscreen;
         SDL_Surface* TEXTURESURFACE_PROGRAM_icon;
@@ -89,15 +92,14 @@ class RenderWindow {
         void DrawTile(int tileX, int tileY, int tileID);
         void DrawEntity(int posX, int posY, int id, bool flip, int animation, int metadata);
         void DrawParticle(float posX, float posY, int id, float percentage);
-
-        void DrawLetter(int posX, int posY, int sizeX, int sizeY, char letter);
-        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start = 0, int end = -1);
         
         void SetDialogueText(char* newText, int ticks = 50);
         char* GetDialogueText();
         void DrawDialogueBox();
         void LoadScreen();
-        
+
+        void DrawStatusBar(int HP, bool PuzzleCompleted);
+        void ToggleStatusBar(bool toggle);
 
         bool IsInitialized();
         void ToggleFullscreen();
@@ -107,4 +109,8 @@ class RenderWindow {
         void LogTick();
 
         void Close();
+    
+    private:
+        void DrawLetter(int posX, int posY, int sizeX, int sizeY, char letter);
+        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start = 0, int end = -1);
 };

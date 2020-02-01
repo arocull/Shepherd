@@ -56,6 +56,7 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolume(0.2f, 2.5f);
+        window->ToggleStatusBar(true);
     } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
         window->SetDialogueText("Walk towards the unlit torch and swing\nyour staff to toss a fireball. If you\nmiss, simply pick up the flame again.", 125);
 }
@@ -85,6 +86,7 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
     if (PuzzleComplete == true) {
         Particle* a = ActivateParticle(particles, 2, entities[0]->x, entities[0]->y);
         a->maxLifetime = 0.5f;
+        map->PuzzleStatus = PuzzleComplete;
     }
 
     //printf("Puzzle input changed, %i plates pressed, %d solved\n", map->PressurePlatesPressed, PuzzleComplete);

@@ -338,6 +338,9 @@ int main(int argc, char **argv) {
             case 'D':   // Desert
                 window.FillViewportBackground(210, 200, 80);
                 break;
+            case 'P':   // Pyramid
+                window.FillViewportBackground(100, 70, 50);
+                break;
             case 'M':   // Mountain
                 window.FillViewportBackground(20, 20, 20);
                 break;
@@ -376,6 +379,7 @@ int main(int argc, char **argv) {
         window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation, player->animationMetadata);
 
         // Draw GUI
+        window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
         window.DrawDialogueBox();
         
         SDL_RenderPresent(window.canvas);

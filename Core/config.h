@@ -11,6 +11,8 @@
 #define DialogueBoxLines 3
 // Amount of space between each line of text in proportion to the total size of the dialogue box
 #define DialogueBoxLineSpacing .05
+// Scale of the top GUI status bar in comparison to the viewport scale
+#define StatusBarScale .05
 
 // Maximum entities that can exist at a time (not counting player)
 #define MaxEntities 25

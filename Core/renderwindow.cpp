@@ -102,12 +102,14 @@ void RenderWindow::UpdateSize() {
         dialogueBoxY = y*DialogueBoxScale;
     else
         dialogueBoxY = 0;
+    
+    statusBarY = y*StatusBarScale;
 
     dialogueBoxLineHeight = dialogueBoxY/DialogueBoxLines - dialogueBoxY*DialogueBoxLineSpacing;
 
-    tileRes = fmin(x/MapWidth, (y - dialogueBoxY)/MapHeight);
+    tileRes = fmin(x/MapWidth, (y - dialogueBoxY - statusBarY)/MapHeight);
     offsetX = (x - MapWidth*tileRes)/2;
-    offsetY = (y - MapHeight*tileRes - dialogueBoxY)/2;
+    offsetY = (y - MapHeight*tileRes - dialogueBoxY - statusBarY)/2 + statusBarY;
     innerWidth = tileRes*MapWidth;
     innerHeight = tileRes*MapHeight;
 }
@@ -480,11 +482,9 @@ char* RenderWindow::GetDialogueText() {
     return dialogueText;
 }
 void RenderWindow::DrawDialogueBox() {
-    SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
-    SDL_RenderDrawLine(canvas,0,offsetY,x,offsetY);
-
     // Top pixel of dialogue box
     int dboxtop = innerHeight + offsetY;
+    SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
     SDL_RenderDrawLine(canvas,0,dboxtop,x,innerHeight+offsetY);
     
 
@@ -503,9 +503,45 @@ void RenderWindow::DrawDialogueBox() {
         dboxtop-=dialogueBoxY*DialogueBoxLineSpacing/2;
     }
 
+    SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
     SDL_RenderDrawLine(canvas,0,dboxtop+dialogueBoxY,x,dboxtop+dialogueBoxY);
 }
 void RenderWindow::LoadScreen() {
     SDL_RenderCopy(canvas, TEXTURE_PROGRAM_loadscreen, NULL, NULL);
     SDL_RenderPresent(canvas);
+}
+
+
+
+
+void RenderWindow::DrawStatusBar(int HP, bool PuzzleCompleted) {
+    if (!statusBarVisible) return;
+
+    SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
+    int top = offsetY-statusBarY;
+    SDL_RenderDrawLine(canvas,0,top,x,top);
+    SDL_RenderDrawLine(canvas,0,offsetY,x,offsetY);
+
+    int pulse = (int) 20 * abs(sin(PI*time));
+    SDL_SetRenderDrawColor(canvas, 50 + pulse, 180 + pulse, 60 + pulse, 0);
+    SDL_Rect healthRect;
+    healthRect.w = (int) statusBarY * 3 * (float) (HP / 3.0f);
+    healthRect.h = statusBarY;
+    healthRect.x = 0;
+    healthRect.y = top;
+    SDL_RenderFillRect(canvas, &healthRect);
+
+    if (PuzzleCompleted) {
+        SDL_SetRenderDrawColor(canvas, 50, 180, 60, 0);
+        SDL_Rect completionRect;
+        completionRect.w = statusBarY;
+        completionRect.h = statusBarY;
+        completionRect.x = x-statusBarY;
+        completionRect.y = top;
+        SDL_RenderFillRect(canvas, &completionRect);
+    }
+}
+void RenderWindow::ToggleStatusBar(bool toggle) {
+    statusBarVisible = toggle;
+    UpdateSize();
 }
