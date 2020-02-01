@@ -60,6 +60,21 @@ Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos) {
 
     return nullptr;
 }
+Entity* GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence) {
+    occurrence--;
+
+    int count = 0;
+    for (int i = 0; i < MaxEntities; i++) {
+        if (entities[i] && entities[i]->GetID()) {
+            if (count == occurrence)
+                return entities[i];
+            
+            count++;
+        }
+    }
+
+    return nullptr;
+}
 
 
 Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos) {

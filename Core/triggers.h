@@ -39,3 +39,6 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
 
 // Checks to see if all crates within a level are ontop of pressure plates (might not be useable for more unique crate puzzles)
 bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfEntities = MaxEntities);
+
+// Shortcut for configuring torches, locks torches by default
+Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable = false, bool useable = false, bool glow = false);

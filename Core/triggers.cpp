@@ -77,9 +77,9 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
     else if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2 && !map->Triggers[2]) {
         PuzzleComplete = true;
         map->Triggers[2] = true;
-    } else if (map->GetMapID() == 1 && GetEntityAtLocation(entities, 35, 4) && GetEntityAtLocation(entities, 35, 4)->HasFire)
+    } else if (map->GetMapID() == 7 && GetEntityAtLocation(entities, 35, 4) && GetEntityAtLocation(entities, 35, 4)->HasFire) {
         PuzzleComplete = true;
-    else if (map->GetMapID() == 9 && Trigger_Internal_CheckAllCrates(entities, map, MaxEntities) && entities[0])
+    } else if (map->GetMapID() == 9 && Trigger_Internal_CheckAllCrates(entities, map, MaxEntities) && entities[0])
         PuzzleComplete = true;
     
     if (PuzzleComplete == true) {
@@ -90,23 +90,14 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
     //printf("Puzzle input changed, %i plates pressed, %d solved\n", map->PressurePlatesPressed, PuzzleComplete);
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
-    map->TimesLoaded++;
 
-    if (map->GetMapID() == 7 && map->TimesLoaded <= 1) {
+    if (map->GetMapID() == 7 && !map->HasLoaded) {
         Entity* torch1 = GetEntityAtLocation(entities, 8, 4);
         Entity* torch2 = GetEntityAtLocation(entities, 35, 4);
 
-        if (torch1) {
-            Torch* t1 = dynamic_cast<Torch*>(torch1);
-            if (t1)
-                t1->Extinguishable = false;
-        }
-        if (torch2) {
-            Torch* t2 = dynamic_cast<Torch*>(torch2);
-            if (t2)
-                t2->HasFire = false;
-        }
-
+        Trigger_Internal_TorchSetup(torch1, false, true, false);
+        if (torch2)
+            torch2->HasFire = false;
 
     } else if (map->GetMapID() == 11) {    // Pyramid Gateway
         int DoorRequirements = 0;
@@ -115,7 +106,11 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
         Entity* torch2Obj = GetEntityAtLocation(entities, 9, 10);
         Entity* torch3Obj = GetEntityAtLocation(entities, 15, 4);
         Entity* torch4Obj = GetEntityAtLocation(entities, 15, 10);
-        
+
+        Trigger_Internal_TorchSetup(torch1Obj);
+        Trigger_Internal_TorchSetup(torch2Obj);
+        Trigger_Internal_TorchSetup(torch3Obj);
+        Trigger_Internal_TorchSetup(torch4Obj);
 
         if (torch1Obj) {
             if (world[0][2]->Triggers[2]) {
@@ -123,33 +118,16 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
                 DoorRequirements++;
             } else
                 torch1Obj->HasFire = false;
-            
-            Torch* torch1 = dynamic_cast<Torch*>(torch1Obj);
-            if (torch1) {
-                torch1->Extinguishable = false;
-                torch1->FireUsable = false;
-            }
         }
         if (torch2Obj) {
             
-            Torch* torch2 = dynamic_cast<Torch*>(torch2Obj);
-            if (torch2) {
-                torch2->Extinguishable = false;
-                torch2->FireUsable = false;
-            }
         }
         if (torch3Obj) {
-            if (GetEntityAtLocation(world[2][2]->StoredEntities, 35, 4)->HasFire) {
+            if (world[2][2]->HasLoaded && GetEntityAtLocation(world[2][2]->StoredEntities, 35, 4)->HasFire) {
                 torch3Obj->HasFire = true;
                 DoorRequirements++;
             } else
                 torch3Obj->HasFire = false;
-            
-            Torch* torch3 = dynamic_cast<Torch*>(torch3Obj);
-            if (torch3) {
-                torch3->Extinguishable = false;
-                torch3->FireUsable = false;
-            }
         }
         if (torch4Obj) {
             if (Trigger_Internal_CheckAllCrates(world[2][0]->StoredEntities, world[2][0], MaxEntitiesStoreable)) {
@@ -157,12 +135,6 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
                 DoorRequirements++;
             } else
                 torch4Obj->HasFire = false;
-
-            Torch* torch4 = dynamic_cast<Torch*>(torch4Obj);
-            if (torch4) {
-                torch4->Extinguishable = false;
-                torch4->FireUsable = false;
-            }
         }
 
 
@@ -172,6 +144,8 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
             map->FillRectangle(27, 6, 28, 9, 0);
         }
     }
+
+    map->HasLoaded = true;
 }
 
 
@@ -185,15 +159,15 @@ bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfE
 
     return true;
 }
+Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool useable, bool glow) {
+    if (!torch) return nullptr;
 
-/* Tutorial Triggers
-        // Sleeping Wolf Area
-        if (id == 4 && triggerID == 4) {       // Force all wolves in map to sleep
-            for (int i = 0; i < MaxEntities; i++) {
-                if (entities[i] && entities[i]->GetID() == 4) {
-                    entities[i]->Paused = true;
-                    entities[i]->animation = 3;
-                }
-            }
-        }
-*/
+    Torch* t = dynamic_cast<Torch*>(torch);
+    if (t) {
+        t->Extinguishable = extinguishable;
+        t->FireUsable = useable;
+        t->glow = glow;
+    }
+
+    return t;
+}

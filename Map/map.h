@@ -17,7 +17,7 @@ class Map {
         Entity** StoredEntities;
         bool Triggers[3];
         int PressurePlatesPressed = 0;
-        bool TimesLoaded = 0;
+        bool HasLoaded = false;
 
         void SetMapID(int Identification);
         int GetMapID();

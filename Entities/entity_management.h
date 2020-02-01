@@ -27,6 +27,8 @@ void CleanEntities(Entity* entities[MaxEntities]);
 
 // Searches list of entities and returns the first entity it finds with given location; otherwise returns null
 Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos);
+// Returns the Nth occurrence of an entity of a given type in an array of entities; returns null if not present
+Entity* GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence);
 
 // Finds the entity with the nearest location, excluding anyone at the given location
 Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos);
