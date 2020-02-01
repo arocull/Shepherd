@@ -18,6 +18,8 @@
 #define MaxEntities 25
 // Maximum number of entities that can be stored within a map
 #define MaxEntitiesStoreable 10
+// Maximum number of entities that can be pointed to within puzzle data
+#define MaxEntitiesPuzzle 5
 // Maximum number of particles that can be active at a time
 #define MaxParticles 10
 // Amount of sheep the player must care for
