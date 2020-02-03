@@ -56,6 +56,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_torch = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_torch);
         }
 
+        TEXTURESURFACE_lever = SDL_LoadBMP("Textures/Lever.bmp");
+        if (TEXTURESURFACE_lever) {
+            TEXTURE_lever = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_lever);
+        }
+
         TEXTURESURFACE_sheep = SDL_LoadBMP("Textures/Sheep.bmp");
         if (TEXTURESURFACE_sheep) {
             TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
@@ -152,6 +157,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_crate);
     SDL_FreeSurface(TEXTURESURFACE_torch);
     SDL_DestroyTexture(TEXTURE_torch);
+    SDL_FreeSurface(TEXTURESURFACE_lever);
+    SDL_DestroyTexture(TEXTURE_lever);
     SDL_FreeSurface(TEXTURESURFACE_sheep);
     SDL_DestroyTexture(TEXTURE_sheep);
     SDL_FreeSurface(TEXTURESURFACE_wolf);
@@ -349,23 +356,39 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
         SDL_RenderCopyEx(canvas, TEXTURE_wolf, &src, &tile, angle, NULL, flipStyle);
     } else if (id == 5) {   // Crate
         SDL_RenderCopy(canvas, TEXTURE_crate, NULL, &tile);
-    } else if (id == 6) {
+    } else if (id == 6) {   // Torch
         SDL_Rect src;
         src.h = 32;
         src.w = 32;
         src.x = 0;
         src.y = 0;
 
-        if (anim == 1)
+        if (anim == 1)  // Glowing Base Texture
             src.x = 32;
         
         SDL_RenderCopyEx(canvas, TEXTURE_torch, &src, &tile, angle, NULL, flipStyle);
 
-        if (meta > 0) {
+        if (meta > 0) { // Fire Animation
             src.x = (ticks % 2)*32;
             src.y = meta*32;
 
             SDL_RenderCopyEx(canvas, TEXTURE_torch, &src, &tile, angle, NULL, flipStyle);
+        }
+    } else if (id == 7) {   // Lever
+        SDL_Rect src;
+        src.h = 32;
+        src.w = 32;
+        src.x = 0;
+        src.y = 0;
+
+        if (anim == 1)  // Flipped Animation
+            src.x = 32;
+        
+        SDL_RenderCopyEx(canvas, TEXTURE_lever, &src, &tile, angle, NULL, flipStyle);
+
+        if (meta > 0) { // Layer Lock
+            src.y = 32;
+            SDL_RenderCopyEx(canvas, TEXTURE_lever, &src, &tile, angle, NULL, flipStyle);
         }
     }
 }

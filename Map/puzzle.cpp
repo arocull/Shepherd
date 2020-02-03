@@ -23,7 +23,6 @@ void Puzzle_CheckSolution(struct Puzzle* puzzle) {
     if (!puzzle->Enabled) return;
 
     int torches = 0;
-    int levers = 0;
 
     int pressurePlatesDown = 0;
     int torchesLit = 0;
@@ -46,6 +45,10 @@ void Puzzle_CheckSolution(struct Puzzle* puzzle) {
                     torchesLit++;
                 else if (puzzle->FireType == -1 && (a->HasFire || a->HasFrost))
                     torchesLit++;
+            } else if (a->GetID() == 7) {
+                Lever* l = dynamic_cast<Lever*>(a);
+                if (l && l->IsFlipped())
+                        leversFlipped++;
             }
         }
     }

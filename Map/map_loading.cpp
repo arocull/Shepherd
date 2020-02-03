@@ -120,6 +120,7 @@ Map* GenerateMapFromFile(const char* filePath) {
                     tileID = 7;
                 case 'h':       // Wolf (or Hound)
                 case 't':       // Torch
+                case 'l':       // Lever
                     SpawnsEntity = true;
             }
             if (SpawnsEntity) {
@@ -130,6 +131,8 @@ Map* GenerateMapFromFile(const char* filePath) {
                     entity = new Crate(x, y);
                 else if (charID == 't')
                     entity = new Torch(x, y);
+                else if (charID == 'l')
+                    entity = new Lever(x, y);
 
                 if (entity) {
                     entity->archivable = true;

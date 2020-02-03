@@ -14,6 +14,8 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         // Staring Area
         if (id == 1 && triggerID == 1)
             window->SetDialogueText("Pressure plates can be weighed down\nby standing on them.");
+        else if (id == 3 && triggerID == 1)
+            window->SetDialogueText("Levers can be flipped by swinging\nyour staff near them.");
         else if (id == 5 && triggerID == 1)
             window->SetDialogueText("Your sheep will always follow you.\nTry to keep track of all of them.", 75);
         else if (id == 5 && triggerID == 2)
@@ -77,6 +79,14 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         window->SetDialogueText("Perhaps a glance at your surroundings may\nhelp provide a solution.", 75);
     else if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2 && !map->Triggers[2])
         PuzzleComplete = true;
+    else if (map->GetMapID() == 3) {
+        Entity* lever = GetEntityOccurence(entities, 7, 1);
+        if (lever) {
+            Lever* l = dynamic_cast<Lever*>(lever);
+            if (l)
+                l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
+        }
+    }
     
     if (PuzzleComplete == true)
         map->PuzzleStatus = PuzzleComplete;
@@ -160,7 +170,17 @@ Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool usea
 void Trigger_SetupPuzzles(Map* map) {
     Puzzle* p = &(map->Puzzles[0]);
 
-    if (map->GetMapID() == 7) {
+    if (map->GetMapID() == 3) {
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, 7, 1, MaxEntitiesStoreable);
+        p->LeversFlipped = 1;
+
+        if (p->entities[0]) {
+            Lever* l = dynamic_cast<Lever*>(p->entities[0]);
+            if (l)
+                l->ToggleLock(true);
+        }
+    } else if (map->GetMapID() == 7) {
         p->Enabled = true;
 
         Entity* torch1 = GetEntityAtLocation(map->StoredEntities, 8, 4, MaxEntitiesStoreable);

@@ -5,6 +5,8 @@
 #include "Entities/entity.h"
 #include "Entities/entity_management.h"
 
+#include "Entities/Subclasses/lever.h"
+
 // Puzzle - A struct that holds puzzle information and automatically handles solutions
 struct Puzzle {
     bool Enabled;       // Is this puzzle allowed to be used and solved?

@@ -61,7 +61,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles) {
                     obj->animation = 1;
                 } else if (obj->GetID() == 4)   //If wolf, deal damage
                     obj->TakeDamage(1, this);
-                else if (obj->GetID() == 6) {
+                else if (obj->GetID() == 6) {   // Extinguish and use torches
                     Torch* t = dynamic_cast<Torch*>(obj);
                     if (t) {
                         if (!HasFire && !HasFrost && t->FireUsable) {
@@ -73,6 +73,10 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles) {
                             t->HasFrost = HasFrost;
                         }
                     }
+                } else if (obj->GetID() == 7) {  // Flip Levers
+                    Lever* l = dynamic_cast<Lever*>(obj);
+                    if (l)
+                        l->Flip();
                 }
             }
         }
