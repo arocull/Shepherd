@@ -22,16 +22,16 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
             window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
         else if (id == 7 && triggerID == 1)
             window->SetDialogueText("Swing your staff while near torches\nto pick up their flames.", 75);
-        else if (id == 7 && triggerID == 4 && entities[0])
+        else if (id == 7 && triggerID == 4 && entities[0])  // Extinguish player's flame when leaving
             entities[0]->HasFire = false;
         else if (id == 9 && triggerID == 1)
-            window->SetDialogueText("You can push crates around by walking\ninto them. Crates, like you and your sheep,\nweigh down pressure plates.", 80);
+            window->SetDialogueText("You can push crates around by walking\ninto them.", 75);
         else if (id == 9 && triggerID == 2)
-            window->SetDialogueText("Crates cannot be pushed off of surfaces.", 50);
+            window->SetDialogueText("Crates cannot be pushed off of surfaces.");
         else if (id == 11 && triggerID == 1)
             window->SetDialogueText("These torches are covered in odd glyphs,\nbut you sense they might be related\nto the nearby ruins.", 125);
         else if (id == 11 && triggerID == 2)
-            window->SetDialogueText("The glyphs on the door are from an unknown\nand ancient language.", 75);
+            window->SetDialogueText("The door is marked by four flame-like\nsymbols.");
     }
 }
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
