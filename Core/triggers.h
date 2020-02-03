@@ -5,11 +5,12 @@
 #include "mathutil.h"
 
 #include "Core/renderwindow.h"
-
 #include "Audio/sound_service.h"
+
 #include "Entities/entity_management.h"
 
 #include "Map/map.h"
+#include "Map/puzzle.h"
 
 #include "Entities/particle.h"
 #include "Entities/entity.h"
@@ -42,3 +43,8 @@ bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfE
 
 // Shortcut for configuring torches, locks torches by default
 Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable = false, bool useable = false, bool glow = false);
+
+
+
+// Performs initial puzzle set up for the given map
+void Trigger_SetupPuzzles(Map* map);

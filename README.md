@@ -20,3 +20,18 @@ There is a tutorial in place that should help instruct you on how to play and gi
 
 F11 can be used to toggle fullscreen and windowed mode (game should adjust aspect ratio automatically).
 Hitting Escape closes the game.
+
+
+
+
+## Editing
+
+### Building Levels
+
+Level files can be located within Map>Maps, and are merely comprised of chars.
+The translations of char to tile/entity can be found within Map>map_loading.cpp in the bottom function.
+The number and letter below the actual map tiles itself are used for level identification and biome.
+Biomes merely affect the background color, whereas the identification is used within Core>triggers.cpp to tell what level is what.
+
+If you want to set up and configure a puzzle, simply edit the function Trigger_SetupPuzzles and add a section for your added level.
+If the level requires a unique set of inputs, you can add conditions in Trigger_PuzzleInput for more specific purposes.

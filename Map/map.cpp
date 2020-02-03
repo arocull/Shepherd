@@ -17,6 +17,11 @@ Map::Map() {
         StoredEntities[i] = nullptr;
     }
 
+    Puzzles = (Puzzle*) calloc(MaxPuzzles, sizeof(Puzzle));
+    for (int i = 0; i < MaxPuzzles; i++) {
+        Puzzle_InitializePuzzle(&Puzzles[i]);
+    }
+
     for (int i = 0; i < 3; i++)
         Triggers[i] = false;
 }
@@ -93,6 +98,17 @@ void Map::Free() {
         free(tiles[x]);
     }
     free(tiles);
+
+    for (int i = 0; i < MaxEntitiesStoreable; i++) {
+        if (StoredEntities[i])
+            delete StoredEntities[i];
+    }
+    //delete StoredEntities;
+
+    for (int i = 0; i < MaxPuzzles; i ++) {
+        Puzzle_FreePuzzle(&Puzzles[i]);
+    }
+    free(Puzzles);
     
     delete StoredEntities;
 }

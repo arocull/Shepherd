@@ -87,36 +87,49 @@ int main(int argc, char **argv) {
     world[3][1] = GenerateMapFromFile("Map/Maps/Desert/Desert11");
     world[3][0] = GenerateMapFromFile("Map/Maps/Desert/Desert10");
 
+
+    // Perform first-time setup for levels that need it (set up puzzles, update entity data)
+    for (int x = 0; x < WorldWidth; x++) {
+        for (int y = 0; y < WorldHeight; y++) {
+            Trigger_SetupPuzzles(world[x][y]);
+        }
+    }
+
+    // World indexing, current X and Y is the currently loaded level, world X and Y is changed based upon movement and says what level to load
     int worldX = 1;
     int worldY = 1;
     int currentWorldX = worldX;
     int currentWorldY = worldY;
     
+    // Allocate memory for runtime entities
     Entity* levelEntities[MaxEntities];
-    struct Particle* particles = (struct Particle*) calloc(MaxParticles, sizeof(Particle));
-
-    Shepherd* player = new Shepherd(20, 8);
-    levelEntities[0] = player;
     for (int i = 1; i < MaxEntities; i++) {
         levelEntities[i] = nullptr;
     }
+    
+    struct Particle* particles = (struct Particle*) calloc(MaxParticles, sizeof(Particle));
 
+    // Player setup
+    Shepherd* player = new Shepherd(20, 8);
+    levelEntities[0] = player;
+
+    // Load in current level and (finally) start the game
     Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
     Trigger_GameStart(&window, &soundService, currentLevel, levelEntities);
 
 
-    while (true) {
+    while (event.type != SDL_QUIT) {
         LastTick = CurrentTick;
         CurrentTick = SDL_GetPerformanceCounter();
         DeltaTime = (CurrentTick-LastTick) / SDL_GetPerformanceFrequency();
 
         // Check Events
         SDL_PollEvent(&event);
-        if (event.type == SDL_QUIT)
-            break;
+        //if (event.type == SDL_QUIT)
+        //    break;
 
         // Key Presses
-        else if (event.type == SDL_KEYDOWN) {
+        if (event.type == SDL_KEYDOWN) {
             SDL_Keycode key = event.key.keysym.sym;
             if (key == SDLK_ESCAPE)
                 break;
@@ -219,6 +232,7 @@ int main(int argc, char **argv) {
 
 
             // Tick Entities and Tally Pressure Plates
+            bool currentPuzzleStatus = currentLevel->PuzzleStatus;
             bool PressurePlatesChanged = false;
             currentLevel->PressurePlatesPressed = 0;
             for (int i = 0; i < MaxEntities; i++) {
@@ -317,7 +331,25 @@ int main(int argc, char **argv) {
             if (PressurePlatesChanged)
                 Trigger_PuzzleInput(&window, &soundService, particles, currentLevel, levelEntities);
 
+            int puzzlesEnabled = 0;
+            int puzzlesCompleted = 0;
+            for (int i = 0; i < MaxPuzzles; i++) {
+                if (currentLevel->Puzzles[i].Enabled) {
+                    puzzlesEnabled++;
 
+                    Puzzle_CheckSolution(&currentLevel->Puzzles[i]);
+                    if (currentLevel->Puzzles[i].Solved)
+                        puzzlesCompleted++;
+                }
+            }
+            if (puzzlesEnabled > 0)
+                currentLevel->PuzzleStatus = (puzzlesEnabled == puzzlesCompleted);
+
+            // If the player completed a puzzle this tick, show a particle
+            if (!currentPuzzleStatus && currentLevel->PuzzleStatus) {
+                Particle* a = ActivateParticle(particles, 2, player->x, player->y);
+                a->maxLifetime = 0.75f;
+            }
 
             GameTick = 0;
         }

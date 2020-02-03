@@ -52,19 +52,19 @@ void CleanEntities(Entity* entities[MaxEntities]) {
 }
 
 
-Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos) {
-    for (int i = 0; i < MaxEntities; i++) {
+Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos, int dataRange) {
+    for (int i = 0; i < dataRange; i++) {
         if (entities[i] && entities[i]->x == xPos && entities[i]->y == yPos)
             return entities[i];
     }
 
     return nullptr;
 }
-Entity* GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence) {
+Entity* GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence, int dataRange) {
     occurrence--;
 
     int count = 0;
-    for (int i = 0; i < MaxEntities; i++) {
+    for (int i = 0; i < dataRange; i++) {
         if (entities[i] && entities[i]->GetID()) {
             if (count == occurrence)
                 return entities[i];

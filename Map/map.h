@@ -7,6 +7,7 @@
 
 #include "Map/tile.h"
 #include "Entities/entity.h"
+#include "Map/puzzle.h"
 
 // Map - A class that holds a 2D array of tiles, as well as a list of entities that persist only within the map.
 class Map {
@@ -18,6 +19,8 @@ class Map {
         bool Triggers[3];               // Booleans for trigger variables
         int PressurePlatesPressed = 0;  // The number of pressure plates currently weighed down at the current frame
         bool HasLoaded = false;         // Is set to true once a map has been physically loaded
+
+        Puzzle* Puzzles;                // Puzzles that might accessible in levels.
         bool PuzzleStatus = false;      // Has the puzzle on this level been completed?
 
         void SetMapID(int Identification);

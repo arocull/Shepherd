@@ -17,7 +17,6 @@ void Puzzle_InitializePuzzle(struct Puzzle* puzzle) {
 
 void Puzzle_FreePuzzle(struct Puzzle* puzzle) {
     free(puzzle->entities);
-    free(puzzle);
 }
 
 void Puzzle_CheckSolution(struct Puzzle* puzzle) {

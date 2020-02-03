@@ -75,33 +75,17 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 
     if (map->GetMapID() == 1 && map->PressurePlatesPressed == 1 && !map->Triggers[2])
         window->SetDialogueText("Perhaps a glance at your surroundings may\nhelp provide a solution.", 75);
-    else if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2 && !map->Triggers[2]) {
-        PuzzleComplete = true;
-        map->Triggers[2] = true;
-    } else if (map->GetMapID() == 7 && GetEntityAtLocation(entities, 35, 4) && GetEntityAtLocation(entities, 35, 4)->HasFire) {
-        PuzzleComplete = true;
-    } else if (map->GetMapID() == 9 && Trigger_Internal_CheckAllCrates(entities, map, MaxEntities) && entities[0])
+    else if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2 && !map->Triggers[2])
         PuzzleComplete = true;
     
-    if (PuzzleComplete == true) {
-        Particle* a = ActivateParticle(particles, 2, entities[0]->x, entities[0]->y);
-        a->maxLifetime = 0.5f;
+    if (PuzzleComplete == true)
         map->PuzzleStatus = PuzzleComplete;
-    }
 
     //printf("Puzzle input changed, %i plates pressed, %d solved\n", map->PressurePlatesPressed, PuzzleComplete);
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 
-    if (map->GetMapID() == 7 && !map->HasLoaded) {
-        Entity* torch1 = GetEntityAtLocation(entities, 8, 4);
-        Entity* torch2 = GetEntityAtLocation(entities, 35, 4);
-
-        Trigger_Internal_TorchSetup(torch1, false, true, false);
-        if (torch2)
-            torch2->HasFire = false;
-
-    } else if (map->GetMapID() == 11) {    // Pyramid Gateway
+    if (map->GetMapID() == 11) {    // Pyramid Gateway
         int DoorRequirements = 0;
 
         Entity* torch1Obj = GetEntityAtLocation(entities, 9, 4);
@@ -115,28 +99,22 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
         Trigger_Internal_TorchSetup(torch4Obj);
 
         if (torch1Obj) {
-            if (world[0][2]->Triggers[2]) {
-                torch1Obj->HasFire = true;
+            torch1Obj->HasFire = world[0][2]->PuzzleStatus;
+            if (torch1Obj->HasFire)
                 DoorRequirements++;
-            } else
-                torch1Obj->HasFire = false;
         }
         if (torch2Obj) {
             
         }
         if (torch3Obj) {
-            if (world[2][2]->HasLoaded && GetEntityAtLocation(world[2][2]->StoredEntities, 35, 4)->HasFire) {
-                torch3Obj->HasFire = true;
+            torch3Obj->HasFire = world[2][2]->PuzzleStatus;
+            if (torch3Obj->HasFire)
                 DoorRequirements++;
-            } else
-                torch3Obj->HasFire = false;
         }
         if (torch4Obj) {
-            if (Trigger_Internal_CheckAllCrates(world[2][0]->StoredEntities, world[2][0], MaxEntitiesStoreable)) {
-                torch4Obj->HasFire = true;
+            torch4Obj->HasFire = world[2][0]->PuzzleStatus;
+            if (torch4Obj->HasFire)
                 DoorRequirements++;
-            } else
-                torch4Obj->HasFire = false;
         }
 
 
@@ -172,4 +150,31 @@ Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool usea
     }
 
     return t;
+}
+
+
+
+
+
+
+void Trigger_SetupPuzzles(Map* map) {
+    Puzzle* p = &(map->Puzzles[0]);
+
+    if (map->GetMapID() == 7) {
+        p->Enabled = true;
+
+        Entity* torch1 = GetEntityAtLocation(map->StoredEntities, 8, 4, MaxEntitiesStoreable);
+        Entity* torch2 = GetEntityAtLocation(map->StoredEntities, 35, 4, MaxEntitiesStoreable);
+
+        Trigger_Internal_TorchSetup(torch1, false, true, false);
+        if (torch2)
+            torch2->HasFire = false;
+        
+        p->entities[0] = torch2;
+    } else if (map->GetMapID() == 9) {
+        p->Enabled = true;
+
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, 5, 1, MaxEntitiesStoreable);
+        p->PlatesPressed = 1;
+    }
 }
