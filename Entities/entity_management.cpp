@@ -65,7 +65,7 @@ Entity* GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence
 
     int count = 0;
     for (int i = 0; i < dataRange; i++) {
-        if (entities[i] && entities[i]->GetID()) {
+        if (entities[i] && entities[i]->GetID() == id) {
             if (count == occurrence)
                 return entities[i];
             

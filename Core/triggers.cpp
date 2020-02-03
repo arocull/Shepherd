@@ -15,7 +15,7 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         if (id == 1 && triggerID == 1)
             window->SetDialogueText("Pressure plates can be weighed down\nby standing on them.");
         else if (id == 3 && triggerID == 1)
-            window->SetDialogueText("Levers can be flipped by swinging\nyour staff near them.");
+            window->SetDialogueText("Levers can be flipped by swinging\nyour staff near them, but need to be\nunlocked frst.", 75);
         else if (id == 5 && triggerID == 1)
             window->SetDialogueText("Your sheep will always follow you.\nTry to keep track of all of them.", 75);
         else if (id == 5 && triggerID == 2)
@@ -83,15 +83,12 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         Entity* lever = GetEntityOccurence(entities, 7, 1);
         if (lever) {
             Lever* l = dynamic_cast<Lever*>(lever);
-            if (l)
-                l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
+            if (l) l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
         }
     }
     
     if (PuzzleComplete == true)
         map->PuzzleStatus = PuzzleComplete;
-
-    //printf("Puzzle input changed, %i plates pressed, %d solved\n", map->PressurePlatesPressed, PuzzleComplete);
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 
@@ -110,21 +107,19 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
 
         if (torch1Obj) {
             torch1Obj->HasFire = world[0][2]->PuzzleStatus;
-            if (torch1Obj->HasFire)
-                DoorRequirements++;
+            if (torch1Obj->HasFire) DoorRequirements++;
         }
         if (torch2Obj) {
-            
+           torch2Obj->HasFire = world[0][0]->PuzzleStatus;
+            if (torch2Obj->HasFire) DoorRequirements++; 
         }
         if (torch3Obj) {
             torch3Obj->HasFire = world[2][2]->PuzzleStatus;
-            if (torch3Obj->HasFire)
-                DoorRequirements++;
+            if (torch3Obj->HasFire) DoorRequirements++;
         }
         if (torch4Obj) {
             torch4Obj->HasFire = world[2][0]->PuzzleStatus;
-            if (torch4Obj->HasFire)
-                DoorRequirements++;
+            if (torch4Obj->HasFire) DoorRequirements++;
         }
 
 
