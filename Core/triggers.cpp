@@ -13,25 +13,25 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         
         // Staring Area
         if (id == 1 && triggerID == 1)
-            window->SetDialogueText("Pressure plates can be weighed down\nby standing on them.");
+            window->SetDialogueText("Pressure plates can be weighed down by standing on them.");
         else if (id == 3 && triggerID == 1)
-            window->SetDialogueText("Levers can be flipped by swinging\nyour staff near them, but need to be\nunlocked frst.", 75);
+            window->SetDialogueText("Levers can be flipped by swinging your staff near them, but need to be unlocked first.", 75);
         else if (id == 5 && triggerID == 1)
-            window->SetDialogueText("Your sheep will always follow you.\nTry to keep track of all of them.", 75);
+            window->SetDialogueText("Your sheep will always follow you. Try to keep track of all of them.", 75);
         else if (id == 5 && triggerID == 2)
-            window->SetDialogueText("You cannot leave an area without\nall of your sheep gathered around you.", 75);
+            window->SetDialogueText("You cannot leave an area without all of your sheep gathered around you.", 75);
         else if (id == 7 && triggerID == 1)
-            window->SetDialogueText("Swing your staff while near torches\nto pick up their flames.", 75);
+            window->SetDialogueText("Swing your staff while near torche to pick up their flames.", 75);
         else if (id == 7 && triggerID == 4 && entities[0])  // Extinguish player's flame when leaving
             entities[0]->HasFire = false;
         else if (id == 9 && triggerID == 1)
-            window->SetDialogueText("You can push crates around by walking\ninto them.", 75);
+            window->SetDialogueText("You can push crates around by walking into them.", 75);
         else if (id == 9 && triggerID == 2)
             window->SetDialogueText("Crates cannot be pushed off of surfaces.");
         else if (id == 11 && triggerID == 1)
-            window->SetDialogueText("These torches are covered in odd glyphs,\nbut you sense they might be related\nto the nearby ruins.", 125);
-        else if (id == 11 && triggerID == 2)
-            window->SetDialogueText("The door is marked by four flame-like\nsymbols.");
+            window->SetDialogueText("These torches are covered in odd glyphs, but you sense they might be related to the nearby ruins.", 125);
+        else if (id == 11 && triggerID == 4)
+            window->SetDialogueText("The door is marked by four flame-like symbols.");
     }
 }
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
@@ -53,32 +53,30 @@ void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* ma
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 
     // On starting area, if the player has not done so yet, instruct them on how to move
-    if (map->GetMapID() == 5 && (map->Triggers[3] == false || (entities[0] && entities[0]->Paused == false))) {
-        map->Triggers[3] == true;
+    if (map->GetMapID() == 5 && (map->Triggers[3] == false || (entities[0] && entities[0]->Paused == true))) {
+        map->Triggers[3] = true;
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolume(0.2f, 2.5f);
         window->ToggleStatusBar(true);
     } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
-        window->SetDialogueText("Walk towards the unlit torch and swing\nyour staff to toss a fireball. If you\nmiss, simply pick up the flame again.", 125);
+        window->SetDialogueText("Walk towards the unlit torch and swing your staff to toss a fireball.");
 }
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
-    if (map->GetMapID() == 5 && (entities[0] && !entities[0]->Paused))
-        window->SetDialogueText("A hungry sheep bleats timidly. You wonder\nworriedly on when you will be able to\nfeed them again.", 100);
+    if (map->GetMapID() == 1)
+        window->SetDialogueText("Some puzzles might require a bit of help from your wooly friends.");
+    else if (map->GetMapID() == 5 && (entities[0] && !entities[0]->Paused))
+        window->SetDialogueText("A hungry sheep bleats timidly. You wonder worriedly on when you will be able to feed them again.", 100);
     else if (map->GetMapID() == 8)
-        window->SetDialogueText("Looking forward, a pyramid looms over you.\nBehind are some mountains, hopefully\nwith greener pastures on the other side.", 100);
+        window->SetDialogueText("Looking forward, a pyramid looms over you. Behind are some mountains, hopefully with greener pastures on the other side.", 100);
     else if (map->GetMapID() == 9)
         window->SetDialogueText("Crates can be pushed by moving into them.", 100);
     else if (map->GetMapID() == 11)
-        window->SetDialogueText("The pyramid entrance is somewhat ominous,\nand you sense a faint, supernatural presence.", 100);
+        window->SetDialogueText("The pyramid entrance is somewhat ominous, and you sense a faint, supernatural presence.", 100);
 }
 void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
-    bool PuzzleComplete = false;
-
-    if (map->GetMapID() == 1 && map->PressurePlatesPressed == 1 && !map->Triggers[2])
-        window->SetDialogueText("Perhaps a glance at your surroundings may\nhelp provide a solution.", 75);
-    else if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2 && !map->Triggers[2])
-        PuzzleComplete = true;
+    if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2)
+        map->PuzzleStatus = true;
     else if (map->GetMapID() == 3) {
         Entity* lever = GetEntityOccurence(entities, 7, 1);
         if (lever) {
@@ -86,9 +84,6 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
             if (l) l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
         }
     }
-    
-    if (PuzzleComplete == true)
-        map->PuzzleStatus = PuzzleComplete;
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 

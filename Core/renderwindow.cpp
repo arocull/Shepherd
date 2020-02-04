@@ -475,7 +475,26 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* 
     int sizeX = (int) sizeY * (5.0f/8.0f);
 
     int currentIndex = start;
-    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftX <= rightX-sizeX) {
+    int lastWordEnd = start;
+    int leftXSim = leftX;
+    // First, estimate how much space the text will take up so we don't end up splitting up a new word
+    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftXSim <= rightX-sizeX) {
+        currentIndex++;
+
+        char l = text[currentIndex];
+        if (l == '\n') //If it's a new line, move on (automatically gets pushed on)
+            break;
+        else if (l == ' ' || l == '\0') //If it's a space or terminating character, count it as the end of a word
+            lastWordEnd = currentIndex-1;
+
+        leftXSim+=sizeX + sizeX*LetterSpacing;
+    }
+
+
+    currentIndex = start;   // Reset index and actually draw the text (same method)
+    if (text[currentIndex] == ' ')
+        currentIndex++;
+    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftX <= rightX-sizeX && currentIndex <= lastWordEnd) {
         if (text[currentIndex] == '\n') { //If it's a new line, move on (automatically gets pushed on)
             currentIndex++;
             break;
