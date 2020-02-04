@@ -81,7 +81,10 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         Entity* lever = GetEntityOccurence(entities, 7, 1);
         if (lever) {
             Lever* l = dynamic_cast<Lever*>(lever);
-            if (l) l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
+            if (l) {
+                l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
+                Particle* clickEffect = ActivateParticle(particles, 3, lever->x, lever->y);
+            }
         }
     }
 }

@@ -247,7 +247,6 @@ int main(int argc, char **argv) {
                     if (!a->OnPressurePlate) {
                         a->OnPressurePlate = true;
                         Particle* clickEffect = ActivateParticle(particles, 3, a->x, a->y);
-                        clickEffect->maxLifetime = 0.1f;
 
                         PressurePlatesChanged = true;
                     }
