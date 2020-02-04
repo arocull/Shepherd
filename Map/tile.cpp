@@ -19,6 +19,8 @@ void SetTileID(struct Tile* tile, int newID) {
         case 5:     //Rock
         case 6:     //Pillar
         case 10:    //Empty Tile
+        case 11:    //Door (Closed Vertical)
+        case 12:    //Door (Closed Horizontal)
             tile->solid = true;
             break;
         case 2:     //Water
@@ -28,5 +30,6 @@ void SetTileID(struct Tile* tile, int newID) {
             break;
         default:
             tile->solid = false;
+            tile->liquid = false;
     }
 }

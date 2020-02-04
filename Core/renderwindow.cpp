@@ -238,6 +238,18 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
     } else if (tileID == 10) {  //Empty Tile
         SDL_SetRenderDrawColor(canvas, 0, 0, 0, 0);
         SDL_RenderFillRect(canvas, &tile);
+    } else if (tileID == 11 || tileID == 12) {  //Door
+        SDL_SetRenderDrawColor(canvas, 100, 60, 50, 0);
+
+        if (tileID == 11) {
+            tile.x += tileRes*.1;
+            tile.w *= .8;
+        } else if (tileID == 12) {
+            tile.y += tileRes*.1;
+            tile.h *= .8;
+        }
+
+        SDL_RenderFillRect(canvas, &tile);
     }
 }
 void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, int meta) {

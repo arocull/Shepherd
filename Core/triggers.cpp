@@ -124,7 +124,7 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
 
         if (DoorRequirements == 4) {    //If all requirements are met, open the door
             map->FillRectangle(26, 5, 27, 10, 0);
-            map->FillRectangle(27, 6, 28, 9, 0);
+            map->FillRectangle(27, 6, 40, 9, 0);
         }
     }
 
