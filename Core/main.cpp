@@ -85,7 +85,11 @@ int main(int argc, char **argv) {
 
     world[3][2] = GenerateMapFromFile("Map/Maps/Desert/Desert10");
     world[3][1] = GenerateMapFromFile("Map/Maps/Desert/Desert11");
-    world[3][0] = GenerateMapFromFile("Map/Maps/Desert/Desert10");
+    world[3][0] = GenerateMapFromFile("Map/Maps/Desert/Desert12");
+
+    world[4][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid13");
+    world[4][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid14");
+    world[4][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid15");
 
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data)
@@ -370,7 +374,7 @@ int main(int argc, char **argv) {
                 window.FillViewportBackground(210, 200, 80);
                 break;
             case 'P':   // Pyramid
-                window.FillViewportBackground(100, 70, 50);
+                window.FillViewportBackground(100, 80, 65);
                 break;
             case 'M':   // Mountain
                 window.FillViewportBackground(20, 20, 20);

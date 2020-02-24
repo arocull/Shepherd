@@ -120,6 +120,11 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
             if (torch4Obj->HasFire) DoorRequirements++;
         }
 
+        #ifdef DEBUG_MODE
+            if (DEBUG_SkipGates >= 1)
+                DoorRequirements = 4;
+        #endif
+
 
 
         if (DoorRequirements == 4) {    //If all requirements are met, open the door

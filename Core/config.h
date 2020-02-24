@@ -1,4 +1,4 @@
-#define WorldWidth 4
+#define WorldWidth 5
 #define WorldHeight 3
 #define MapWidth 40
 #define MapHeight 15
@@ -41,7 +41,12 @@
 
 // Debug //
 
+// Uncomment if you want certain debug labels to be read
+//#define DEBUG_MODE
+
 // Do we want to test a breakpoint without spawning sheep?
 #define DEBUG_RequireSheep true
 // Set to true if you want to disable playing audio via SoundService
 #define DEBUG_AudioDisabled true
+// Automatically open X gates from the start of the game (for faster testing)
+#define DEBUG_SkipGates 0

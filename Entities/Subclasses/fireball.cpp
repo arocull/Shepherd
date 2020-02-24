@@ -34,9 +34,11 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
                         torch->HasFrost = HasFrost; 
                     }
                 } else {
-                    hit->TakeDamage(1, this);
                     hit->HasFire = HasFire;
-                    hit->HasFrost = HasFrost;   
+                    hit->HasFrost = HasFrost;  
+
+                    if (!((hit->GetID() == 1 || hit->GetID() == 2) && !enemy))
+                        hit->TakeDamage(1, this);
                 }
             }
         }

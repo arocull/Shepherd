@@ -18,6 +18,7 @@ class Fireball : public Entity {
 
         int speedX;
         int speedY;
+        bool enemy = false;
 
         void Burst(Entity** entities, Particle* particles);
 };
