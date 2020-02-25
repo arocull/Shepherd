@@ -36,6 +36,8 @@
 // How many ticks can the player be idle before they are considered "idle?"
 // - Note: TicksUntilIdle / TickRate = x seconds idle
 #define TicksUntilIdle 112
+// What to multiple tick rate by when game is accelerated
+#define TickAcceleration 7
 
 
 

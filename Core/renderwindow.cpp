@@ -560,10 +560,6 @@ void RenderWindow::DrawDialogueBox() {
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
     SDL_RenderDrawLine(canvas,0,dboxtop+dialogueBoxY,x,dboxtop+dialogueBoxY);
 }
-void RenderWindow::LoadScreen() {
-    SDL_RenderCopy(canvas, TEXTURE_PROGRAM_loadscreen, NULL, NULL);
-    SDL_RenderPresent(canvas);
-}
 
 
 
@@ -598,4 +594,19 @@ void RenderWindow::DrawStatusBar(int HP, bool PuzzleCompleted) {
 void RenderWindow::ToggleStatusBar(bool toggle) {
     statusBarVisible = toggle;
     UpdateSize();
+}
+
+
+
+
+
+
+// Draws a pause menu for interacting with
+void RenderWindow::DrawPauseMenu(int itemSelected) {
+
+}
+// Draws a pop-up that covers the whole screen if something is expected to take a while to process
+void RenderWindow::LoadScreen() {
+    SDL_RenderCopy(canvas, TEXTURE_PROGRAM_loadscreen, NULL, NULL);
+    SDL_RenderPresent(canvas);
 }

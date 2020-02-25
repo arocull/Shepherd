@@ -99,10 +99,12 @@ class RenderWindow {
         void SetDialogueText(char* newText, int ticks = 50);
         char* GetDialogueText();
         void DrawDialogueBox();
-        void LoadScreen();
 
         void DrawStatusBar(int HP, bool PuzzleCompleted);
         void ToggleStatusBar(bool toggle);
+
+        void DrawPauseMenu(int itemSelected);
+        void LoadScreen();
 
         bool IsInitialized();
         void ToggleFullscreen();

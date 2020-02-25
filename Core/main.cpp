@@ -68,6 +68,10 @@ int main(int argc, char **argv) {
     float DeltaTime = 0;
     float GameTick = 0;
     int ticks = 0;
+    #ifdef DEBUG_MODE
+        bool accelerate = false;
+    #endif
+    bool GamePaused = false;
 
     // Load world from files
     Map* world[WorldWidth][WorldHeight];
@@ -129,8 +133,6 @@ int main(int argc, char **argv) {
 
         // Check Events
         SDL_PollEvent(&event);
-        //if (event.type == SDL_QUIT)
-        //    break;
 
         // Key Presses
         if (event.type == SDL_KEYDOWN) {
@@ -154,18 +156,35 @@ int main(int argc, char **argv) {
             } else if (key == SDLK_SPACE) {
                 MoveFireballQueued = true;
             }
+            #ifdef DEBUG_MODE   // In Debug Mode, we can hold Left Shift to accelerate the game
+                if (key == SDLK_LSHIFT)
+                    accelerate = true;
+            #endif
         } else if (event.type == SDL_KEYUP) {
             SDL_Keycode key = event.key.keysym.sym;
             if (key == SDLK_w || key == SDLK_UP || key == SDLK_s || key == SDLK_DOWN || key == SDLK_d || key == SDLK_RIGHT || key == SDLK_a || key == SDLK_LEFT)
                 Move_QueueClear = true;
+            #ifdef DEBUG_MODE
+                if (key == SDLK_LSHIFT)
+                    accelerate = false;
+            #endif
         }
         
 
 
 
         // Game Logic
-        GameTick+=DeltaTime*TickRate;
-        if (GameTick <= 0.5f && Move_QueueClear)    // Prevent any 'sliding'
+        if (!GamePaused) {
+            #ifdef DEBUG_MODE
+                if (accelerate)
+                    GameTick+=DeltaTime*TickRate*TickAcceleration;
+                else
+                    GameTick+=DeltaTime*TickRate;
+            #else
+                GameTick+=DeltaTime*TickRate;
+            #endif
+        }
+        if (GameTick <= 0.5f && Move_QueueClear && !GamePaused)    // Prevent any 'sliding'
             Movement_Clear();
         else if (GameTick >= 1) {
             ticks++;
@@ -416,6 +435,8 @@ int main(int argc, char **argv) {
         // Draw GUI
         window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
         window.DrawDialogueBox();
+        if (GamePaused)
+            window.DrawPauseMenu(0);
         
         SDL_RenderPresent(window.canvas);
         soundService.Tick(DeltaTime);
