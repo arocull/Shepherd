@@ -6,7 +6,7 @@ SoundService::SoundService() {
         printf("Failed to Initiate SDL, %s\n", SDL_GetError());
 	else {
         //Initialize SDL_mixer 
-        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 8, 4096) == -1 ) {
+        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) == -1 ) {
             printf("Failed to Initiate SDL, %s\n", SDL_GetError());
         } else
             Initialized = true;
@@ -15,7 +15,7 @@ SoundService::SoundService() {
     if (Initialized)
         SDL_PauseAudio(0);
 
-    //Mix_AllocateChannels(MaxAudioChannels);
+    Mix_AllocateChannels(MaxAudioChannels);
 
     sounds = (SoundData*) calloc(MaxAudioChannels, sizeof(SoundData));
     for (int i = 0; i < MaxAudioChannels; i++) {
@@ -35,12 +35,6 @@ void SoundService::CloseSoundService() {
 
 
 void SoundService::Tick(float DeltaTime) {
-    if (TimeToDesiredVolume > 0) {
-        TimeToDesiredVolume-=DeltaTime;
-        float percent = 1.0f - (TimeToDesiredVolume / TimeToDesiredVolumeStart);
-        Volume = VolumeStart*(1.0f-percent) + VolumeDesired*percent;
-    }
-
     for (int i = 0; i < MaxAudioChannels; i++) {
         if (sounds[i].sound) {
             if (Mix_Playing(sounds[i].channel) == 0)
@@ -48,11 +42,8 @@ void SoundService::Tick(float DeltaTime) {
         }
     }
 }
-void SoundService::FadeVolume(float desired, float time) {
-    VolumeDesired = desired;
-    VolumeStart = Volume;
-    TimeToDesiredVolume = time;
-    TimeToDesiredVolumeStart = time;
+void SoundService::SetVolume(float volume) {
+    Mix_Volume(-1, (int) (volume*128));
 }
 
 
@@ -67,12 +58,17 @@ SoundData* SoundService::PlaySound(const char* FilePath) {
     }
 }
 SoundData* SoundService::LoadSound(const char* FilePath) {
-    int sfxIndex = 0;
+    int sfxIndex = -1;
     for (int i = 0; i < MaxAudioChannels; i++) {
         if (sounds[i].finished == true) {
             sfxIndex = i;
             break;
         }
+    }
+
+    if (sfxIndex == -1) {
+        printf("No available sound slot for sound %s !\n", FilePath);
+        return nullptr;
     }
 
     SoundData sfx = sounds[sfxIndex];

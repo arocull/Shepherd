@@ -526,7 +526,7 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* 
 
 Set the amount of ticks the dialogue remains in the box, defaults to 50 (5 seconds with a tick rate of 10)
 Set 'ticks' to 0 for the text to last indefinitely or until overwritten*/
-void RenderWindow::SetDialogueText(char* text, int ticks) {
+void RenderWindow::SetDialogueText(const char* text, int ticks) {
     if (dialogueText != NULL)
         free(dialogueText);
     dialogueText = strdup(text);

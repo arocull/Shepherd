@@ -96,7 +96,7 @@ class RenderWindow {
         void DrawEntity(int posX, int posY, int id, bool flip, int animation, int metadata);
         void DrawParticle(float posX, float posY, int id, float percentage);
         
-        void SetDialogueText(char* newText, int ticks = 50);
+        void SetDialogueText(const char* newText, int ticks = 50);
         char* GetDialogueText();
         void DrawDialogueBox();
 

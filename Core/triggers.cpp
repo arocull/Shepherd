@@ -57,7 +57,7 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         map->Triggers[3] = true;
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
-        soundService->FadeVolume(0.2f, 2.5f);
+        soundService->SetVolume(0.2f);
         window->ToggleStatusBar(true);
     } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
         window->SetDialogueText("Walk towards the unlit torch and swing your staff to toss a fireball.");

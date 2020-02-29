@@ -35,15 +35,9 @@ class SoundService {
         // Internal Play Sound function--do all verification beforehand, otherwise can result in crash
         SoundData* LoadSound(const char* FilePath);
 
-        float Volume = 1.0f;
-        float VolumeStart = 1.0f;
-        float VolumeDesired = 1.0f;
-        float TimeToDesiredVolume = 0.0f;
-        float TimeToDesiredVolumeStart = 0.0f;
-
     public:
         // Fades the current volume to the desired volume over the given amount of time
-        void FadeVolume(float desired, float time);
+        void SetVolume(float volume);
 
         // Ticks the Sound Service
         // * Automatically stops sounds that have finished and fades volume
