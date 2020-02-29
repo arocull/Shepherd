@@ -51,11 +51,15 @@ void SoundService::SetVolume(float volume) {
 SoundData* SoundService::PlaySound(const char* FilePath) {
     if (!Initialized || DEBUG_AudioDisabled)
         return nullptr;
-    else {
-        SoundData* sfx = LoadSound(FilePath);
+    
+    #ifdef DEBUG_MODE
+        printf("Listing currently playing audio:\n");
+        for (int i = 0; i < MaxAudioChannels; i++) {
+            printf("\tChannel %i is %i\n", sounds[i].channel, !sounds[i].finished);
+        }
+    #endif
 
-        return sfx;
-    }
+    return LoadSound(FilePath);
 }
 SoundData* SoundService::LoadSound(const char* FilePath) {
     int sfxIndex = -1;
@@ -71,17 +75,17 @@ SoundData* SoundService::LoadSound(const char* FilePath) {
         return nullptr;
     }
 
-    SoundData sfx = sounds[sfxIndex];
-    sfx.finished = false;
+    SoundData* sfx = &sounds[sfxIndex];
+    sfx->finished = false;
 
-    sfx.sound = Mix_LoadWAV(FilePath);
-	if (!sfx.sound) {
+    sfx->sound = Mix_LoadWAV(FilePath);
+	if (!sfx->sound) {
         printf("Failed to load sound, %s\n", Mix_GetError());
-		sfx.finished = true;
+		sfx->finished = true;
     } else
-        Mix_PlayChannel(sfx.channel, sfx.sound, 0);
+        Mix_PlayChannel(sfx->channel, sfx->sound, 0);
 
-    return &(sounds[sfxIndex]);
+    return sfx;
 }
 void SoundService::StopSound(SoundData* sound) {
     sound->finished = true;

@@ -63,6 +63,8 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         window->SetDialogueText("Walk towards the unlit torch and swing your staff to toss a fireball.");
 }
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
+    soundService->PlaySound("Audio/Resources/Think.wav");
+
     if (map->GetMapID() == 1)
         window->SetDialogueText("Some puzzles might require a bit of help from your wooly friends.");
     else if (map->GetMapID() == 5 && (entities[0] && !entities[0]->Paused))
