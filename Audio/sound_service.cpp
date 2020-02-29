@@ -1,15 +1,36 @@
 #include "Audio/sound_service.h"
 
 
-int AudioVolume = 128;
-
-
 SoundService::SoundService() {
-    
+    if (Mix_Init(MIX_INIT_MP3) == -1)
+        printf("Failed to Initiate SDL, %s\n", SDL_GetError());
+	else {
+        //Initialize SDL_mixer 
+        if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 8, 4096) == -1 ) {
+            printf("Failed to Initiate SDL, %s\n", SDL_GetError());
+        } else
+            Initialized = true;
+    }
+
+    if (Initialized)
+        SDL_PauseAudio(0);
+
+    //Mix_AllocateChannels(MaxAudioChannels);
+
+    sounds = (SoundData*) calloc(MaxAudioChannels, sizeof(SoundData));
+    for (int i = 0; i < MaxAudioChannels; i++) {
+        sounds[i].sound = nullptr;
+        sounds[i].channel = i+1;
+        sounds[i].finished = true;
+    }
 }
 void SoundService::CloseSoundService() {
-    if (PlayingAudio)
-        StopSound(&currentSound);
+    StopAllSounds();
+
+    free(sounds);
+
+    Mix_CloseAudio();
+    Mix_Quit();
 }
 
 
@@ -18,12 +39,12 @@ void SoundService::Tick(float DeltaTime) {
         TimeToDesiredVolume-=DeltaTime;
         float percent = 1.0f - (TimeToDesiredVolume / TimeToDesiredVolumeStart);
         Volume = VolumeStart*(1.0f-percent) + VolumeDesired*percent;
-        AudioVolume = max(min((int) (SDL_MIX_MAXVOLUME*log(SDL_MIX_MAXVOLUME*Volume + 1.0f)/4.87f), SDL_MIX_MAXVOLUME), 0);
     }
 
-    if (PlayingAudio) {
-        if (((struct SoundData*)currentSound.userdata)->audio_len <= 0) {
-            StopSound(&currentSound);
+    for (int i = 0; i < MaxAudioChannels; i++) {
+        if (sounds[i].sound) {
+            if (Mix_Playing(sounds[i].channel) == 0)
+                StopSound(&sounds[i]);
         }
     }
 }
@@ -36,67 +57,46 @@ void SoundService::FadeVolume(float desired, float time) {
 
 
 
-SDL_AudioSpec* SoundService::PlaySound(char* FilePath) {
-    if (PlayingAudio == true || DEBUG_AudioDisabled)
+SoundData* SoundService::PlaySound(const char* FilePath) {
+    if (!Initialized || DEBUG_AudioDisabled)
         return nullptr;
     else {
-        currentSound = LoadSound(FilePath);
-        PlayingAudio = true;
+        SoundData* sfx = LoadSound(FilePath);
 
-        return &currentSound;
+        return sfx;
     }
 }
-SDL_AudioSpec SoundService::LoadSound(char* FilePath) {
-    SDL_AudioSpec wav_specifications;
-	static Uint32 wav_length;
-	static Uint8* wav_buffer;
+SoundData* SoundService::LoadSound(const char* FilePath) {
+    int sfxIndex = 0;
+    for (int i = 0; i < MaxAudioChannels; i++) {
+        if (sounds[i].finished == true) {
+            sfxIndex = i;
+            break;
+        }
+    }
 
-	if (SDL_LoadWAV(FilePath, &wav_specifications, &wav_buffer, &wav_length) == NULL)
-		exit(1);
-	
-	wav_specifications.callback = SoundService_AudioCallback;
-	struct SoundData* data = (struct SoundData*) calloc(1, sizeof(struct SoundData));
-	wav_specifications.userdata = data;
-	data->audio_pos = wav_buffer;
-	data->audio_buffer = wav_buffer;
-	data->audio_len = wav_length;
+    SoundData sfx = sounds[sfxIndex];
+    sfx.finished = false;
 
-	if (SDL_OpenAudio(&wav_specifications, NULL) < 0) {
-		fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
-		exit(-1);
-	}
+    sfx.sound = Mix_LoadWAV(FilePath);
+	if (!sfx.sound) {
+        printf("Failed to load sound, %s\n", Mix_GetError());
+		sfx.finished = true;
+    } else
+        Mix_PlayChannel(sfx.channel, sfx.sound, 0);
 
-    SDL_PauseAudio(0);
-
-	return wav_specifications;
+    return &(sounds[sfxIndex]);
 }
-void SoundService::StopSound(SDL_AudioSpec* sound) {
-    SDL_CloseAudio();
+void SoundService::StopSound(SoundData* sound) {
+    sound->finished = true;
+    if (!sound->sound) return;
 
-	struct SoundData* data = (struct SoundData*) sound->userdata;
-	SDL_FreeWAV(data->audio_buffer);
-	free(data);
-
-    PlayingAudio = false;
+    Mix_Pause(sound->channel);
+    Mix_FreeChunk(sound->sound);
+    sound->sound = nullptr;
 }
 void SoundService::StopAllSounds() {
-    if (PlayingAudio)
-        StopSound(&currentSound);
-}
-
-
-
-
-void SoundService_AudioCallback(void *userdata, unsigned char* stream, int len) {
-    struct SoundData* data = (struct SoundData*) userdata;
-
-	if (data->audio_len <= 0)
-		return;
-	
-	len = ( len > data->audio_len ? data->audio_len : len );
-	SDL_memcpy(stream, data->audio_pos, len); 						// simply copy from one buffer into the other
-	SDL_MixAudio(stream, data->audio_pos, len, AudioVolume);	// mix from one buffer into another
-
-	data->audio_pos += len;
-	data->audio_len -= len;
+    for (int i = 0; i < MaxAudioChannels; i++) {
+        StopSound(&sounds[i]);
+    }
 }

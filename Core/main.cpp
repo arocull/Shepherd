@@ -15,6 +15,7 @@ $> run
 
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>

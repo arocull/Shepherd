@@ -1,8 +1,8 @@
 CC        := g++ 
 LD        := g++
 
-CCFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main `sdl2-config --cflags` -L/usr/lib # -Wall -Werror -g, -lSDL2_ttf
-LDFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main `sdl2-config --cflags` -L/usr/lib #-Wl,--verbose, -lSDL2_ttf
+CCFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main -lSDL2_mixer `sdl2-config --cflags` -L/usr/lib # -Wall -Werror -g, -lSDL2_ttf
+LDFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main -lSDL2_mixer `sdl2-config --cflags` -L/usr/lib #-Wl,--verbose, -lSDL2_ttf
 TARGET=main
 
 MODULES   := Core Entities Entities/Subclasses Map Audio

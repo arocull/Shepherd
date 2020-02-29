@@ -6,8 +6,9 @@ This is heavily a work-in-progress and something I do only on my own time when I
 
 ## Packages
 
-This game uses SDL2 as a dependency. To install this package, run:
+This game uses SDL2 and SDL2_Mixer a dependencies. To install this package, run:
 `$ apt install libsdl2-dev`
+`$ apt install libsdl2-mixer-dev`
 
 The game compiles uses a Makefile to compile by executing g++ commands.
 

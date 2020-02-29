@@ -4,18 +4,19 @@
 #include <cmath>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "config.h"
 #include "Core/mathutil.h"
 
-// Note, use this tutorial: https://gist.github.com/armornick/3447121
-// Perhaps look here as well https://github.com/jakebesworth/Simple-SDL2-Audio
+// Note, use this tutorial: https://gist.github.com/armornick/3497064
+// SDL_Mixer documentation: https://www.libsdl.org/projects/SDL_mixer/docs/SDL_mixer_frame.html
 
 // A structure nested inside SDL_AudioSpec objects to help track information of the sound they're playing
 struct SoundData {
-	Uint8* audio_pos;	// global pointer to the audio buffer to be played
-	Uint32 audio_len;	// remaining length of the sample we have to play
-	Uint8* audio_buffer;
+	Mix_Chunk* sound;
+    int channel;
+    bool finished;
 };
 
 // Sound Service -- A general tool for playing and managing audio
@@ -27,11 +28,12 @@ class SoundService {
         void CloseSoundService();
 
     private:
-        SDL_AudioSpec currentSound;
-        bool PlayingAudio = false;
+        bool Initialized = false;
+
+        SoundData* sounds;
 
         // Internal Play Sound function--do all verification beforehand, otherwise can result in crash
-        SDL_AudioSpec LoadSound(char* FilePath);
+        SoundData* LoadSound(const char* FilePath);
 
         float Volume = 1.0f;
         float VolumeStart = 1.0f;
@@ -47,11 +49,9 @@ class SoundService {
         // * Automatically stops sounds that have finished and fades volume
         void Tick(float DeltaTime);
         // Plays the given WAV file path and returns the sound object--returns null if could not play
-        SDL_AudioSpec* PlaySound(char* FilePath);
+        SoundData* PlaySound(const char* FilePath);
         // Stops the given sound object from playing
-        void StopSound(SDL_AudioSpec* sound);
+        void StopSound(SoundData* sound);
         // Stops all playing sounds
         void StopAllSounds();
 };
-
-void SoundService_AudioCallback(void *userdata, unsigned char* stream, int len);
