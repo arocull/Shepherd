@@ -36,6 +36,7 @@ class Map {
         void WallRectangle(int x, int y);
         void WallRectangle(int startX, int startY, int endX, int endY, int id);
         void FillRectangle(int startX, int startY, int endX, int endY, int id);
+        void FreezeArea(int centerX, int centerY, int radius, bool thaw);
         void Free();
 
     private:

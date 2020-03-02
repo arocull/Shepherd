@@ -196,5 +196,15 @@ void Trigger_SetupPuzzles(Map* map) {
 
         p->entities[0] = GetEntityOccurence(map->StoredEntities, 5, 1, MaxEntitiesStoreable);
         p->PlatesPressed = 1;
+    } else if (map->GetMapID() == 13) {
+        Entity* torch1 = GetEntityOccurence(map->StoredEntities, 6, 1, MaxEntitiesStoreable);
+        Entity* torch2 = GetEntityOccurence(map->StoredEntities, 6, 2, MaxEntitiesStoreable);
+
+        Trigger_Internal_TorchSetup(torch1, false, true, false);
+        Trigger_Internal_TorchSetup(torch2, false, true, false);
+        if (torch2) {
+            torch2->HasFire = false;
+            torch2->HasFrost = true;
+        }
     }
 }

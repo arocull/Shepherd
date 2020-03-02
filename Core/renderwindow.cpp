@@ -250,6 +250,9 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
         }
 
         SDL_RenderFillRect(canvas, &tile);
+    } else if (tileID == 13) {  //Ice
+        SDL_SetRenderDrawColor(canvas, 220, 225, 240, 0);
+        SDL_RenderFillRect(canvas, &tile);
     }
 }
 void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, int meta) {

@@ -110,6 +110,7 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'E': tileID = 10; break;   //Empty Tile (black)
                 case 'D': tileID = 11; break;  //Door (Closed Vertical)
                 case 'd': tileID = 12; break;  //Door (Closed Horizontal)
+                case 'i': tileID = 13; break;  //Ice
 
                 // Map Triggers
                 case '1': tileID = -1; break;   //Trigger 1

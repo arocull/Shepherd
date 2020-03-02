@@ -28,6 +28,7 @@ void SetTileID(struct Tile* tile, int newID) {
             tile->liquid = true;
             tile->solid = false;
             break;
+        case 13:    //Ice
         default:
             tile->solid = false;
             tile->liquid = false;

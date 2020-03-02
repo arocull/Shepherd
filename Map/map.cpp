@@ -91,6 +91,18 @@ void Map::FillRectangle(int startX, int startY, int endX, int endY, int id) {
         }
     }
 }
+void Map::FreezeArea(int centerX, int centerY, int radius, bool thaw) {
+    for (int x = centerX - radius; x < centerX + 2*radius; x++) {
+        for (int y = centerY - radius; y < centerY + 2*radius; y++) {
+            if (x >= 0 && x < MapWidth && y >= 0 && y < MapWidth) {
+                if (thaw && GetTileID(x,y) == 13)   // Thaw ice
+                    SetTile(x,y,2);
+                else if (!thaw && GetTileID(x,y) == 2)  // Freeze water
+                    SetTile(x,y,13);
+            }
+        }
+    }
+}
 
 // Deallocates all tiles from RAM
 void Map::Free() {
