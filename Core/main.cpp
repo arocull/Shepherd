@@ -243,7 +243,7 @@ int main(int argc, char **argv) {
             if (MoveFireballQueued) {
                 MoveFireballQueued = false;
 
-                if (player->HasFire || player->HasFrost) {          // Sling Fireball
+                if (player->HasFire) {          // Sling Fireball
                     player->SlingFireball(levelEntities, particles);
                 } else {        // Rally Sheep / Swing Attack
                     player->SwingAttack(levelEntities, particles);
@@ -264,11 +264,11 @@ int main(int argc, char **argv) {
                 Entity* a = levelEntities[i];
 
                 a->Tick();
-                if (a->HasFire && a->HasFrost)  // Fire overrites frost
+                if (a->HasFire && a->HasFrost)  // Fire overrides frost
                     a->HasFrost = false;
                 
                 if (a->HasFire || a->HasFrost)  // Freeze or thaw nearby water
-                    currentLevel->FreezeArea(a->x, a->y, 2, a->HasFire);
+                    currentLevel->FreezeArea(a->x, a->y, 1, a->HasFire);
 
                 if (currentLevel->GetTileID(a->x, a->y) == 8) {
                     if (!a->OnPressurePlate) {

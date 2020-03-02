@@ -64,11 +64,11 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles) {
                 else if (obj->GetID() == 6) {   // Extinguish and use torches
                     Torch* t = dynamic_cast<Torch*>(obj);
                     if (t) {
-                        if (!HasFire && !HasFrost && t->FireUsable) {
+                        if (t->FireUsable && ((!HasFire && !HasFrost) || (HasFrost && obj->HasFire))) {
                             HasFire = obj->HasFire;
                             HasFrost = obj->HasFrost;
                             t->Extinguish();
-                        } else if (!t->Extinguishable && (HasFire || HasFrost)) {
+                        } else if (t->Extinguishable && (HasFire || HasFrost)) {
                             t->HasFire = HasFire;
                             t->HasFrost = HasFrost;
                         }
