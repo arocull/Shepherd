@@ -96,6 +96,14 @@ int main(int argc, char **argv) {
     world[4][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid14");
     world[4][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid15");
 
+    world[5][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid16");
+    world[5][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid17");
+    world[5][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid18");
+
+    world[6][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid19");
+    world[6][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid20");
+    world[6][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid21");
+
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data)
     for (int x = 0; x < WorldWidth; x++) {

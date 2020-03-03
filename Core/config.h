@@ -1,4 +1,4 @@
-#define WorldWidth 5
+#define WorldWidth 7
 #define WorldHeight 3
 #define MapWidth 40
 #define MapHeight 15
