@@ -33,6 +33,10 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
                         torch->HasFire = HasFire;
                         torch->HasFrost = HasFrost; 
                     }
+                // If it hits a crate, incinerate it
+                } else if (hit->GetID() == 5) {
+                    Crate* crate = dynamic_cast<Crate*>(hit);
+                    if (crate && crate->canIncinerate) crate->Incinerate(particles, this);
                 } else {
                     hit->HasFire = HasFire;
                     hit->HasFrost = HasFrost;  

@@ -434,6 +434,11 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, (int) 200*(1.0f-percentage));
         base.w = (int) tileRes*2.75*(sin(PI*percentage)+1.0)/2;
         base.h = base.w;
+    } else if (id == 6) {
+        SDL_SetRenderDrawColor(canvas, 80, 80, 40, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
+        base.w = (int) tileRes*((sin(PI*percentage) + 1.0)/2);
+        base.h = base.w;
+        base.y -= tileRes*((sin(PI*percentage) + 1.0)/2);
     }
 
     base.x-=(base.w-tileRes)/2;
