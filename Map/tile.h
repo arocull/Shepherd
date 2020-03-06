@@ -9,6 +9,7 @@ struct Tile {
     int id = 0;
     bool solid = false;
     bool liquid = false;
+    bool pitfall = false;
 };
 
 void SetTileID(struct Tile* tile, int newID);
