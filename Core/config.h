@@ -43,6 +43,9 @@
 // Maximum number of audio channels to play audio on at a time
 #define MaxAudioChannels 10
 
+// Maximum length of an AI path (used for lots of rapid memory allocation, try to keep low)
+#define MaxPathLength 100
+
 
 // Debug //
 

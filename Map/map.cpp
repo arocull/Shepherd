@@ -53,9 +53,13 @@ int Map::GetTileID(int x, int y) {
 bool Map::IsTileSolid(int x, int y) {
     return tiles[x][y].solid;
 }
-// Checks if the tile at X, Y is a liquid
+// Checks if the tile at X, Y is a liquid (not pathable by certain creatures)
 bool Map::IsTileLiquid(int x, int y) {
     return tiles[x][y].liquid;
+}
+// Checks if the tile at X, Y is a pitfall (not pathable but can be crossed by flying projectiles)
+bool Map::IsTilePitfall(int x, int y) {
+    return tiles[x][y].pitfall;
 }
 
 

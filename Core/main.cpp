@@ -39,6 +39,7 @@ $> run
 
 #include "Entities/entity_management.h"
 #include "Entities/movement.h"
+#include "Entities/AI/path_manager.h"
 #include "Map/map_loading.h"
 
 #include "Core/triggers.h"
@@ -253,6 +254,7 @@ int main(int argc, char **argv) {
 
                 if (player->HasFire) {          // Sling Fireball
                     player->SlingFireball(levelEntities, particles);
+                    soundService.PlaySound("Audio/Resources/FireballSling.wav");
                 } else {        // Rally Sheep / Swing Attack
                     player->SwingAttack(levelEntities, particles);
                     Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
@@ -312,18 +314,22 @@ int main(int argc, char **argv) {
                     }
 
 
-                } else if (a->GetID() == 2/* && (ticks % 2) == 0*/) {   //Sheep AI; follow player every other tick
+                } else if (a->GetID() == 2 && ((ticks % 2) == 0 || distGrid(a->x, a->y, player->x, player->y) > 4)) {   //Sheep AI; follow player every other tick
                     a->animation = 0;
 
-                    int dirToPlayerX = (player->x - a->x);
-                    int dirToPlayerY = (player->y - a->y);
-                    if (abs(dirToPlayerX) >= abs(dirToPlayerY))
-                        dirToPlayerY = 0;
-                    else
-                        dirToPlayerX = 0;
+                    Sheep* sheep = dynamic_cast<Sheep*>(a);
 
-                    Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToPlayerX), -sgn(dirToPlayerY));
+                    int dirX = 0;
+                    int dirY = 0;
 
+                    CheckPathObscurity(sheep->currentPath, currentLevel, levelEntities, true);
+                    if (!sheep->currentPath || !sheep->currentPath->complete || !(sheep->currentPath->goalX == player->x && sheep->currentPath->goalY == player->y)) {
+                        Path_FreePath(sheep->currentPath);
+                        sheep->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, true);
+                    }
+                    GetNextMovement(a->x, a->y, sheep->currentPath, &dirX, &dirY);
+
+                    Movement_ShiftEntity(currentLevel, levelEntities, a, dirX, -dirY);
 
                 } else if (a->GetID() == 4) {   //Wolf AI, hunt down closest sheep--if none left, attack player
                     Wolf* wolf = dynamic_cast<Wolf*>(a);
@@ -341,19 +347,23 @@ int main(int argc, char **argv) {
                                 a->animation = 0;
                         } else {
                             Entity* target = wolf->GetTarget();
-                            int dirToTargetX = (target->x - a->x);
-                            int dirToTargetY = (target->y - a->y);
-                            if (abs(dirToTargetX) >= abs(dirToTargetY))
-                                dirToTargetY = 0;
-                            else
-                                dirToTargetX = 0;
 
-                            if (distF((float) wolf->x, (float) wolf->y, (float) target->x, (float) target->y) <= 1.1f) {
+                            if (distGrid(wolf->x, wolf->y, target->x, target->y) <= 1) {
                                 target->TakeDamage(1, wolf);
                                 wolf->EndHunt();
                             }
 
-                            Movement_ShiftEntity(currentLevel, levelEntities, a, sgn(dirToTargetX), -sgn(dirToTargetY));
+                            int dirX = 0;
+                            int dirY = 0;
+
+                            CheckPathObscurity(wolf->currentPath, currentLevel, levelEntities, false);
+                            if (!wolf->currentPath || !wolf->currentPath->complete || !(wolf->currentPath->goalX == target->x && wolf->currentPath->goalY == target->y)) {
+                                Path_FreePath(wolf->currentPath);
+                                wolf->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, false);
+                            }
+                            GetNextMovement(a->x, a->y, wolf->currentPath, &dirX, &dirY);
+
+                            Movement_ShiftEntity(currentLevel, levelEntities, a, dirX, -dirY);
                             a->animation = 1;
                         }       
                     }
@@ -385,7 +395,7 @@ int main(int argc, char **argv) {
                 a->maxLifetime = 0.75f;
             }
 
-            GameTick = 0;
+            GameTick--;
         }
 
 

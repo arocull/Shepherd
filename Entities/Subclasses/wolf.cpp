@@ -17,6 +17,8 @@ Wolf::Wolf(int xPos, int yPos) {
 void Wolf::Unload() {
     EndHunt();
     stun = 0;
+
+    Path_FreePath(currentPath);
 }
 
 

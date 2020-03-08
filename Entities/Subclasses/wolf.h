@@ -2,6 +2,8 @@
 
 #include "Entities/entity.h"
 
+#include "Entities/AI/path_manager.h"
+
 class Wolf : public Entity {
     public:
         Wolf(int x, int y);
@@ -21,4 +23,7 @@ class Wolf : public Entity {
         bool IsHunting();
 
         Entity* GetTarget();
+
+        // Holds pathdata
+        Path* currentPath = nullptr;
 };

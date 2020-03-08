@@ -13,6 +13,7 @@ template <typename T> T max(T val1, T val2);
 
 template <typename T> int dist(T x1, T y1, T x2, T y2);
 
+template <typename T> T distGrid(T x1, T y1, T x2, T y2);
 
 
 float distF(float x1, float y1, float x2, float y2);
@@ -46,4 +47,9 @@ template <typename T> T max(T val1, T val2) {
 // Returns the Pythagorean distance between two points--works with any numerical type
 template <typename T> int dist(T x1, T y1, T x2, T y2) {
     return sqrt(pow(x2-x1, 2) + pow(y2-y1, 2));
+}
+
+// Returns the gridded distance between two points
+template <typename T> T distGrid(T x1, T y1, T x2, T y2) {
+    return abs(x2 - x1) + abs(y2 - y1);
 }

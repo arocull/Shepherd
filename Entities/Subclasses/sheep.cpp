@@ -10,6 +10,10 @@ Sheep::Sheep(int xPos, int yPos) {
     animationMetadata = Health;
 }
 
+void Sheep::Unload() {
+    Path_FreePath(currentPath);
+}
+
 bool Sheep::TakeDamage(int dmgAmount, Entity* attacker) {
     if (Armored) {
         attacker->TakeDamage(3, this);

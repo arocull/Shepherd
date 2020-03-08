@@ -32,6 +32,7 @@ class Map {
         int GetTileID(int x, int y);
         bool IsTileSolid(int x, int y);
         bool IsTileLiquid(int x, int y);
+        bool IsTilePitfall(int x, int y);
 
         void WallRectangle(int x, int y);
         void WallRectangle(int startX, int startY, int endX, int endY, int id);
