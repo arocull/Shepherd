@@ -71,6 +71,9 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_pillar;
         SDL_Texture* TEXTURE_pillar;
 
+        SDL_Surface* TEXTURESURFACE_vines;
+        SDL_Texture* TEXTURE_vines;
+
         SDL_Surface* TEXTURESURFACE_crate;
         SDL_Texture* TEXTURE_crate;
 
@@ -94,7 +97,7 @@ class RenderWindow {
 
     public:
         void FillViewportBackground(int r, int g, int b);
-        void DrawTile(int tileX, int tileY, int tileID);
+        void DrawTile(int tileX, int tileY, int tileID, int tilingIndex);
         void DrawEntity(int posX, int posY, int id, bool flip, int animation, int metadata);
         void DrawParticle(float posX, float posY, int id, float percentage);
         

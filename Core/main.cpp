@@ -428,9 +428,20 @@ int main(int argc, char **argv) {
         }
 
         // Draw tiles first
+        int currentTileID = 0;
         for (int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
-                window.DrawTile(x,y,currentLevel->GetTileID(x,y));
+                currentTileID = currentLevel->GetTileID(x,y);
+                window.DrawTile(
+                    x,
+                    y,
+                    currentTileID,
+                    IsTileable(currentTileID) ? GetTilingIndex(
+                        currentLevel->GetTileIDConstrained(x,y-1) == currentTileID,
+                        currentLevel->GetTileIDConstrained(x,y+1) == currentTileID,
+                        currentLevel->GetTileIDConstrained(x+1,y) == currentTileID,
+                        currentLevel->GetTileIDConstrained(x-1,y) == currentTileID
+                    ) : 0);
             }
         }
 

@@ -49,6 +49,11 @@ void Map::SetTile(int x, int y, int newID) {
 int Map::GetTileID(int x, int y) {
     return tiles[x][y].id;
 }
+// Returns the tile ID of the given tile at X, Y, constrained to the map bounds
+int Map::GetTileIDConstrained(int x, int y) {
+    if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) return 0;
+    return tiles[x][y].id;
+}
 // Checks if the tile at X, Y is solid
 bool Map::IsTileSolid(int x, int y) {
     return tiles[x][y].solid;

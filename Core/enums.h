@@ -14,6 +14,7 @@ enum TileID {   // : int_fast8_t
     ET_Door_Vertical = 11,
     ET_Door_Horizontal = 12,
     ET_Ice = 13,
+    ET_Vines = 14,
 
     ET_None = 0,       // Empty space
     ET_Trigger1 = -1,  // Triggers

@@ -30,6 +30,7 @@ class Map {
 
         void SetTile(int x, int y, int newID);
         int GetTileID(int x, int y);
+        int GetTileIDConstrained(int x, int y);
         bool IsTileSolid(int x, int y);
         bool IsTileLiquid(int x, int y);
         bool IsTilePitfall(int x, int y);

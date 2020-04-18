@@ -16,3 +16,7 @@ struct Tile {
 
 void SetTileID(struct Tile* tile, int newID);
 struct Tile* MakeTile(int x, int y, int id);
+
+
+bool IsTileable(int tileID);
+int GetTilingIndex(bool up, bool down, bool right, bool left);

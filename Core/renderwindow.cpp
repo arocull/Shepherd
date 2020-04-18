@@ -46,6 +46,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_pillar = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_pillar);
         }
 
+        TEXTURESURFACE_vines = SDL_LoadBMP("Textures/Vines.bmp");
+        if (TEXTURESURFACE_vines) {
+            TEXTURE_vines = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_vines);
+        }
+
         TEXTURESURFACE_crate = SDL_LoadBMP("Textures/Crate.bmp");
         if (TEXTURESURFACE_crate) {
             TEXTURE_crate = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_crate);
@@ -153,6 +158,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_rock);
     SDL_FreeSurface(TEXTURESURFACE_pillar);
     SDL_DestroyTexture(TEXTURE_pillar);
+    SDL_FreeSurface(TEXTURESURFACE_vines);
+    SDL_DestroyTexture(TEXTURE_vines);
     SDL_FreeSurface(TEXTURESURFACE_crate);
     SDL_DestroyTexture(TEXTURE_crate);
     SDL_FreeSurface(TEXTURESURFACE_torch);
@@ -185,7 +192,7 @@ void RenderWindow::FillViewportBackground(int r, int g, int b) {
     SDL_RenderFillRect(canvas, &box);
     return;
 }
-void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
+void RenderWindow::DrawTile(int tileX, int tileY, int tileID, int tilingIndex) {
     if (tileID <= TileID::ET_None) return;
 
     SDL_Rect tile;
@@ -196,7 +203,7 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
     
     float z = sqrt(pow(tileX,2) + pow(tileY,2));
 
-    bool requiresSource = (tileID == TileID::ET_Tree);
+    bool requiresSource = (tileID == TileID::ET_Tree || tileID == TileID::ET_Vines);
     bool defaultDraw = true;
     
     switch (tileID) {
@@ -265,11 +272,36 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
         src.x = 0;
         src.y = 0;
 
+        if (tilingIndex > 0) { // Tileables
+            switch (tilingIndex) {
+                case 1: src.x = 32; break;
+                case 14: src.x = 64; break;
+                case 12: src.x = 96; break;
+                case 15: src.x = 128; break;
+
+                case 8: src.y = 32; break;
+                case 6: src.y = 32; src.x = 32; break;
+                case 9: src.y = 32; src.x = 64; break;
+                case 13: src.y = 32; src.x = 96; break;
+
+                case 4: src.y = 64; break;
+                case 5: src.y = 64; src.x = 32; break;
+                case 7: src.y = 64; src.x = 64; break;
+                case 3: src.y = 64; src.x = 96; break;
+
+                case 10: src.y = 96; break;
+                case 2: src.y = 96; src.x = 32; break;
+                case 11: src.y = 96; src.x = 64; break;
+            }
+        }
+
         switch (tileID) {     //Tree
             case TileID::ET_Tree:
                 src.x = ((tileX + tileY)%3) * 32;
                 SDL_RenderCopyEx(canvas, TEXTURE_tree, &src, &tile, 0, NULL, SDL_FLIP_NONE);
                 break;
+            case TileID::ET_Vines:
+                SDL_RenderCopyEx(canvas, TEXTURE_vines, &src, &tile, 0, NULL, SDL_FLIP_NONE);
             default:
                 break;
         }

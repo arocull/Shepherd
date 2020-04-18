@@ -111,6 +111,7 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'D': tileID = TileID::ET_Door_Vertical; break;  //Door (Closed Vertical)
                 case 'd': tileID = TileID::ET_Door_Horizontal; break;  //Door (Closed Horizontal)
                 case 'i': tileID = TileID::ET_Ice; break;  //Ice
+                case 'v': tileID = TileID::ET_Vines; break;  // Vines
 
                 // Map Triggers
                 case '1': tileID = -1; break;   //Trigger 1

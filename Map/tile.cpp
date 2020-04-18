@@ -41,3 +41,34 @@ void SetTileID(struct Tile* tile, int newID) {
             tile->pitfall = false;
     }
 }
+
+
+bool IsTileable(int tileID) {
+    return tileID == TileID::ET_Vines;
+}
+int GetTilingIndex(bool up, bool down, bool right, bool left) {
+    if (up && down && right && left) return 5;  // 4-way junction
+
+    if (up && down) {
+        if (right) return 14;
+        if (left) return 15;
+        return 6;       // Vertical
+    }
+    if (left && right) {
+        if (down) return 12;
+        if (up) return 13;
+        return 7;    // Horizontal
+    }
+
+    if (down && right) return 8;
+    if (down && left) return 9;
+    if (up && right) return 10;
+    if (up && left) return 11;
+
+    if (up) return 2;       // Bottom cap
+    if (down) return 1;     // Top cap
+    if (right) return 4;    // Left cap
+    if (left) return 3;     // Right cap
+
+    return 0;
+}
