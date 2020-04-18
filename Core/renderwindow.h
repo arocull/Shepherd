@@ -9,6 +9,8 @@
 #include "charmap.h"
 #include "mathutil.h"
 
+#include "Core/enums.h"
+
 // Render Window - An individual window that renders things.
 class RenderWindow {
     public:

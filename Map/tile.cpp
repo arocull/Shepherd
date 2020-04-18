@@ -14,25 +14,27 @@ struct Tile* MakeTile(int x, int y, int id) {
 void SetTileID(struct Tile* tile, int newID) {
     tile->id = newID;
     switch (newID) {
-        case 10:    //Empty Tile
+        case TileID::ET_Empty_Tile:    //Empty Tile
+            tile->liquid = false;
             tile->solid = false;
             tile->pitfall = true;
             break;
-        case 1:     //Wall
-        case 4:     //Tree
-        case 5:     //Rock
-        case 6:     //Pillar
-        case 11:    //Door (Closed Vertical)
-        case 12:    //Door (Closed Horizontal)
+        case TileID::ET_Wall:     //Wall
+        case TileID::ET_Tree:     //Tree
+        case TileID::ET_Rock:     //Rock
+        case TileID::ET_Pillar:     //Pillar
+        case TileID::ET_Door_Vertical:    //Door (Closed Vertical)
+        case TileID::ET_Door_Horizontal:    //Door (Closed Horizontal)
+            tile->liquid = false;
             tile->solid = true;
+            tile->pitfall = false;
             break;
-        case 2:     //Water
-        case 3:     //Magma
+        case TileID::ET_Water:     //Water
+        case TileID::ET_Magma:     //Magma
             tile->liquid = true;
             tile->solid = false;
             tile->pitfall = false;
             break;
-        case 13:    //Ice
         default:
             tile->solid = false;
             tile->liquid = false;

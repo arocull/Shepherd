@@ -98,19 +98,19 @@ Map* GenerateMapFromFile(const char* filePath) {
 
             // Check character and set tile ID accordingly; defaults to 0 if none of these are present
             switch (charID) {
-                case 'W': tileID = 1; break;    //Wall
-                case 'w': tileID = 2; break;    //Water
-                case 'L': tileID = 3; break;    //Lava
-                case 'T': tileID = 4; break;    //Tree
-                case 'R': tileID = 5; break;    //Rock
-                case 'P': tileID = 6; break;    //Pillar
-                case 'e': tileID = 7; break;    //Empty Puzzle Piece
-                case 'p': tileID = 8; break;    //Pressure Plate
-                case 'F': tileID = 9; break;    //Fake Wall
-                case 'E': tileID = 10; break;   //Empty Tile (black)
-                case 'D': tileID = 11; break;  //Door (Closed Vertical)
-                case 'd': tileID = 12; break;  //Door (Closed Horizontal)
-                case 'i': tileID = 13; break;  //Ice
+                case 'W': tileID = TileID::ET_Wall; break;    //Wall
+                case 'w': tileID = TileID::ET_Water; break;    //Water
+                case 'L': tileID = TileID::ET_Magma; break;    //Lava
+                case 'T': tileID = TileID::ET_Tree; break;    //Tree
+                case 'R': tileID = TileID::ET_Rock; break;    //Rock
+                case 'P': tileID = TileID::ET_Pillar; break;    //Pillar
+                case 'e': tileID = TileID::ET_Empty_Puzzle_Piece; break;    //Empty Puzzle Piece
+                case 'p': tileID = TileID::ET_Pressure_Plate; break;    //Pressure Plate
+                case 'F': tileID = TileID::ET_Fake_Wall; break;    //Fake Wall
+                case 'E': tileID = TileID::ET_Empty_Tile; break;   //Empty Tile (black)
+                case 'D': tileID = TileID::ET_Door_Vertical; break;  //Door (Closed Vertical)
+                case 'd': tileID = TileID::ET_Door_Horizontal; break;  //Door (Closed Horizontal)
+                case 'i': tileID = TileID::ET_Ice; break;  //Ice
 
                 // Map Triggers
                 case '1': tileID = -1; break;   //Trigger 1
@@ -120,7 +120,7 @@ Map* GenerateMapFromFile(const char* filePath) {
 
                 // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
                 case 'c':       // Crate (with Empty Puzzle Piece tile beneath)
-                    tileID = 7;
+                    tileID = TileID::ET_Empty_Puzzle_Piece;
                 case 'h':       // Wolf (or Hound)
                 case 't':       // Torch
                 case 'l':       // Lever

@@ -4,6 +4,7 @@
 
 #include "Core/config.h"
 #include "Core/mathutil.h"
+#include "Core/enums.h"
 
 #include "Map/tile.h"
 #include "Map/map.h"

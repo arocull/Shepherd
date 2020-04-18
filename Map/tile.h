@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "Core/enums.h"
+
 struct Tile {
     int x;
     int y;

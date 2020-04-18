@@ -186,73 +186,93 @@ void RenderWindow::FillViewportBackground(int r, int g, int b) {
     return;
 }
 void RenderWindow::DrawTile(int tileX, int tileY, int tileID) {
-    if (tileID == 0) return;
+    if (tileID <= TileID::ET_None) return;
 
     SDL_Rect tile;
     tile.w = tileRes;
     tile.h = tileRes;
     tile.x = tileX*tileRes + offsetX;
     tile.y = tileY*tileRes + offsetY;
-
     
-    if (tileID == 1) {          // Wall
-        if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
-            SDL_SetRenderDrawColor(canvas, 215, 215, 215, 0);
-        else
-            SDL_SetRenderDrawColor(canvas, 235, 235, 235, 0);
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 2) {   //Water
-        SDL_SetRenderDrawColor(canvas, 0, 30, 200 + (int) (sin(time + (sqrt(pow(tileX,2) + pow(tileY,2)))) * 20), 0);
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 3) {    // Magma
-        float z = sqrt(pow(tileX,2) + pow(tileY,2));
-        SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2 + z) * 30), 80 + (int) (sin(time/3 + z) * 20), 20, 0);
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 4) {     //Tree
+    float z = sqrt(pow(tileX,2) + pow(tileY,2));
+
+    bool requiresSource = (tileID == TileID::ET_Tree);
+    bool defaultDraw = true;
+    
+    switch (tileID) {
+        case TileID::ET_Wall:
+            if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
+                SDL_SetRenderDrawColor(canvas, 215, 215, 215, 0);
+            else
+                SDL_SetRenderDrawColor(canvas, 235, 235, 235, 0);
+            break;
+        case TileID::ET_Water:
+            SDL_SetRenderDrawColor(canvas, 0, 30, 200 + (int) (sin(time + z) * 20), 0);
+            break;
+        case TileID::ET_Magma:
+            SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2 + z) * 30), 80 + (int) (sin(time/3 + z) * 20), 20, 0);
+            break;
+        case TileID::ET_Rock:
+            SDL_RenderCopy(canvas, TEXTURE_rock, NULL, &tile);
+            defaultDraw = false;
+            break;
+        case TileID::ET_Pillar:
+            SDL_RenderCopy(canvas, TEXTURE_pillar, NULL, &tile);
+            defaultDraw = false;
+            break;
+        case TileID::ET_Empty_Puzzle_Piece:
+            SDL_SetRenderDrawColor(canvas, 90, 90, 90, 0);
+            break;
+        case TileID::ET_Pressure_Plate:
+            tile.w = 4*tileRes/5;
+            tile.h = tile.w;
+            tile.x+=tileRes/10;
+            tile.y+=tileRes/10;
+            SDL_SetRenderDrawColor(canvas, 130, 130, 130, 0);
+            break;
+        case TileID::ET_Fake_Wall:
+            if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
+                SDL_SetRenderDrawColor(canvas, 205, 205, 205, 0);
+            else
+                SDL_SetRenderDrawColor(canvas, 225, 225, 225, 0);
+            break;
+        case TileID::ET_Empty_Tile:
+            SDL_SetRenderDrawColor(canvas, 0, 0, 0, 0);
+            break;
+        case TileID::ET_Door_Vertical:
+            SDL_SetRenderDrawColor(canvas, 100, 60, 50, 0);
+            tile.x += tileRes*.1;
+            tile.w *= .8;
+            break;
+        case TileID::ET_Door_Horizontal:
+            SDL_SetRenderDrawColor(canvas, 100, 60, 50, 0);
+            tile.y += tileRes*.1;
+            tile.h *= .8;
+            break;
+        case TileID::ET_Ice:
+            SDL_SetRenderDrawColor(canvas, 220, 225, 240, 0);
+            break;
+        default:
+            defaultDraw = false;
+            break;
+    }
+    if (!requiresSource && defaultDraw) SDL_RenderFillRect(canvas, &tile);
+
+    if (requiresSource) {
         SDL_Rect src;
         src.w = 32;
         src.h = 32;
-        src.x = ((tileX + tileY)%3) * 32;
+        src.x = 0;
         src.y = 0;
-        SDL_RenderCopyEx(canvas, TEXTURE_tree, &src, &tile, 0, NULL, SDL_FLIP_NONE);
-    } else if (tileID == 5) {    //Rock
-        SDL_RenderCopy(canvas, TEXTURE_rock, NULL, &tile);
-    } else if (tileID == 6) {    //Pillar
-        SDL_RenderCopy(canvas, TEXTURE_pillar, NULL, &tile);
-    } else if (tileID == 7) {   //Empty Puzzle Piece
-        SDL_SetRenderDrawColor(canvas, 90, 90, 90, 0);
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 8) {   //Pressure Plate
-        tile.w = 4*tileRes/5;
-        tile.h = tile.w;
-        tile.x+=tileRes/10;
-        tile.y+=tileRes/10;
-        SDL_SetRenderDrawColor(canvas, 130, 130, 130, 0);
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 9) {   //Fake Wall
-        if ((tileX % 2 == 1 && tileY % 2 == 0) || (tileX % 2 == 0 && tileY % 2 == 1))
-            SDL_SetRenderDrawColor(canvas, 205, 205, 205, 0);
-        else
-            SDL_SetRenderDrawColor(canvas, 225, 225, 225, 0);
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 10) {  //Empty Tile
-        SDL_SetRenderDrawColor(canvas, 0, 0, 0, 0);
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 11 || tileID == 12) {  //Door
-        SDL_SetRenderDrawColor(canvas, 100, 60, 50, 0);
 
-        if (tileID == 11) {
-            tile.x += tileRes*.1;
-            tile.w *= .8;
-        } else if (tileID == 12) {
-            tile.y += tileRes*.1;
-            tile.h *= .8;
+        switch (tileID) {     //Tree
+            case TileID::ET_Tree:
+                src.x = ((tileX + tileY)%3) * 32;
+                SDL_RenderCopyEx(canvas, TEXTURE_tree, &src, &tile, 0, NULL, SDL_FLIP_NONE);
+                break;
+            default:
+                break;
         }
-
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (tileID == 13) {  //Ice
-        SDL_SetRenderDrawColor(canvas, 220, 225, 240, 0);
-        SDL_RenderFillRect(canvas, &tile);
     }
 }
 void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, int meta) {
@@ -267,7 +287,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
         flipStyle = SDL_FLIP_HORIZONTAL;
 
     double angle = 0.0;
-    if (id == 1) {          // Shepherd
+    if (id == EntityID::EE_Shepherd) {          // Shepherd
         int step = ticks/TickRate % 2;
 
         switch (anim) {
@@ -314,7 +334,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
             src.y+=32*meta;
             SDL_RenderCopyEx(canvas, TEXTURE_shepherd, &src, &tile, angle, NULL, flipStyle);
         }
-    } else if (id == 2) {  // Sheep
+    } else if (id == EntityID::EE_Sheep) {  // Sheep
         SDL_Rect src;
         src.w = 32;
         src.h = 32;
@@ -343,7 +363,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
             src.y+=32;
             SDL_RenderCopyEx(canvas, TEXTURE_sheep, &src, &tile, angle, NULL, flipStyle);
         }
-    } else if (id == 3) {   // Fireball
+    } else if (id == EntityID::EE_Fireball) {   // Fireball
         int sha = (int) 20 * (sin(time*20) + 1);
         SDL_SetRenderDrawColor(canvas, 210 + sha, 100 + sha, 0, 0);
 
@@ -353,7 +373,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
         tile.h *= .5;
 
         SDL_RenderFillRect(canvas, &tile);
-    } else if (id == 4) {   // Wolf
+    } else if (id == EntityID::EE_Wolf) {   // Wolf
         SDL_Rect src;
         src.h = 32;
         src.w = 32;
@@ -369,9 +389,9 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
             src.x = (ticks/4 % 2) * 32;
 
         SDL_RenderCopyEx(canvas, TEXTURE_wolf, &src, &tile, angle, NULL, flipStyle);
-    } else if (id == 5) {   // Crate
+    } else if (id == EntityID::EE_Crate) {   // Crate
         SDL_RenderCopy(canvas, TEXTURE_crate, NULL, &tile);
-    } else if (id == 6) {   // Torch
+    } else if (id == EntityID::EE_Torch) {   // Torch
         SDL_Rect src;
         src.h = 32;
         src.w = 32;
@@ -389,7 +409,7 @@ void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, i
 
             SDL_RenderCopyEx(canvas, TEXTURE_torch, &src, &tile, angle, NULL, flipStyle);
         }
-    } else if (id == 7) {   // Lever
+    } else if (id == EntityID::EE_Lever) {   // Lever
         SDL_Rect src;
         src.h = 32;
         src.w = 32;
