@@ -15,6 +15,7 @@ enum TileID {   // : int_fast8_t
     ET_Door_Horizontal = 12,
     ET_Ice = 13,
     ET_Vines = 14,
+    ET_Scroll = 15,    // Scrolls are unique triggerables, but still need to be rendered
 
     ET_None = 0,       // Empty space
     ET_Trigger1 = -1,  // Triggers

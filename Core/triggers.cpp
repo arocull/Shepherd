@@ -3,7 +3,7 @@
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID) {
     int id = map->GetMapID();
 
-    triggerID = max(1,min(triggerID, 4));
+    triggerID = max(1,min(triggerID, 5));
 
     
     if (!map->Triggers[triggerID]) {
@@ -33,6 +33,12 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         else if (id == 11 && triggerID == 4)
             window->SetDialogueText("The door is marked by four flame-like symbols.");
     }
+}
+void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map,  Entity* entities[]) {
+    if (!map->HasScroll()) return;
+
+    window->SetDialogueText(map->GetScroll(), 100);
+    map->ScrollDiscovered = true;
 }
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     // Starting Level Cinematic

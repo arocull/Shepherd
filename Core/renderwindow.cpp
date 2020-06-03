@@ -259,6 +259,12 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID, int tilingIndex) {
         case TileID::ET_Ice:
             SDL_SetRenderDrawColor(canvas, 220, 225, 240, 0);
             break;
+        
+        case TileID::ET_Scroll:
+            SDL_SetRenderDrawColor(canvas, 230, 220, 0, 0);
+            tile.x += tileRes*.15;
+            tile.w *= 0.7;
+            break;
         default:
             defaultDraw = false;
             break;
@@ -554,9 +560,9 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* 
         currentIndex++;
 
         char l = text[currentIndex];
-        if (l == '\n') //If it's a new line, move on (automatically gets pushed on)
+        if (l == '\n' || l == '\0') //If it's a new line, move on (automatically gets pushed on)
             break;
-        else if (l == ' ' || l == '\0') //If it's a space or terminating character, count it as the end of a word
+        else if (l == ' ') //If it's a space or terminating character, count it as the end of a word
             lastWordEnd = currentIndex-1;
 
         leftXSim+=sizeX + sizeX*LetterSpacing;
@@ -567,7 +573,7 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* 
     if (text[currentIndex] == ' ')
         currentIndex++;
     while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftX <= rightX-sizeX && currentIndex <= lastWordEnd) {
-        if (text[currentIndex] == '\n') { //If it's a new line, move on (automatically gets pushed on)
+        if (text[currentIndex] == '\n' || text[currentIndex] == '\0') { //If it's a new line, move on (automatically gets pushed on)
             currentIndex++;
             break;
         }

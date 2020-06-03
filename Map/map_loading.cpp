@@ -112,12 +112,13 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'd': tileID = TileID::ET_Door_Horizontal; break;  //Door (Closed Horizontal)
                 case 'i': tileID = TileID::ET_Ice; break;  //Ice
                 case 'v': tileID = TileID::ET_Vines; break;  // Vines
+                case 's': tileID = TileID::ET_Scroll; break; // Scroll, a unique triggerable
 
                 // Map Triggers
-                case '1': tileID = -1; break;   //Trigger 1
-                case '2': tileID = -2; break;   //Trigger 2
-                case '3': tileID = -3; break;   //Trigger 3
-                case '4': tileID = -4; break;   //Trigger 4 - Note: no debounce
+                case '1': tileID = TileID::ET_Trigger1; break;   //Trigger 1
+                case '2': tileID = TileID::ET_Trigger2; break;   //Trigger 2
+                case '3': tileID = TileID::ET_Trigger3; break;   //Trigger 3
+                case '4': tileID = TileID::ET_Trigger4; break;   //Trigger 4 - Note: no debounce
 
                 // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
                 case 'c':       // Crate (with Empty Puzzle Piece tile beneath)
@@ -153,12 +154,27 @@ Map* GenerateMapFromFile(const char* filePath) {
         char digit1 = mapFile.get();
         char digit2 = mapFile.get();
 
-        int mapID = ((int) (digit1 - '0')) * 10 + ((int) (digit2 - '0'));
+        int mapID = ((int) (digit1 - '0')) * 10 + ((int) (digit2 - '0')); // Convert map ID to number
         map->SetMapID(mapID);
 
         char biome = mapFile.get();
-        if (!mapFile.eof())
+        if (!mapFile.eof()) { // If there is a biome, get it
             map->SetMapBiome(biome);
+
+            // After biomes, the only thing left in map data is scroll text, so build a string and set it using that
+            mapFile.get();  // Clear out newline
+            if (!mapFile.eof()) {   // Make sure we aren't at the end of the file though
+                char* scroll = (char*) calloc(sizeof(char), MaxScrollLength);
+                int scrollIndex = 0;
+                for (; scrollIndex < MaxScrollLength - 1 && !mapFile.eof(); scrollIndex++) {
+                    scroll[scrollIndex] = mapFile.get();
+                }
+                scroll[scrollIndex - 1] = '\0';     // Terminating character
+
+                map->SetScroll(scroll);
+                free(scroll);
+            }
+        }
     }
 
     mapFile.close();

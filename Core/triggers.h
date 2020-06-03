@@ -20,6 +20,9 @@
 // Triggered whenever the player steps on a trigger tile or a pressure plate is pressed
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
 
+// Triggered whenever the player steps on a scroll (reads scroll off and performs unique actions if necessary)
+void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map,  Entity* entities[]);
+
 // Triggered whenever a new game starts--use for opening cinematic when very first area is loaded
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 

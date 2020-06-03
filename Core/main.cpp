@@ -243,10 +243,12 @@ int main(int argc, char **argv) {
 
             // Check Entities for Fire
             int standingTile = currentLevel->GetTileID(player->x, player->y);
-            if (standingTile == 3)
+            if (standingTile == TileID::ET_Magma)
                 player->HasFire = true;
             else if (standingTile < 0)
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
+            else if (standingTile == TileID::ET_Scroll)
+                Trigger_OnScroll(&window, &soundService, currentLevel, levelEntities);
 
             // Toss Fireball
             if (MoveFireballQueued) {
@@ -436,18 +438,18 @@ int main(int argc, char **argv) {
                     x,
                     y,
                     currentTileID,
-                    IsTileable(currentTileID) ? GetTilingIndex(
+                    IsTileable(currentTileID) ? GetTilingIndex( // If the tile is tileable, get the tiling index
                         currentLevel->GetTileIDConstrained(x,y-1) == currentTileID,
                         currentLevel->GetTileIDConstrained(x,y+1) == currentTileID,
                         currentLevel->GetTileIDConstrained(x+1,y) == currentTileID,
                         currentLevel->GetTileIDConstrained(x-1,y) == currentTileID
-                    ) : 0);
+                    ) : 0); // Otherwise, simply return zero
             }
         }
 
         // Draw all entities aside from Shepherd
         for (Entity* obj : levelEntities) {
-            if (obj && obj->GetID() != 1)
+            if (obj && obj->GetID() != EntityID::EE_Shepherd)
                 window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation, obj->animationMetadata);
         }
 

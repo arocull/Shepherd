@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "config.h"
 
@@ -23,10 +24,16 @@ class Map {
         Puzzle* Puzzles;                // Puzzles that might accessible in levels.
         bool PuzzleStatus = false;      // Has the puzzle on this level been completed?
 
+        bool ScrollDiscovered = false;  // Has the scroll on this map been read before?
+
         void SetMapID(int Identification);
         int GetMapID();
         void SetMapBiome(char b);
         char GetMapBiome();
+
+        void SetScroll(const char* text);
+        bool HasScroll();
+        char* GetScroll();
 
         void SetTile(int x, int y, int newID);
         int GetTileID(int x, int y);
@@ -45,4 +52,7 @@ class Map {
         int EntitiesStored = 0;
         int id = -1;                // Map ID, can be anything--repeats are fine. This is read by triggers to tell what level is what.
         char biome = 'F';           // What color should we render the background as?
+
+        bool scrollSet = false;
+        char* scroll = NULL;          // Scroll text for this area
 };

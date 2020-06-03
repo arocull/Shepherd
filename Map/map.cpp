@@ -40,6 +40,20 @@ char Map::GetMapBiome() {
     return biome;
 }
 
+bool Map::HasScroll() {
+    return scrollSet;
+}
+void Map::SetScroll(const char* text) {
+    if (!scrollSet) {
+        scrollSet = true;
+        scroll = strdup(text);
+        printf("Setting scroll %s", scroll);
+    }
+}
+char* Map::GetScroll() {
+    return scroll;
+}
+
 
 // Sets the tile properties of the tile at X, Y based off the given ID
 void Map::SetTile(int x, int y, int newID) {
@@ -130,6 +144,12 @@ void Map::Free() {
         Puzzle_FreePuzzle(&Puzzles[i]);
     }
     free(Puzzles);
+
+    if (scrollSet) {
+        scrollSet = false;
+        free(scroll);
+        scroll = NULL;
+    }
     
     delete StoredEntities;
 }

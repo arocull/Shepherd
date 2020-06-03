@@ -46,14 +46,17 @@
 // Maximum length of an AI path (used for lots of rapid memory allocation, try to keep low)
 #define MaxPathLength 100
 
+// Maximum text length of a scroll in characters
+#define MaxScrollLength 256
+
 
 // Debug //
 
 // Uncomment if you want certain debug labels to be read
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 // Do we want to test a breakpoint without spawning sheep?
-#define DEBUG_RequireSheep true
+#define DEBUG_RequireSheep false
 // Set to true if you want to disable playing audio via SoundService
 #define DEBUG_AudioDisabled false
 // Automatically open X gates from the start of the game (for faster testing)
