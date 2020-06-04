@@ -40,18 +40,18 @@ char Map::GetMapBiome() {
     return biome;
 }
 
-bool Map::HasScroll() {
-    return scrollSet;
-}
-void Map::SetScroll(const char* text) {
+void Map::SetScroll(const char* text, const char* name) {
     if (!scrollSet) {
         scrollSet = true;
         scroll = strdup(text);
-        printf("Setting scroll %s", scroll);
+        scrollName = strdup(name);
     }
 }
 char* Map::GetScroll() {
     return scroll;
+}
+bool Map::HasScroll() {
+    return scrollSet;
 }
 
 
@@ -148,6 +148,7 @@ void Map::Free() {
     if (scrollSet) {
         scrollSet = false;
         free(scroll);
+        free(scrollName);
         scroll = NULL;
     }
     

@@ -31,7 +31,7 @@ class Map {
         void SetMapBiome(char b);
         char GetMapBiome();
 
-        void SetScroll(const char* text);
+        void SetScroll(const char* text, const char* name);
         bool HasScroll();
         char* GetScroll();
 
@@ -55,4 +55,5 @@ class Map {
 
         bool scrollSet = false;
         char* scroll = NULL;          // Scroll text for this area
+        char* scrollName = NULL;      // Scroll name for this area
 };

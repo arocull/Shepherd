@@ -560,9 +560,10 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* 
         currentIndex++;
 
         char l = text[currentIndex];
-        if (l == '\n' || l == '\0') //If it's a new line, move on (automatically gets pushed on)
+        if (l == '\n' || l == '\0') { //If it's a new line, move on (automatically gets pushed on)
+            lastWordEnd = currentIndex-1;
             break;
-        else if (l == ' ') //If it's a space or terminating character, count it as the end of a word
+        } else if (l == ' ') //If it's a space or terminating character, count it as the end of a word
             lastWordEnd = currentIndex-1;
 
         leftXSim+=sizeX + sizeX*LetterSpacing;

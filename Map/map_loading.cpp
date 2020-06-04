@@ -36,8 +36,13 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* lev
     CleanEntities(newLevel->StoredEntities);
 
 
-    //Spawn Sheep (if playerX or playerY is negative, do not spawn any)
-    if (DEBUG_RequireSheep && playerX >= 0 && playerY >= 0) {
+    // Spawn Sheep (if playerX or playerY is negative, do not spawn any)
+    if (
+        playerX >= 0 && playerY >= 0
+        #ifdef DEBUG_MODE
+            && DEBUG_RequireSheep
+        #endif
+    ) {
         int sheepLeft = MaxSheep;
 
         int top = playerY-1; int bottom = playerY+1; int left = playerX-1; int right = playerX+1;
@@ -164,15 +169,29 @@ Map* GenerateMapFromFile(const char* filePath) {
             // After biomes, the only thing left in map data is scroll text, so build a string and set it using that
             mapFile.get();  // Clear out newline
             if (!mapFile.eof()) {   // Make sure we aren't at the end of the file though
-                char* scroll = (char*) calloc(sizeof(char), MaxScrollLength);
-                int scrollIndex = 0;
-                for (; scrollIndex < MaxScrollLength - 1 && !mapFile.eof(); scrollIndex++) {
-                    scroll[scrollIndex] = mapFile.get();
-                }
-                scroll[scrollIndex - 1] = '\0';     // Terminating character
+                char* scrollName = (char*) calloc(sizeof(char), MaxScrollNameLength);
 
-                map->SetScroll(scroll);
-                free(scroll);
+                int scrollIndex = 0;
+                for (; scrollIndex < MaxScrollNameLength - 1 && !mapFile.eof(); scrollIndex++) {
+                    char currentChar = mapFile.get();
+                    if (currentChar == '\n') break; // Stop sampling on newline
+                    scrollName[scrollIndex] = currentChar;
+                }
+                scrollName[scrollIndex - 1] = '\0';     // Terminating character
+
+                // Do not need to grab newline here--is collected within scroll name builder
+                if (!mapFile.eof()) {
+                    char* scroll = (char*) calloc(sizeof(char), MaxScrollLength);
+                    scrollIndex = 0; // Reset scroll index
+                    for (; scrollIndex < MaxScrollLength - 1 && !mapFile.eof(); scrollIndex++) {
+                        scroll[scrollIndex] = mapFile.get();
+                    }
+                    scroll[scrollIndex - 1] = '\0';     // Terminating character
+
+                    map->SetScroll(scroll, scrollName);
+                    free(scroll);
+                }
+                free(scrollName);
             }
         }
     }
