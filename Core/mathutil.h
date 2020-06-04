@@ -15,6 +15,7 @@ template <typename T> int dist(T x1, T y1, T x2, T y2);
 
 template <typename T> T distGrid(T x1, T y1, T x2, T y2);
 
+template <typename T> T lerp(T a, T b, float alpha);
 
 float distF(float x1, float y1, float x2, float y2);
 
@@ -52,4 +53,9 @@ template <typename T> int dist(T x1, T y1, T x2, T y2) {
 // Returns the gridded distance between two points
 template <typename T> T distGrid(T x1, T y1, T x2, T y2) {
     return abs(x2 - x1) + abs(y2 - y1);
+}
+
+// Returns a linearly interpolated value between values A and B using alpha
+template <typename T> T lerp(T a, T b, float alpha) {
+    return a * (1.0f - alpha) + b * alpha;
 }

@@ -31,7 +31,7 @@
 #define ShepherdHealth 3
 #define FireballSpeed 3
 
-// How many times a second the game ticks; essentially sets "speed" of gameplay
+// How many times a second the game ticks; essentially sets "speed" of gameplay, 8 is usually pretty good
 #define TickRate 8
 // How many ticks can the player be idle before they are considered "idle?"
 // - Note: TicksUntilIdle / TickRate = x seconds idle

@@ -3,10 +3,14 @@
 Entity::Entity() {
     x = MapHeight/2;
     y = MapWidth/2;
+    lastX = x;
+    lastY = y;
 }
 Entity::Entity(int xPos, int yPos, int ID) {
     x = xPos;
     y = yPos;
+    lastX = xPos;
+    lastY = yPos;
     id = ID;
 }
 

@@ -32,6 +32,15 @@ class Entity {
         // Vertical position of Entity
         int y;
 
+        // Previous horizontal position of Entity
+        int lastX = 0;
+        // Previous vertical position of entity
+        int lastY = 0;
+        // True if the entity was pushed around by the player horizontally
+        bool shovedX = false;
+        // True if the entity was pushed around by the player vertically
+        bool shovedY = false;
+
         // Flips sprite horizontally while rendering
         bool Flipped = false;
         // True if object is on fire

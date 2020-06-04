@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/config.h"
+#include "Core/enums.h"
 
 #include "Entities/entity.h"
 #include "Entities/Subclasses/fireball.h"
@@ -18,8 +19,8 @@ class Shepherd : public Entity {
     private:
 
     public:
-        int lastX = 0;
-        int lastY = 0;
+        int faceX = 1;
+        int faceY = 0;
 
         int ticksIdled = 0;
 

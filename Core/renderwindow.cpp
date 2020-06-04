@@ -313,12 +313,12 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID, int tilingIndex) {
         }
     }
 }
-void RenderWindow::DrawEntity(int posX, int posY, int id, bool flip, int anim, int meta) {
+void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, bool flip, int anim, int meta) {
     SDL_Rect tile;
     tile.w = tileRes;
     tile.h = tileRes;
-    tile.x = posX*tileRes + offsetX;
-    tile.y = posY*tileRes + offsetY;
+    tile.x = lerp(lastX * tileRes, posX * tileRes, min((time * TickRate - ticks), 1.0f)) + offsetX;
+    tile.y = lerp(lastY * tileRes, posY * tileRes, min((time * TickRate - ticks), 1.0f)) + offsetY;
 
     SDL_RendererFlip flipStyle = SDL_FLIP_NONE;
     if (flip)

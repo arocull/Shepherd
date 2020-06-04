@@ -184,6 +184,7 @@ int main(int argc, char **argv) {
 
 
         // Game Logic
+        bool didTick = false;
         if (!GamePaused) {
             #ifdef DEBUG_MODE
                 if (accelerate)
@@ -197,6 +198,7 @@ int main(int argc, char **argv) {
         if (GameTick <= 0.5f && Move_QueueClear && !GamePaused)    // Prevent any 'sliding'
             Movement_Clear();
         else if (GameTick >= 1) {
+            didTick = true;
             ticks++;
             window.LogTick();
 
@@ -206,6 +208,9 @@ int main(int argc, char **argv) {
 
             if (!player->Paused) {      //If they player is not paused, let them move if input is given
                 player->animation = 0;
+
+                player->lastX = player->x;
+                player->lastY = player->y;
 
                 if (MoveUp)
                     Movement_ShiftPlayer(currentLevel, levelEntities, player, 0, 1, &worldX, &worldY);
@@ -238,6 +243,8 @@ int main(int argc, char **argv) {
                 StopParticles(particles);
                 currentLevel = LoadLevel(world, currentLevel, levelEntities, worldX, worldY, player->x, player->y);
                 Trigger_LevelLoaded(&window, &soundService, world, currentLevel, levelEntities);
+                player->lastX = player->x; // Don't draw player teleporting
+                player->lastY = player->y;
             }
 
 
@@ -274,6 +281,13 @@ int main(int argc, char **argv) {
             for (int i = 0; i < MaxEntities; i++) {
                 if (!levelEntities[i]) continue;   //Skip checks if this is a nullpointer or paused
                 Entity* a = levelEntities[i];
+
+                if (a->GetID() != EntityID::EE_Shepherd) { // Update last positions
+                    if (!a->shovedX) a->lastX = a->x;
+                    else a->shovedX = false;
+                    if (!a->shovedY) a->lastY = a->y;
+                    else a->shovedY = false;
+                }
 
                 a->Tick();
                 if (a->HasFire && a->HasFrost)  // Fire overrides frost
@@ -450,7 +464,7 @@ int main(int argc, char **argv) {
         // Draw all entities aside from Shepherd
         for (Entity* obj : levelEntities) {
             if (obj && obj->GetID() != EntityID::EE_Shepherd)
-                window.DrawEntity(obj->x, obj->y, obj->GetID(), obj->Flipped, obj->animation, obj->animationMetadata);
+                window.DrawEntity(obj->x, obj->y, obj->lastX, obj->lastY, obj->GetID(), obj->Flipped, obj->animation, obj->animationMetadata);
         }
 
 
@@ -465,7 +479,7 @@ int main(int argc, char **argv) {
         SDL_SetRenderDrawBlendMode(window.canvas, blend);
 
         // Draw shepherd last
-        window.DrawEntity(player->x, player->y, player->GetID(), player->Flipped, player->animation, player->animationMetadata);
+        window.DrawEntity(player->x, player->y, player->lastX, player->lastY, player->GetID(), player->Flipped, player->animation, player->animationMetadata);
 
         // Draw GUI
         window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);

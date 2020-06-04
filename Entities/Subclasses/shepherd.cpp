@@ -1,13 +1,15 @@
 #include "shepherd.h"
 
 Shepherd::Shepherd(int spawnX, int spawnY) {
-    id = 1;
+    id = EntityID::EE_Shepherd;
 
     MaxHealth = ShepherdHealth;
     Health = MaxHealth;
 
     x = spawnX;
     y = spawnY;
+    lastX = spawnX;
+    lastY = spawnY;
 }
 
 
@@ -25,7 +27,7 @@ void Shepherd::SlingFireball(Entity** entities, Particle* particles) {
     HasFire = false;
     animation = 2;      //Fireball Toss animation
     
-    AppendEntity(entities, new Fireball(x, y, lastX, lastY, 0));
+    AppendEntity(entities, new Fireball(x, y, faceX, faceY, 0));
 }
 void Shepherd::SwingAttack(Entity** entities, Particle* particles) {
     animation = 2;

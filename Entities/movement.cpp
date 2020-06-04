@@ -113,8 +113,8 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
     else if (dx > 0)
         obj->Flipped = false;
 
-    obj->lastX = dx;
-    obj->lastY = dy;
+    obj->faceX = sgn(dx);
+    obj->faceY = sgn(dy);
     obj->animation = 1;     //Set animation to walking
     obj->ticksIdled = 0;
 
@@ -126,12 +126,16 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         obj->x = MapWidth-1;
     } else if (desiredX < MapWidth && desiredX >= 0 && !world->IsTileSolid(desiredX, obj->y)) {
         Entity* hit = GetEntityAtLocation(entities, desiredX, obj->y);
-        if (hit && hit->GetID() == 2) {   //If sheep, swap places
+        if (hit && hit->GetID() == EntityID::EE_Sheep) {   //If sheep, swap places
+            hit->lastX = hit->x;
+            hit->shovedX = true;
             hit->x = obj->x;
             obj->x = desiredX;
             obj->Flipped = !obj->Flipped;
-        } else if (hit && hit->GetID() == 5) {  //If hit crate, push crate, then move to place if push was successful
-            if (Movement_ShiftEntityOnTiles(world, entities, hit, dx, dy, 7))
+        } else if (hit && hit->GetID() == EntityID::EE_Crate) {  //If hit crate, push crate, then move to place if push was successful
+            hit->lastX = hit->x;
+            hit->shovedX = true;
+            if (Movement_ShiftEntityOnTiles(world, entities, hit, dx, dy, TileID::ET_Empty_Puzzle_Piece))
                 obj->x = desiredX;
         } else if (!hit || (hit && !hit->Solid))
             obj->x = desiredX;
@@ -145,11 +149,15 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         obj->y = 0;
     } else if (desiredY < MapHeight && desiredY >= 0 && !world->IsTileSolid(obj->x, desiredY)) {
         Entity* hit = GetEntityAtLocation(entities, obj->x, desiredY);
-        if (hit && hit->GetID() == 2) {   //If sheep, swap places
+        if (hit && hit->GetID() == EntityID::EE_Sheep) {   //If sheep, swap places
+            hit->lastY = hit->y;
+            hit->shovedY = true;
             hit->y = obj->y;
             obj->y = desiredY;
-        } else if (hit && hit->GetID() == 5) {  //If hit crate, push crate, then move to place if push was successful
-            if (Movement_ShiftEntityOnTiles(world, entities, hit, dx, dy, 7))
+        } else if (hit && hit->GetID() == EntityID::EE_Crate) {  //If hit crate, push crate, then move to place if push was successful
+            hit->lastY = hit->y;
+            hit->shovedY = true;
+            if (Movement_ShiftEntityOnTiles(world, entities, hit, dx, dy, TileID::ET_Empty_Puzzle_Piece))
                 obj->y = desiredY;
         } else if (!hit || (hit && !hit->Solid))
             obj->y = desiredY;
