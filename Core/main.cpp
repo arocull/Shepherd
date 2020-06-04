@@ -184,7 +184,6 @@ int main(int argc, char **argv) {
 
 
         // Game Logic
-        bool didTick = false;
         if (!GamePaused) {
             #ifdef DEBUG_MODE
                 if (accelerate)
@@ -198,7 +197,6 @@ int main(int argc, char **argv) {
         if (GameTick <= 0.5f && Move_QueueClear && !GamePaused)    // Prevent any 'sliding'
             Movement_Clear();
         else if (GameTick >= 1) {
-            didTick = true;
             ticks++;
             window.LogTick();
 
