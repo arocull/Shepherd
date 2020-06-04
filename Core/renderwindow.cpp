@@ -125,9 +125,11 @@ void RenderWindow::UpdateSize() {
 }
 void RenderWindow::TickDeltaTime(float DeltaTime) {
     time+=DeltaTime;
+    tickAlpha += DeltaTime * TickRate;
 }
 void RenderWindow::LogTick() {
     ticks++;
+    tickAlpha = 0.0f;
 
     // Check if we we have any dialogue text waiting to be cleared
     if (dialogueTicksLeft > 0) {
@@ -317,8 +319,11 @@ void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, 
     SDL_Rect tile;
     tile.w = tileRes;
     tile.h = tileRes;
-    tile.x = lerp(lastX * tileRes, posX * tileRes, min((time * TickRate - ticks), 1.0f)) + offsetX;
-    tile.y = lerp(lastY * tileRes, posY * tileRes, min((time * TickRate - ticks), 1.0f)) + offsetY;
+    if (lastX != posX) tile.x = lerp(lastX * tileRes, posX * tileRes, tickAlpha) + offsetX;
+    else tile.x = posX * tileRes + offsetX;
+    
+    if (lastY != posY) tile.y = lerp(lastY * tileRes, posY * tileRes, tickAlpha) + offsetY;
+    else tile.y = posY * tileRes + offsetY;
 
     SDL_RendererFlip flipStyle = SDL_FLIP_NONE;
     if (flip)
@@ -343,20 +348,20 @@ void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, 
         src.h = 32;
         src.y = 0;
 
-        if (anim == 1) {
+        if (anim == 1) { // Walk
             src.w = 12;
             src.x = 20;
             if (step == 1)
                 src.x = 32;
             step = ticks % 2;
-            angle = (((double) step) - 0.5)*5;
-        } else if (anim == 2) {
+            angle = (((double) step) - 0.5)*15;
+        } else if (anim == 2) { // Sling
             src.w = 23;
             src.x = 44;
-        } else if (anim == 3) {
+        } else if (anim == 3) { // Bow
             src.w = 24;
             src.x = 67;
-        } else {
+        } else { // Idle
             src.w = 10;
             if (step == 1)
                 src.x = 10;

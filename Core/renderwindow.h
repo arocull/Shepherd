@@ -44,9 +44,11 @@ class RenderWindow {
         int windowedY;
 
         //How much time has passed since the window was created
-        float time = 0;
+        float time = 0.0f;
         //How many game ticks have passed since the window was created
         int ticks = 0;
+        // Value between 0 and 1, current time progression through tick (used for interpolation)
+        float tickAlpha = 0.0f;
 
 
         //Y Size of the dialogue box
