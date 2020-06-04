@@ -299,7 +299,7 @@ int main(int argc, char **argv) {
 
                 
 
-                if (a->GetID() == 3) {      //Fireball, move in a straight line
+                if (a->GetID() == EntityID::EE_Fireball) {      //Fireball, move in a straight line
                     Fireball* fireball = dynamic_cast<Fireball*>(a);
 
                     if (fireball) {
@@ -316,7 +316,7 @@ int main(int argc, char **argv) {
                     }
 
 
-                } else if (a->GetID() == 2 && ((ticks % 2) == 0 || distGrid(a->x, a->y, player->x, player->y) > 4)) {   //Sheep AI; follow player every other tick
+                } else if (a->GetID() == EntityID::EE_Sheep && ((ticks % 2) == 0 || distGrid(a->x, a->y, player->x, player->y) > 4)) {   //Sheep AI; follow player every other tick
                     a->animation = 0;
 
                     Sheep* sheep = dynamic_cast<Sheep*>(a);
@@ -324,16 +324,16 @@ int main(int argc, char **argv) {
                     int dirX = 0;
                     int dirY = 0;
 
-                    CheckPathObscurity(sheep->currentPath, currentLevel, levelEntities, true);
+                    CheckPathObscurity(sheep->currentPath, currentLevel, levelEntities, true, EntityID::EE_Sheep);
                     if (!sheep->currentPath || !sheep->currentPath->complete || !(sheep->currentPath->goalX == player->x && sheep->currentPath->goalY == player->y)) {
                         Path_FreePath(sheep->currentPath);
-                        sheep->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, true);
+                        sheep->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, sheep, true, true, EntityID::EE_Wolf);
                     }
                     GetNextMovement(a->x, a->y, sheep->currentPath, &dirX, &dirY);
 
                     Movement_ShiftEntity(currentLevel, levelEntities, a, dirX, -dirY);
 
-                } else if (a->GetID() == 4) {   //Wolf AI, hunt down closest sheep--if none left, attack player
+                } else if (a->GetID() == EntityID::EE_Wolf) {   //Wolf AI, hunt down closest sheep--if none left, attack player
                     Wolf* wolf = dynamic_cast<Wolf*>(a);
                     if (wolf) {
                         if (wolf->InStun()) {
@@ -361,7 +361,7 @@ int main(int argc, char **argv) {
                             CheckPathObscurity(wolf->currentPath, currentLevel, levelEntities, false);
                             if (!wolf->currentPath || !wolf->currentPath->complete || !(wolf->currentPath->goalX == target->x && wolf->currentPath->goalY == target->y)) {
                                 Path_FreePath(wolf->currentPath);
-                                wolf->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, false);
+                                wolf->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, wolf, false, true, EntityID::EE_Shepherd);
                             }
                             GetNextMovement(a->x, a->y, wolf->currentPath, &dirX, &dirY);
 

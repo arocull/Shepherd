@@ -32,4 +32,6 @@ enum EntityID {     // : uint_fast8_t
     EE_Crate = 5,
     EE_Torch = 6,
     EE_Lever = 7,
+
+    EE_None = 0,
 };

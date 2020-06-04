@@ -8,6 +8,7 @@
 #include <stdbool.h>
 
 #include "Core/mathutil.h"
+#include "Core/enums.h"
 
 #include "Map/map.h"
 #include "Map/tile.h"
@@ -40,22 +41,24 @@ struct WalkableResults {
     int* toB;
 };
 
-bool IsTilePathable(int x, int y, Map* map, Entity** entities, bool avoidLiquids);
+bool IsTilePathable(int x, int y, Map* map, Entity** entities, bool avoidLiquids = false, EntityID ignoreEntity = EntityID::EE_None);
+int GetTileDifficultyIndex(int x, int y, Map* map, Entity** entities, Entity* obj = nullptr, bool avoidLiquids = true, bool avoidFire = true, EntityID avoidEntity = EntityID::EE_None);
 
 // Returns an array of tiles that can be walked on
-WalkableResults* Path_Internal_GetWalkableTiles(int posX, int posY, int goalX, int goalY, Map* map, Entity** entities, bool avoidLiquids);
+WalkableResults* Path_Internal_GetWalkableTiles(int posX, int posY, int goalX, int goalY, Map* map, Entity** entities, Entity* obj = nullptr, bool avoidLiquids = true, bool avoidFire = true, EntityID avoidEntity = EntityID::EE_None);
+
 // Frees a WalkableResults struct
 void Path_Internal_FreeWalkableResults(WalkableResults* toFree);
 
 // Gets a simple path from point A to point B
-Path* GetPath(int startX, int startY, int goalX, int goalY, Map* map, Entity** entities, bool avoidLiquids);
+Path* GetPath(int startX, int startY, int goalX, int goalY, Map* map, Entity** entities, Entity* obj = nullptr, bool avoidLiquids = true, bool avoidFire = true, EntityID avoidEntity = EntityID::EE_None);
 // Copies down path data from a given path into another one--used for making copies of paths
 void Path_Internal_CopyPathData(Path* from, Path* to);
 // Frees pathdata
 void Path_FreePath(Path* toFree);
 
 // Checks to see if the path was obscured (is path blocked by entity or tile?) -- if so, marks path as incomplete
-void CheckPathObscurity(Path* path, Map* map, Entity** entities, bool avoidLiquids);
+void CheckPathObscurity(Path* path, Map* map, Entity** entities, bool avoidLiquids = false, EntityID ignoreEntity = EntityID::EE_None);
 
 // Gets the next movement along a path
 void GetNextMovement(int currentX, int currentY, Path* path, int* nextMoveX, int* nextMoveY);
