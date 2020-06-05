@@ -41,9 +41,16 @@ void SoundService::CloseSoundService() {
 void SoundService::Tick(float DeltaTime) {
     if (fading) {
         fadeTime += DeltaTime;
-        SetVolume(lerp(fadeStartVolume, fadeEndVolume, max(fadeTime / fadeTimeLength, 1.0f)), fadeChannel);
+        SetVolume(lerp(fadeStartVolume, fadeEndVolume, min(fadeTime / fadeTimeLength, 1.0f)), fadeChannel);
 
         if (fadeTime >= fadeTimeLength) fading = false;
+    }
+    if (musicFading) {
+        musicFadeTime += DeltaTime;
+        SetVolumeMusic(lerp(musicFadeStartVolume, musicFadeEndVolume, min(musicFadeTime / musicFadeTimeLength, 1.0f)));
+        printf("new music volume is %f\n", lerp(musicFadeStartVolume, musicFadeEndVolume, min(musicFadeTime / musicFadeTimeLength, 1.0f)));
+
+        if (musicFadeTime >= musicFadeTimeLength) musicFading = false;
     }
 
     if (musicTimer > 0 && musicFade) {
@@ -63,7 +70,7 @@ void SoundService::Tick(float DeltaTime) {
 }
 void SoundService::SetVolume(float volume, int channel) {
     currentVolume = volume;
-    Mix_Volume(channel, (int) (volume*128));
+    Mix_Volume(channel, (int) (pow(volume, 2) * 128));
 }
 void SoundService::FadeVolume(float newVolume, float fadeTime, int channel) {
     fadeChannel = channel;
@@ -71,7 +78,7 @@ void SoundService::FadeVolume(float newVolume, float fadeTime, int channel) {
     fadeEndVolume = newVolume;
     fadeTimeLength = fadeTime;
     fadeTime = 0.0f;
-    fading = false;
+    fading = true;
 }
 
 
@@ -95,6 +102,22 @@ void SoundService::FadeIntoMusic(float fadeTime, const char* MusicFile) {
     musicFade = Mix_LoadMUS(MusicFile);
     FadeOutMusic(fadeTime);
     musicTimer = fadeTime;
+}
+void SoundService::QueueMusic(float timer, const char* MusicFile) {
+    if (musicFade) Mix_FreeMusic(musicFade);
+    musicFade = Mix_LoadMUS(MusicFile);
+    musicTimer = timer;
+}
+void SoundService::SetVolumeMusic(float volume) {
+    musicVolume = volume;
+    Mix_VolumeMusic((int) (pow(volume, 2) *128));
+}
+void SoundService::FadeVolumeMusic(float newVolume, float fadeTime) {
+    musicFadeStartVolume = musicVolume;
+    musicFadeEndVolume = newVolume;
+    musicFadeTimeLength = fadeTime;
+    musicFadeTime = 0.0f;
+    musicFading = true;
 }
 
 

@@ -31,12 +31,21 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
             window->SetDialogueText("Crates cannot be pushed off of surfaces.");
         else if (id == 11 && triggerID == 1)
             window->SetDialogueText("These torches are covered in odd glyphs, but you sense they might be related to the nearby ruins.", 125);
+        else if (id == 11 && triggerID == 2)
+            soundService->FadeVolumeMusic(0.0f, 0.5f);
+        else if (id == 11 && triggerID == 3)
+            soundService->FadeVolumeMusic(0.2f, 0.5f);
         else if (id == 11 && triggerID == 4)
             window->SetDialogueText("The door is marked by four flame-like symbols.");
         else if (id == 13 && triggerID == 1 && !map->Puzzles[1].Solved)
             window->SetDialogueText("The torch is cold, and is marked with a glyph shaped like a weight.", 75);
         else if (id == 13 && triggerID == 4 && !map->Puzzles[0].Solved)
             window->SetDialogueText("The only thing that seems to be able to reach that crate is a well-aimed fireball.");
+        else if (id == 14 && triggerID == 1) {
+            soundService->SetVolumeMusic(0.5f);
+            soundService->PlayMusic("Audio/Resources/IntoTheCastle.wav", 1);
+            soundService->QueueMusic(23.0f, "Audio/Resources/CastleHalls.wav");
+        }
     }
 }
 void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map,  Entity* entities[]) {
@@ -68,13 +77,13 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         map->Triggers[2] = true;
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
-        soundService->FadeIntoMusic(3.0f, "Audio/Resources/Raindrops.wav");
+        soundService->FadeVolumeMusic(0.2f, 1.0f);
         window->ToggleStatusBar(true);
     } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
         window->SetDialogueText("Walk towards the unlit torch and swing your staff to toss a fireball.");
 }
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
-    soundService->PlaySound("Audio/Resources/Think.wav");
+    if ((entities[0] && !entities[0]->Paused)) soundService->PlaySound("Audio/Resources/Think.wav");
 
     if (map->GetMapID() == 1)
         window->SetDialogueText("Some puzzles might require a bit of help from your wooly friends.");
@@ -157,8 +166,10 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
 
 
         if (DoorRequirements == 4) {    //If all requirements are met, open the door
-            map->FillRectangle(26, 5, 27, 10, 0);
-            map->FillRectangle(27, 6, 40, 9, 0);
+            map->FillRectangle(26, 5, 27, 10, TileID::ET_None);
+            map->FillRectangle(27, 6, 40, 9, TileID::ET_None);
+            map->FillRectangle(35, 6, 36, 9, TileID::ET_Trigger3);
+            map->FillRectangle(36, 6, 37, 9, TileID::ET_Trigger2);
         }
     } else if (map->GetMapID() == 13) {
         Entity* crate = GetEntityOccurence(world[4][1]->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);

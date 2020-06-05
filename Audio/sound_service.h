@@ -31,12 +31,19 @@ class SoundService {
         bool Initialized = false;
 
         float currentVolume = 1.0f;
-        int fadeChannel = -1;
         float fadeStartVolume = 1.0f;
         float fadeEndVolume = 1.0f;
         float fadeTimeLength = 0.0f;
         float fadeTime = 0.0f;
         bool fading = false;
+        int fadeChannel = -1;
+
+        float musicVolume = 1.0f;
+        float musicFadeStartVolume = 1.0f;
+        float musicFadeEndVolume = 1.0f;
+        float musicFadeTimeLength = 0.0f;
+        float musicFadeTime = 0.0f;
+        bool musicFading = false;
 
         Mix_Music* music = nullptr;
         Mix_Music* musicFade = nullptr;
@@ -53,13 +60,19 @@ class SoundService {
         // Fades the current volume to the desired volume over the given amount of time
         void FadeVolume(float newVolume, float fadeTime, int channel = -1);
 
-        // Plays given music file
+        // Plays given music file for a set or infinite amount of loops
         void PlayMusic(const char* MusicFile, int loops = -1);
         void PlayMusic(Mix_Music* newMusic, int loops = -1);
         // Fades out music
         void FadeOutMusic(float fadeTime);
-        // Fades out current music into new music
+        // Fades out current music into new music after a set amount of time
         void FadeIntoMusic(float fadeTime, const char* MusicFile);
+        // Starts playing the given music file after a set amount of time (used for song intros + looping)
+        void QueueMusic(float fadeTime, const char* MusicFile);
+        // Sets the SDL Mixer volume of the music
+        void SetVolumeMusic(float volume);
+        // Fades the music volume to a certain value over a set amount of time
+        void FadeVolumeMusic(float newVolume, float fadeTime);
 
         // Ticks the Sound Service
         // * Automatically stops sounds that have finished and fades volume
