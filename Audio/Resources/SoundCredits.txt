@@ -1,3 +1,11 @@
 SoundCredits
 
 Wind SFX (Wind-Mark_DiAngeo) taken from http://soundbible.com/1810-Wind.html
+
+
+Other sound effects are made by me
+Recorded using a PreSonus AudioBox with a microphone, cut and exported using Audacity
+
+Song lengths:
+Into the Castle - 22.5 seconds
+Raindrops - 3:39.3
