@@ -59,7 +59,7 @@ void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* ma
     }
     window->SetDialogueText("\nHit spacebar to rally your sheep.", 0);
 
-    soundService->PlaySound("Audio/Resources/AmbientWind.wav");
+    soundService->PlayMusic("Audio/Resources/AmbientWind.wav");
 }
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 
@@ -68,7 +68,7 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         map->Triggers[2] = true;
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
-        soundService->SetVolume(0.2f);
+        soundService->FadeIntoMusic(3.0f, "Audio/Resources/Raindrops.wav");
         window->ToggleStatusBar(true);
     } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
         window->SetDialogueText("Walk towards the unlit torch and swing your staff to toss a fireball.");

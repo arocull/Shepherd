@@ -25,9 +25,13 @@ SoundService::SoundService() {
     }
 }
 void SoundService::CloseSoundService() {
+    Mix_HaltMusic();
     StopAllSounds();
 
     free(sounds);
+
+    if (music) Mix_FreeMusic(music);
+    if (musicFade) Mix_FreeMusic(musicFade);
 
     Mix_CloseAudio();
     Mix_Quit();
@@ -35,6 +39,21 @@ void SoundService::CloseSoundService() {
 
 
 void SoundService::Tick(float DeltaTime) {
+    if (fading) {
+        fadeTime += DeltaTime;
+        SetVolume(lerp(fadeStartVolume, fadeEndVolume, max(fadeTime / fadeTimeLength, 1.0f)), fadeChannel);
+
+        if (fadeTime >= fadeTimeLength) fading = false;
+    }
+
+    if (musicTimer > 0 && musicFade) {
+        musicTimer -= DeltaTime;
+        if (musicTimer <= 0) {
+            PlayMusic(musicFade);
+            musicFade = nullptr;
+        }
+    }
+
     for (int i = 0; i < MaxAudioChannels; i++) {
         if (sounds[i].sound) {
             if (Mix_Playing(sounds[i].channel) == 0)
@@ -42,8 +61,40 @@ void SoundService::Tick(float DeltaTime) {
         }
     }
 }
-void SoundService::SetVolume(float volume) {
-    Mix_Volume(-1, (int) (volume*128));
+void SoundService::SetVolume(float volume, int channel) {
+    currentVolume = volume;
+    Mix_Volume(channel, (int) (volume*128));
+}
+void SoundService::FadeVolume(float newVolume, float fadeTime, int channel) {
+    fadeChannel = channel;
+    fadeStartVolume = currentVolume;
+    fadeEndVolume = newVolume;
+    fadeTimeLength = fadeTime;
+    fadeTime = 0.0f;
+    fading = false;
+}
+
+
+void SoundService::PlayMusic(const char* MusicFile, int loops) {
+    Mix_HaltMusic();
+    if (music) Mix_FreeMusic(music);
+    music = Mix_LoadMUS(MusicFile);
+    Mix_PlayMusic(music, loops);
+}
+void SoundService::PlayMusic(Mix_Music* newMusic, int loops) {
+    Mix_HaltMusic();
+    if (music) Mix_FreeMusic(music);
+    music = newMusic;
+    Mix_PlayMusic(music, loops);
+}
+void SoundService::FadeOutMusic(float fadeTime) {
+    Mix_FadeOutMusic((int) (fadeTime * 1000));
+}
+void SoundService::FadeIntoMusic(float fadeTime, const char* MusicFile) {
+    if (musicFade) Mix_FreeMusic(musicFade);
+    musicFade = Mix_LoadMUS(MusicFile);
+    FadeOutMusic(fadeTime);
+    musicTimer = fadeTime;
 }
 
 
