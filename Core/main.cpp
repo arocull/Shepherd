@@ -386,8 +386,7 @@ int main(int argc, char **argv) {
             // Clean Entity List
             CleanEntities(levelEntities);
 
-            if (PressurePlatesChanged)
-                Trigger_PuzzleInput(&window, &soundService, particles, currentLevel, levelEntities);
+            bool doTriggerPuzzleInput = false;
 
             int puzzlesEnabled = 0;
             int puzzlesCompleted = 0;
@@ -395,13 +394,20 @@ int main(int argc, char **argv) {
                 if (currentLevel->Puzzles[i].Enabled) {
                     puzzlesEnabled++;
 
+                    bool wasSolved = currentLevel->Puzzles[i].Solved;
+
                     Puzzle_CheckSolution(&currentLevel->Puzzles[i]);
-                    if (currentLevel->Puzzles[i].Solved)
+                    if (currentLevel->Puzzles[i].Solved) {
                         puzzlesCompleted++;
+                        if (!wasSolved) doTriggerPuzzleInput = true;
+                    }
                 }
             }
             if (puzzlesEnabled > 0)
                 currentLevel->PuzzleStatus = (puzzlesEnabled == puzzlesCompleted);
+
+            if (PressurePlatesChanged) doTriggerPuzzleInput = true;
+            if (doTriggerPuzzleInput) Trigger_PuzzleInput(&window, &soundService, particles, currentLevel, levelEntities);
 
             // If the player completed a puzzle this tick, show a particle
             if (!currentPuzzleStatus && currentLevel->PuzzleStatus) {

@@ -15,9 +15,10 @@
 #include "Entities/particle.h"
 #include "Entities/entity.h"
 #include "Entities/Subclasses/torch.h"
+#include "Entities/Subclasses/crate.h"
 #include "Entities/Subclasses/lever.h"
 
-// Triggered whenever the player steps on a trigger tile or a pressure plate is pressed
+// Triggered whenever the player steps on a trigger tile
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
 
 // Triggered whenever the player steps on a scroll (reads scroll off and performs unique actions if necessary)
@@ -48,6 +49,8 @@ bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfE
 // Shortcut for configuring torches, locks torches by default
 Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable = false, bool useable = false, bool glow = false);
 
+// Shortcut for configuring crates, makes them incineratable by default
+Crate* Trigger_Internal_CrateSetup(Entity* crate, bool canIncinerate = true);
 
 
 // Performs initial puzzle set up for the given map

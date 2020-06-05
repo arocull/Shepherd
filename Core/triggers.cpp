@@ -3,13 +3,14 @@
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID) {
     int id = map->GetMapID();
 
-    triggerID = max(1,min(triggerID, 5));
+    triggerID = max(1,min(triggerID, 4));
 
     
-    if (!map->Triggers[triggerID]) {
+    if (triggerID == 4 || !map->Triggers[triggerID - 1]) {
         if (triggerID <= 3)
-            map->Triggers[triggerID] = true;
+            map->Triggers[triggerID - 1] = true;
 
+        printf("Trigger %i in area %i\n", triggerID, id);
         
         // Staring Area
         if (id == 1 && triggerID == 1)
@@ -32,6 +33,10 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
             window->SetDialogueText("These torches are covered in odd glyphs, but you sense they might be related to the nearby ruins.", 125);
         else if (id == 11 && triggerID == 4)
             window->SetDialogueText("The door is marked by four flame-like symbols.");
+        else if (id == 13 && triggerID == 1 && !map->Puzzles[1].Solved)
+            window->SetDialogueText("The torch is cold, and is marked with a glyph shaped like a weight.", 75);
+        else if (id == 13 && triggerID == 4 && !map->Puzzles[0].Solved)
+            window->SetDialogueText("The only thing that seems to be able to reach that crate is a well-aimed fireball.");
     }
 }
 void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map,  Entity* entities[]) {
@@ -59,8 +64,8 @@ void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* ma
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 
     // On starting area, if the player has not done so yet, instruct them on how to move
-    if (map->GetMapID() == 5 && (map->Triggers[3] == false || (entities[0] && entities[0]->Paused == true))) {
-        map->Triggers[3] = true;
+    if (map->GetMapID() == 5 && (map->Triggers[2] == false || (entities[0] && entities[0]->Paused == true))) {
+        map->Triggers[2] = true;
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->SetVolume(0.2f);
@@ -79,8 +84,12 @@ void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, E
         window->SetDialogueText("Looking forward, a pyramid looms over you. Behind are some mountains, hopefully with greener pastures on the other side.", 100);
     else if (map->GetMapID() == 9)
         window->SetDialogueText("Crates can be pushed by moving into them.", 100);
+    else if (map->GetMapID() == 10)
+        window->SetDialogueText("You sense a powerful presence residing in this room. Almost... embracing you.", 100);
     else if (map->GetMapID() == 11)
         window->SetDialogueText("The pyramid entrance is somewhat ominous, and you sense a faint, supernatural presence.", 100);
+    else if (map->GetMapID() == 14)
+        window->SetDialogueText("The walls are covered in ancient glyphs, worn away by the patient, eternal hands of time.", 100);
 }
 void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
     if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2)
@@ -94,6 +103,18 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
                 Particle* clickEffect = ActivateParticle(particles, 3, lever->x, lever->y);
             }
         }
+    } else if (map->GetMapID() == 13) {
+        Entity* obj = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
+        Torch* torch;
+        if (obj) torch = dynamic_cast<Torch*>(obj);
+        if (torch) {
+            torch->glow = map->Puzzles[0].Solved; // Inform the player on whether the main puzzle was solved or not
+            torch->HasFire = map->Puzzles[1].Solved; // Light torch if enabled
+        }
+
+        printf("states %i and %i\n", map->Puzzles[0].Solved, map->Puzzles[1].Solved);
+    } else if (map->GetMapID() == 14 && map->PressurePlatesPressed >= 1) {
+        window->SetDialogueText("The pressure plate clicks, and you hear a shifting of stones somewhere nearby.");
     }
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
@@ -139,6 +160,10 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
             map->FillRectangle(26, 5, 27, 10, 0);
             map->FillRectangle(27, 6, 40, 9, 0);
         }
+    } else if (map->GetMapID() == 13) {
+        Entity* crate = GetEntityOccurence(world[4][1]->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
+        if (crate && crate->y == 3) map->FillRectangle(7, 7, 8, 10, TileID::ET_Empty_Puzzle_Piece);
+        else map->FillRectangle(7, 7, 8, 10, TileID::ET_Wall);
     }
 
     map->HasLoaded = true;
@@ -167,6 +192,16 @@ Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool usea
 
     return t;
 }
+Crate* Trigger_Internal_CrateSetup(Entity* crate, bool canIncinerate) {
+    if (!crate) return nullptr;
+
+    Crate* c = dynamic_cast<Crate*>(crate);
+    if (c) {
+        c->canIncinerate = canIncinerate;
+    }
+
+    return c;
+}
 
 
 
@@ -178,7 +213,7 @@ void Trigger_SetupPuzzles(Map* map) {
 
     if (map->GetMapID() == 3) {
         p->Enabled = true;
-        p->entities[0] = GetEntityOccurence(map->StoredEntities, 7, 1, MaxEntitiesStoreable);
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Lever, 1, MaxEntitiesStoreable);
         p->LeversFlipped = 1;
 
         if (p->entities[0]) {
@@ -200,7 +235,21 @@ void Trigger_SetupPuzzles(Map* map) {
     } else if (map->GetMapID() == 9) {
         p->Enabled = true;
 
-        p->entities[0] = GetEntityOccurence(map->StoredEntities, 5, 1, MaxEntitiesStoreable);
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
         p->PlatesPressed = 1;
+    } else if (map->GetMapID() == 13) {
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
+        Trigger_Internal_CrateSetup(p->entities[0], true);
+        p->PlatesPressed = 0; // First crate needs to be incinerated
+
+        Puzzle* p2 = &(map->Puzzles[1]);
+        p2->Enabled = true;
+        p2->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 2, MaxEntitiesStoreable);
+        p2->PlatesPressed = 1; // Second crate must be pushed onto button
+
+        Entity* torch = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
+        Trigger_Internal_TorchSetup(torch, false, true, false);
+        if (torch) torch->HasFire = false;
     }
 }

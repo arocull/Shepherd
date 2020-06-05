@@ -124,7 +124,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
     } else if (desiredX < 0 && *worldX-1 >= 0 && HasAllSheep(entities, obj)) {
         *worldX = *worldX-1;
         obj->x = MapWidth-1;
-    } else if (desiredX < MapWidth && desiredX >= 0 && !world->IsTileSolid(desiredX, obj->y)) {
+    } else if (desiredX < MapWidth && desiredX >= 0 && !world->IsTileSolid(desiredX, obj->y) && !world->IsTilePitfall(desiredX, obj->y)) {
         Entity* hit = GetEntityAtLocation(entities, desiredX, obj->y);
         if (hit && hit->GetID() == EntityID::EE_Sheep) {   //If sheep, swap places
             hit->lastX = hit->x;
@@ -147,7 +147,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
     } else if (desiredY >= MapHeight && *worldY-1 >= 0 && HasAllSheep(entities, obj)) {
         *worldY = *worldY-1;
         obj->y = 0;
-    } else if (desiredY < MapHeight && desiredY >= 0 && !world->IsTileSolid(obj->x, desiredY)) {
+    } else if (desiredY < MapHeight && desiredY >= 0 && !world->IsTileSolid(obj->x, desiredY) && !world->IsTilePitfall(obj->x, desiredY)) {
         Entity* hit = GetEntityAtLocation(entities, obj->x, desiredY);
         if (hit && hit->GetID() == EntityID::EE_Sheep) {   //If sheep, swap places
             hit->lastY = hit->y;

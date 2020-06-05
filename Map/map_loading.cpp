@@ -128,6 +128,12 @@ Map* GenerateMapFromFile(const char* filePath) {
                 // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
                 case 'c':       // Crate (with Empty Puzzle Piece tile beneath)
                     tileID = TileID::ET_Empty_Puzzle_Piece;
+                    SpawnsEntity = true;
+                    break;
+                case 'C':       // Crate (with Pressure Plate tile beneath)
+                    tileID = TileID::ET_Pressure_Plate;
+                    SpawnsEntity = true;
+                    break;
                 case 'h':       // Wolf (or Hound)
                 case 't':       // Torch
                 case 'l':       // Lever
@@ -137,7 +143,7 @@ Map* GenerateMapFromFile(const char* filePath) {
                 Entity* entity;
                 if (charID == 'h')
                     entity = new Wolf(x, y);
-                else if (charID == 'c')
+                else if (charID == 'c' || charID == 'C')
                     entity = new Crate(x, y);
                 else if (charID == 't')
                     entity = new Torch(x, y);
