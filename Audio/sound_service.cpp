@@ -48,7 +48,6 @@ void SoundService::Tick(float DeltaTime) {
     if (musicFading) {
         musicFadeTime += DeltaTime;
         SetVolumeMusic(lerp(musicFadeStartVolume, musicFadeEndVolume, min(musicFadeTime / musicFadeTimeLength, 1.0f)));
-        printf("new music volume is %f\n", lerp(musicFadeStartVolume, musicFadeEndVolume, min(musicFadeTime / musicFadeTimeLength, 1.0f)));
 
         if (musicFadeTime >= musicFadeTimeLength) musicFading = false;
     }

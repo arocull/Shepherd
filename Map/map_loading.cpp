@@ -2,7 +2,7 @@
 #include "Map/map_loading.h"
 
 bool LoadLevel_IsSpawnable(Map* level, Entity* entities[MaxEntities], int xPos, int yPos) {
-    return (!level->IsTileSolid(xPos, yPos) && !level->IsTileLiquid(xPos, yPos) && !GetEntityAtLocation(entities, xPos, yPos));
+    return (!level->IsTileSolid(xPos, yPos) && !level->IsTileLiquid(xPos, yPos) && !level->IsTilePitfall(xPos, yPos) && !GetEntityAtLocation(entities, xPos, yPos));
 }
 
 

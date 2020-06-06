@@ -9,20 +9,18 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
     if (triggerID == 4 || !map->Triggers[triggerID - 1]) {
         if (triggerID <= 3)
             map->Triggers[triggerID - 1] = true;
-
-        printf("Trigger %i in area %i\n", triggerID, id);
         
         // Staring Area
         if (id == 1 && triggerID == 1)
-            window->SetDialogueText("Pressure plates can be weighed down by standing on them.");
-        else if (id == 3 && triggerID == 1)
+            window->SetDialogueText("Pressure plates can be weighed down by standing on them.", 75);
+        else if (id == 3 && triggerID == 4 && !map->Puzzles[0].Solved)
             window->SetDialogueText("Levers can be flipped by swinging your staff near them, but need to be unlocked first.", 75);
         else if (id == 5 && triggerID == 1)
             window->SetDialogueText("Your sheep will always follow you. Try to keep track of all of them.", 75);
         else if (id == 5 && triggerID == 2)
             window->SetDialogueText("You cannot leave an area without all of your sheep gathered around you.", 75);
         else if (id == 7 && triggerID == 1)
-            window->SetDialogueText("Swing your staff while near torche to pick up their flames.", 75);
+            window->SetDialogueText("Swing your staff while near torches to pick up their flames.", 75);
         else if (id == 7 && triggerID == 4 && entities[0])  // Extinguish player's flame when leaving
             entities[0]->HasFire = false;
         else if (id == 9 && triggerID == 1)
@@ -42,9 +40,10 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         else if (id == 13 && triggerID == 4 && !map->Puzzles[0].Solved)
             window->SetDialogueText("The only thing that seems to be able to reach that crate is a well-aimed fireball.");
         else if (id == 14 && triggerID == 1) {
-            soundService->SetVolumeMusic(0.5f);
+            soundService->SetVolumeMusic(0.75f);
             soundService->PlayMusic("Audio/Resources/IntoTheCastle.wav", 1);
             soundService->QueueMusic(23.0f, "Audio/Resources/CastleHalls.wav");
+            window->ToggleStatusBar(true);
         }
     }
 }
@@ -78,53 +77,69 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolumeMusic(0.2f, 1.0f);
-        window->ToggleStatusBar(true);
     } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
-        window->SetDialogueText("Walk towards the unlit torch and swing your staff to toss a fireball.");
+        window->SetDialogueText("Walk towards the unlit torch, then swing your staff to toss a fireball.");
 }
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
-    if ((entities[0] && !entities[0]->Paused)) soundService->PlaySound("Audio/Resources/Think.wav");
+    if ((entities[0] && entities[0]->Paused)) return;
+    bool producedThought = true;
 
-    if (map->GetMapID() == 1)
-        window->SetDialogueText("Some puzzles might require a bit of help from your wooly friends.");
-    else if (map->GetMapID() == 5 && (entities[0] && !entities[0]->Paused))
-        window->SetDialogueText("A hungry sheep bleats timidly. You wonder worriedly on when you will be able to feed them again.", 100);
-    else if (map->GetMapID() == 8)
-        window->SetDialogueText("Looking forward, a pyramid looms over you. Behind are some mountains, hopefully with greener pastures on the other side.", 100);
-    else if (map->GetMapID() == 9)
-        window->SetDialogueText("Crates can be pushed by moving into them.", 100);
-    else if (map->GetMapID() == 10)
-        window->SetDialogueText("You sense a powerful presence residing in this room. Almost... embracing you.", 100);
-    else if (map->GetMapID() == 11)
-        window->SetDialogueText("The pyramid entrance is somewhat ominous, and you sense a faint, supernatural presence.", 100);
-    else if (map->GetMapID() == 14)
-        window->SetDialogueText("The walls are covered in ancient glyphs, worn away by the patient, eternal hands of time.", 100);
+    switch (map->GetMapID()) {
+        case 1: window->SetDialogueText("Some puzzles might require a bit of help from your wooly friends.", 100); break;
+        case 2: window->SetDialogueText("A hungry sheep bleats timidly. You wonder worriedly on when you will be able to feed them again.", 100); break;
+        case 6: window->SetDialogueText("The desert is quiet and oddly calming, though it seems to deprive its inhabitants of a sense of life as well.", 100); break;
+        case 8: window->SetDialogueText("Looking forward, a pyramid looms over you. Behind are some mountains, hopefully with greener pastures on the other side.", 100); break;
+        case 9: window->SetDialogueText("Crates can be pushed by moving into them.", 100); break;
+        case 10: window->SetDialogueText("You sense a powerful presence residing in this room. Almost... embracing you.", 100); break;
+        case 11: window->SetDialogueText("The pyramid entrance is somewhat ominous, and you sense a faint, supernatural presence.", 100); break;
+        case 14: window->SetDialogueText("The walls are covered in ancient glyphs, worn away by the patient, eternal hands of time.", 100); break;
+        default: producedThought = false; // No default case
+    }
+
+    if (producedThought) soundService->PlaySound("Audio/Resources/Think.wav");
 }
 void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
-    if (map->GetMapID() == 1 && map->PressurePlatesPressed >= 2)
-        map->PuzzleStatus = true;
-    else if (map->GetMapID() == 3) {
+
+    if (map->GetMapID() == 1) {
+        if (map->PressurePlatesPressed == 1) {
+            for (int i = 0; i < MaxEntities; i++) {
+                Entity* a = entities[i];
+                if (a && a->OnPressurePlate && a->GetID() == EntityID::EE_Sheep && !a->Paused)
+                    window->SetDialogueText("Make your sheep rest by swinging your staff over them (spacebar).");
+            }
+        } else if (map->PressurePlatesPressed >= 1) map->PuzzleStatus = true;
+
+        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
+    } else if (map->GetMapID() == 3) {
         Entity* lever = GetEntityOccurence(entities, 7, 1);
         if (lever) {
             Lever* l = dynamic_cast<Lever*>(lever);
             if (l) {
                 l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
                 Particle* clickEffect = ActivateParticle(particles, 3, lever->x, lever->y);
+                if (map->PressurePlatesPressed >= 1)
+                    window->SetDialogueText("You hear a click from the internals of the lever, and its lock has disappeared.");
             }
         }
+
+        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
+    } else if (map->GetMapID() == 9) {
+        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
+
     } else if (map->GetMapID() == 13) {
         Entity* obj = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
-        Torch* torch;
-        if (obj) torch = dynamic_cast<Torch*>(obj);
-        if (torch) {
-            torch->glow = map->Puzzles[0].Solved; // Inform the player on whether the main puzzle was solved or not
-            torch->HasFire = map->Puzzles[1].Solved; // Light torch if enabled
+        if (obj) {
+            Torch* torch = dynamic_cast<Torch*>(obj);
+            if (torch) {
+                torch->glow = map->Puzzles[0].Solved; // Inform the player on whether the main puzzle was solved or not
+                torch->HasFire = map->Puzzles[1].Solved; // Light torch if enabled
+            }
         }
 
-        printf("states %i and %i\n", map->Puzzles[0].Solved, map->Puzzles[1].Solved);
     } else if (map->GetMapID() == 14 && map->PressurePlatesPressed >= 1) {
         window->SetDialogueText("The pressure plate clicks, and you hear a shifting of stones somewhere nearby.");
     }
+
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 
@@ -191,7 +206,7 @@ bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfE
 
     return true;
 }
-Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool useable, bool glow) {
+Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool useable, bool glow, bool hasFire, bool hasFrost) {
     if (!torch) return nullptr;
 
     Torch* t = dynamic_cast<Torch*>(torch);
@@ -199,6 +214,8 @@ Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool usea
         t->Extinguishable = extinguishable;
         t->FireUsable = useable;
         t->glow = glow;
+        t->HasFire = hasFire;
+        t->HasFrost = hasFrost;
     }
 
     return t;
@@ -213,6 +230,17 @@ Crate* Trigger_Internal_CrateSetup(Entity* crate, bool canIncinerate) {
 
     return c;
 }
+void Trigger_Internal_DisplayPuzzleStatus_Torch(Entity* torch, bool puzzleStatus) {
+    if (torch) {
+        Torch* t = dynamic_cast<Torch*>(torch);
+        if (t) {
+            t->Extinguishable = false;
+            t->FireUsable = false;
+            t->HasFire = puzzleStatus;
+            t->glow = puzzleStatus;
+        }
+    }
+}
 
 
 
@@ -222,32 +250,36 @@ Crate* Trigger_Internal_CrateSetup(Entity* crate, bool canIncinerate) {
 void Trigger_SetupPuzzles(Map* map) {
     Puzzle* p = &(map->Puzzles[0]);
 
-    if (map->GetMapID() == 3) {
+
+    if (map->GetMapID() == 1) {
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
+    } if (map->GetMapID() == 3) {
         p->Enabled = true;
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Lever, 1, MaxEntitiesStoreable);
         p->LeversFlipped = 1;
 
         if (p->entities[0]) {
             Lever* l = dynamic_cast<Lever*>(p->entities[0]);
-            if (l)
-                l->ToggleLock(true);
+            if (l) l->ToggleLock(true);
         }
+
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
     } else if (map->GetMapID() == 7) {
         p->Enabled = true;
 
-        Entity* torch1 = GetEntityAtLocation(map->StoredEntities, 8, 4, MaxEntitiesStoreable);
-        Entity* torch2 = GetEntityAtLocation(map->StoredEntities, 35, 4, MaxEntitiesStoreable);
+        Entity* torch1 = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
+        Entity* torch2 = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable);
 
-        Trigger_Internal_TorchSetup(torch1, false, true, false);
-        if (torch2)
-            torch2->HasFire = false;
+        Trigger_Internal_TorchSetup(torch1, false, true, false, true, false);
+        if (torch2) torch2->HasFire = false;
         
         p->entities[0] = torch2;
     } else if (map->GetMapID() == 9) {
         p->Enabled = true;
-
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
         p->PlatesPressed = 1;
+
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
     } else if (map->GetMapID() == 13) {
         p->Enabled = true;
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
@@ -260,7 +292,6 @@ void Trigger_SetupPuzzles(Map* map) {
         p2->PlatesPressed = 1; // Second crate must be pushed onto button
 
         Entity* torch = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
-        Trigger_Internal_TorchSetup(torch, false, true, false);
-        if (torch) torch->HasFire = false;
+        Trigger_Internal_TorchSetup(torch, false, true, false, false, false);
     }
 }
