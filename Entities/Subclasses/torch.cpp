@@ -1,7 +1,7 @@
 #include "Entities/Subclasses/torch.h"
 
 Torch::Torch(int xPos, int yPos) {
-    id = 6;
+    id = EntityID::EE_Torch;
 
     x = xPos;
     y = yPos;

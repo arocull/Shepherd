@@ -1,7 +1,7 @@
 #include "Entities/Subclasses/sheep.h"
 
 Sheep::Sheep(int xPos, int yPos) {
-    id = 2;
+    id = EntityID::EE_Sheep;
     x = xPos;
     y = yPos;
     MaxHealth = 2;

@@ -152,5 +152,5 @@ void Map::Free() {
         scroll = NULL;
     }
     
-    delete StoredEntities;
+    free(StoredEntities);
 }

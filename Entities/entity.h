@@ -1,21 +1,22 @@
 #pragma once
 
 #include "Core/config.h"
+#include "Core/enums.h"
 
 // Entity - Any mobile object with individual properties.
 class Entity {
     public:
         Entity();
-        Entity(int xPos, int yPos, int ID);
+        Entity(int xPos, int yPos, EntityID ID);
 
     protected:
-        int id = 0;
+        EntityID id = EntityID::EE_None;
         int MaxHealth = 1;
         int Health = 1;
 
     public:
         // Returns the entity ID
-        int GetID();
+        EntityID GetID();
         // Returns the amount of health the entity has
         int GetHealth();
         // Call this function when unloading the entity (storing into map)

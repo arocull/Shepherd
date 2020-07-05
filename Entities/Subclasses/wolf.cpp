@@ -1,7 +1,7 @@
 #include "wolf.h"
 
 Wolf::Wolf(int xPos, int yPos) {
-    id = 4;
+    id = EntityID::EE_Wolf;
 
     MaxHealth = 2;
     Health = MaxHealth;

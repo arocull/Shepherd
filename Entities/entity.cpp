@@ -6,7 +6,7 @@ Entity::Entity() {
     lastX = x;
     lastY = y;
 }
-Entity::Entity(int xPos, int yPos, int ID) {
+Entity::Entity(int xPos, int yPos, EntityID ID) {
     x = xPos;
     y = yPos;
     lastX = xPos;
@@ -14,7 +14,7 @@ Entity::Entity(int xPos, int yPos, int ID) {
     id = ID;
 }
 
-int Entity::GetID(){
+EntityID Entity::GetID(){
     return id;
 }
 int Entity::GetHealth() {

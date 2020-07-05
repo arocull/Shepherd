@@ -1,7 +1,7 @@
 #include "fireball.h"
 
 Fireball::Fireball(int spawnX, int spawnY, int dirX, int dirY, int type) {
-    id = 3;
+    id = EntityID::EE_Fireball;
     x = spawnX;
     y = spawnY;
     speedX = dirX*FireballSpeed;

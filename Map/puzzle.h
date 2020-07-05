@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/config.h"
+#include "Core/enums.h"
 
 #include "Entities/entity.h"
 #include "Entities/entity_management.h"

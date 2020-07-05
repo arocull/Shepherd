@@ -1,7 +1,7 @@
 #include "Entities/Subclasses/lever.h"
 
 Lever::Lever(int xPos, int yPos) {
-    id = 7;
+    id = EntityID::EE_Lever;
 
     x = xPos;
     y = yPos;
