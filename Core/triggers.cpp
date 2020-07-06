@@ -93,6 +93,7 @@ void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, E
         case 10: window->SetDialogueText("You sense a powerful presence residing in this room. Almost... embracing you.", 100); break;
         case 11: window->SetDialogueText("The pyramid entrance is somewhat ominous, and you sense a faint, supernatural presence.", 100); break;
         case 14: window->SetDialogueText("The walls are covered in ancient glyphs, worn away by the patient, eternal hands of time.", 100); break;
+        case 15: window->SetDialogueText("The floor is covered in a confusing maze of carved glyphs and lines.", 100); break;
         default: producedThought = false; // No default case
     }
 
@@ -138,6 +139,30 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 
     } else if (map->GetMapID() == 14 && map->PressurePlatesPressed >= 1) {
         window->SetDialogueText("The pressure plate clicks, and you hear a shifting of stones somewhere nearby.");
+    
+    } else if (map->GetMapID() == 15) {
+        Entity* solution = GetEntityOccurence(entities, EntityID::EE_Torch, 3, MaxEntities);
+
+        Entity* lever1 = GetEntityOccurence(entities, EntityID::EE_Lever, 1, MaxEntities);
+        Entity* lever2 = GetEntityOccurence(entities, EntityID::EE_Lever, 2, MaxEntities);
+        Entity* lever3 = GetEntityOccurence(entities, EntityID::EE_Lever, 3, MaxEntities);
+        Entity* lever4 = GetEntityOccurence(entities, EntityID::EE_Lever, 4, MaxEntities);
+        if (lever1 && lever2 && lever3 && lever4) {
+            Lever* l1 = dynamic_cast<Lever*>(lever1);
+            Lever* l2 = dynamic_cast<Lever*>(lever2);
+            Lever* l3 = dynamic_cast<Lever*>(lever3);
+            Lever* l4 = dynamic_cast<Lever*>(lever4);
+
+            if (l1 && l2 && l3 && l4) {
+                map->Puzzles[0].entities[0]->HasFire = l2->IsFlipped() || l4->IsFlipped();
+                map->Puzzles[0].entities[1]->HasFire = l1->IsFlipped() && !l3->IsFlipped();
+                map->Puzzles[0].entities[2]->HasFire = !l2->IsFlipped() && !l3->IsFlipped();
+                map->Puzzles[0].entities[3]->HasFire = (l3->IsFlipped() || l2->IsFlipped()) || (!l3->IsFlipped() && !l2->IsFlipped());
+            } else printf("Levers failed to be cast\n");
+        } else printf("Failed to locate all four levers\n");
+
+        Puzzle_CheckSolution(&map->Puzzles[0]);
+        Trigger_Internal_DisplayPuzzleStatus_Torch(solution, map->Puzzles[0].Solved);
     }
 
 }
@@ -238,6 +263,7 @@ void Trigger_Internal_DisplayPuzzleStatus_Torch(Entity* torch, bool puzzleStatus
             t->FireUsable = false;
             t->HasFire = puzzleStatus;
             t->glow = puzzleStatus;
+            t->UpdateAnimationData();
         }
     }
 }
@@ -293,5 +319,15 @@ void Trigger_SetupPuzzles(Map* map) {
 
         Entity* torch = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
         Trigger_Internal_TorchSetup(torch, false, true, false, false, false);
+    } else if (map->GetMapID() == 15) {
+        for (int i = 1; i < 6; i++) {
+            Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, i, MaxEntitiesStoreable), false, false, false, false, false);
+        }
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
+        p->entities[1] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable);
+        p->entities[2] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 4, MaxEntitiesStoreable);
+        p->entities[3] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 5, MaxEntitiesStoreable);
+        p->FireType = 1;
     }
 }

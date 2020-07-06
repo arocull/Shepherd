@@ -34,4 +34,10 @@ void Lever::UpdateAnimationData() {
 
 void Lever::Tick() {
     UpdateAnimationData();
+    if (lastState != Flipped) {
+        stateChanged = true;
+    } else {
+        stateChanged = false;
+    }
+    lastState = Flipped;
 }

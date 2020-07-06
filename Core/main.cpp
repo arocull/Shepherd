@@ -275,6 +275,7 @@ int main(int argc, char **argv) {
             // Tick Entities and Tally Pressure Plates
             bool currentPuzzleStatus = currentLevel->PuzzleStatus;
             bool PressurePlatesChanged = false;
+            bool LeversChanged = false;
             currentLevel->PressurePlatesPressed = 0;
             for (int i = 0; i < MaxEntities; i++) {
                 if (!levelEntities[i]) continue;   //Skip checks if this is a nullpointer or paused
@@ -381,6 +382,9 @@ int main(int argc, char **argv) {
                             a->animation = 1;
                         }       
                     }
+                } else if (a->GetID() == EntityID::EE_Lever) {
+                    Lever* lever = dynamic_cast<Lever*>(a);
+                    if (lever->stateChanged) LeversChanged = true;
                 }
             }
             // Clean Entity List
@@ -388,6 +392,7 @@ int main(int argc, char **argv) {
 
             bool doTriggerPuzzleInput = false;
 
+            // Run checks on puzzles
             int puzzlesEnabled = 0;
             int puzzlesCompleted = 0;
             for (int i = 0; i < MaxPuzzles; i++) {
@@ -406,8 +411,8 @@ int main(int argc, char **argv) {
             if (puzzlesEnabled > 0)
                 currentLevel->PuzzleStatus = (puzzlesEnabled == puzzlesCompleted);
 
-            if (PressurePlatesChanged) doTriggerPuzzleInput = true;
-            if (doTriggerPuzzleInput) Trigger_PuzzleInput(&window, &soundService, particles, currentLevel, levelEntities);
+            // Run triggers
+            if (doTriggerPuzzleInput || PressurePlatesChanged || LeversChanged) Trigger_PuzzleInput(&window, &soundService, particles, currentLevel, levelEntities);
 
             // If the player completed a puzzle this tick, show a particle
             if (!currentPuzzleStatus && currentLevel->PuzzleStatus) {

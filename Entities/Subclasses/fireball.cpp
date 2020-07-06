@@ -27,21 +27,24 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
             if (hit && !hit->HasFire) {
 
                 // If it hits a torch, attempt to ignite it
-                if (hit->GetID() == 6) {
+                if (hit->GetID() == EntityID::EE_Torch) {
                     Torch* torch = dynamic_cast<Torch*>(hit);
                     if (torch && torch->Extinguishable) {
                         torch->HasFire = HasFire;
                         torch->HasFrost = HasFrost; 
                     }
                 // If it hits a crate, incinerate it
-                } else if (hit->GetID() == 5) {
+                } else if (hit->GetID() == EntityID::EE_Crate) {    // Hitting crates with fireballs will incinerate them
                     Crate* crate = dynamic_cast<Crate*>(hit);
                     if (crate && crate->canIncinerate) crate->Incinerate(particles, this);
+                } else if (hit->GetID() == EntityID::EE_Lever) {    // Hitting levers with fireballs will flip them
+                    Lever* lever = dynamic_cast<Lever*>(hit);
+                    if (lever) lever->Flip();
                 } else {
                     hit->HasFire = HasFire;
                     hit->HasFrost = HasFrost;  
 
-                    if (!((hit->GetID() == 1 || hit->GetID() == 2) && !enemy))
+                    if (!((hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) && !enemy))
                         hit->TakeDamage(1, this);
                 }
             }
