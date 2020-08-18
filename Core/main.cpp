@@ -23,6 +23,7 @@ $> run
 #include "Core/config.h"
 #include "Core/mathutil.h"
 
+#include "Core/UI/menu.h"
 #include "Core/renderwindow.h"
 
 #include "Audio/sound_service.h"
@@ -64,19 +65,30 @@ int main(int argc, char **argv) {
     // Randomize seed based off of current time
     //srand(time(0));
 
-    int PauseMenuSelection = 0;
-    int PauseSubmenuSelection = 0;
+    Menu* pauseMenu = new Menu(5); // Fill out pause menu (cast to char array to prevent compiler auto-conversion to string)
+    pauseMenu->optionNames[0] = (char*) "Resume";
+    pauseMenu->optionNames[1] = (char*) "Map";
+    pauseMenu->optionNames[2] = (char*) "Scrolls";
+    pauseMenu->optionNames[3] = (char*) "Settings";
+    pauseMenu->optionNames[4] = (char*) "Close";
+    pauseMenu->optionDesc[0] = (char*) "Resumes the game";
+    pauseMenu->optionDesc[1] = (char*) "Displays a map of the explored areas";
+    pauseMenu->optionDesc[2] = (char*) "Any hidden texts you have found";
+    pauseMenu->optionDesc[3] = (char*) "Tailor your game experience with things like volume and fullscreen";
+    pauseMenu->optionDesc[4] = (char*) "Closes the game";
+
+    Menu* mapMenu;
+    Menu* scrollsMenu;
+    Menu* settingsMenu = new Menu(1);
+    settingsMenu->optionNames[0] = (char*) "Testing";
+    settingsMenu->optionDesc[0] = (char*) "This is a submenu test.";
+
+    Menu* activeMenu = pauseMenu;
+
+
     bool inPauseSubmenu = false;
     bool KeyEscapeDown = false;
     bool KeyFullscreenDown = false;
-
-    const char* PauseMenuText[PauseMainMenuOptions] = {
-        "Resume",
-        "Scrolls",
-        "Map",
-        "Settings",
-        "Close"
-    };
 
     SDL_Event event;
     float LastTick = 0;
@@ -120,10 +132,28 @@ int main(int argc, char **argv) {
     world[6][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid21");
 
 
-    // Perform first-time setup for levels that need it (set up puzzles, update entity data)
-    for (int x = 0; x < WorldWidth; x++) {
-        for (int y = 0; y < WorldHeight; y++) {
-            Trigger_SetupPuzzles(world[x][y]);
+    // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
+    {
+        int numScrolls = 0;
+        for (int x = 0; x < WorldWidth; x++) {
+            for (int y = 0; y < WorldHeight; y++) {
+                Trigger_SetupPuzzles(world[x][y]);
+                if (world[x][y]->HasScroll()) numScrolls++;
+            }
+        }
+
+        scrollsMenu = new Menu(numScrolls);
+        int currentScroll = 0;
+
+        // TODO: Obscure undiscovered scrolls until found
+        for (int x = 0; x < WorldWidth && currentScroll < numScrolls; x++) {
+            for (int y = 0; y < WorldHeight && currentScroll < numScrolls; y++) {
+                if (world[x][y]->HasScroll()) {
+                    scrollsMenu->optionNames[currentScroll] = world[x][y]->GetScrollName();
+                    scrollsMenu->optionDesc[currentScroll] = world[x][y]->GetScroll();
+                    currentScroll++;
+                }
+            }
         }
     }
 
@@ -191,30 +221,41 @@ int main(int argc, char **argv) {
             #endif
 
             if (GamePaused) { // Interpret keypresses
-                if (MoveLeft) inPauseSubmenu = false; // Back out of submenus if left was pressed (same functionality as escape without unpausing)
+                if (MoveLeft) { // Back out of submenus if left was pressed (same functionality as escape without unpausing)
+                    inPauseSubmenu = false;
+                    activeMenu = pauseMenu;
+                }
+
+                if (MoveUp) activeMenu->optionIndex--; // Move up in menu
+                else if (MoveDown) activeMenu->optionIndex++; // Move down in menu
+
+                if (activeMenu->optionIndex >= activeMenu->getNumOptions()) activeMenu->optionIndex = 0; // Wrap to top
+                else if (activeMenu->optionIndex < 0) activeMenu->optionIndex = activeMenu->getNumOptions() - 1; // Wrap to bottom
 
                 if (inPauseSubmenu) { // If in submenu, manipulate index
-                    if (MoveUp) PauseSubmenuSelection--;
-                    else if (MoveDown) PauseSubmenuSelection++;
-                    else if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar
+                    if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar
                         MoveFireballQueued = false;
                         printf("Enter functionality\n");
                     }
-                    
-                    // TODO: Submenu wrapping and sizes
-                } else {
-                    if (MoveUp) PauseMenuSelection--;
-                    else if (MoveDown) PauseMenuSelection++;
-                    else if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar is pressed
+                } else if (activeMenu == pauseMenu) {
+                    if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar is pressed
                         MoveFireballQueued = false;
-                        if (PauseMenuSelection == 0) GamePaused = false; // Resume game
-                        else if (PauseMenuSelection == (PauseMainMenuOptions - 1)) break; // Close game if close is hit
-                        else inPauseSubmenu = true; // Otherwise, enter submenu
-                    }
 
-                    if (PauseMenuSelection >= PauseMainMenuOptions) PauseMenuSelection = 0; // Wrap to top
-                    else if (PauseMenuSelection < 0) PauseMenuSelection = PauseMainMenuOptions - 1; // Wrap to bottom
+                        bool closeGame = false;
+
+                        switch (activeMenu->optionIndex) {
+                            case 0: GamePaused = false; break; // Resume
+                            // case 1: activeMenu // Display map
+                            case 2: activeMenu = scrollsMenu; break;
+                            case 3: activeMenu = settingsMenu; break;
+                            case 4: closeGame = true; break;
+                        }
+
+                        if (activeMenu != pauseMenu) inPauseSubmenu = true; // Entered submenu
+                        if (closeGame) break;
+                    }
                 }
+
 
                 Movement_Clear();
             }
@@ -239,9 +280,13 @@ int main(int argc, char **argv) {
             window.UpdateSize();
 
             window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
-            window.DrawDialogueBox();
+            window.DrawDialogueBox(activeMenu->optionDesc[activeMenu->optionIndex]);
             window.DrawMenuBackground();
-            window.DrawMenu(PauseMainMenuOptions, PauseMenuText, PauseMenuSelection, inPauseSubmenu);
+            window.DrawMenu(pauseMenu->getNumOptions(), pauseMenu->optionNames, pauseMenu->optionIndex, inPauseSubmenu);
+
+            if (activeMenu != pauseMenu) { // Draw submenu as well if it is active
+                window.DrawMenu(activeMenu->getNumOptions(), activeMenu->optionNames, activeMenu->optionIndex, false);
+            }
 
             SDL_RenderPresent(window.canvas);
             continue;
@@ -565,9 +610,22 @@ int main(int argc, char **argv) {
     window.Close();
     soundService.CloseSoundService();
 
+    // Free menus
+    activeMenu = nullptr;
+
+    pauseMenu->Free();
+    scrollsMenu->Free();
+    settingsMenu->Free();
+
+    delete pauseMenu;
+    delete scrollsMenu;
+    delete settingsMenu;
+
+    // Free in-game effects
     StopParticles(particles);
     free(particles);
 
+    // Free world, entities, and finally the player
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
             world[x][y]->Free();

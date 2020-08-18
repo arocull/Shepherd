@@ -34,6 +34,7 @@ class Map {
         void SetScroll(const char* text, const char* name);
         bool HasScroll();
         char* GetScroll();
+        char* GetScrollName();
 
         void SetTile(int x, int y, int newID);
         int GetTileID(int x, int y);

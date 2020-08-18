@@ -513,7 +513,7 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
 
 
 
-
+// Draws a given letter at the given position with the given size
 void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char letter) {
     if (letter == ' ') return;
 
@@ -536,7 +536,7 @@ void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char let
     sample.x = 5*sx;
     sample.y = 8*sy;
 
-    switch (letter) {
+    switch (letter) { // Letters that need to be shifted down hlaf a line
         case 'g':
         case 'j':
         case 'p':
@@ -551,9 +551,9 @@ void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char let
 
 Returns the index of whatever letter it was cut off on (the next letter that would not fit in the box)
 
-Start and end describe what sections of the string to scan, defaults to 0 and -1
-Set 'end' to -1 for no end*/
-int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, const char* text, int start, int end) {
+Start and end describe what sections of the string to scan, defaults to 0 and -2
+Set 'end' to -2 for no end, -1 for auto cut-off */
+int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start, int end) {
     int sizeY = bottomY-topY;
     int sizeX = (int) sizeY * (5.0f/8.0f);
 
@@ -561,7 +561,7 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, const 
     int lastWordEnd = start;
     int leftXSim = leftX;
     // First, estimate how much space the text will take up so we don't end up splitting up a new word
-    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftXSim <= rightX-sizeX) {
+    while (text[currentIndex] && ((end == -1 || currentIndex < end) && leftXSim <= rightX-sizeX) || end <= -2) {
         currentIndex++;
 
         char l = text[currentIndex];
@@ -578,7 +578,7 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, const 
     currentIndex = start;   // Reset index and actually draw the text (same method)
     if (text[currentIndex] == ' ')
         currentIndex++;
-    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftX <= rightX-sizeX && currentIndex <= lastWordEnd) {
+    while (text[currentIndex] && (((end == -1 || currentIndex < end) && leftX <= rightX-sizeX && currentIndex <= lastWordEnd) || end <= -2)) {
         if (text[currentIndex] == '\n' || text[currentIndex] == '\0') { //If it's a new line, move on (automatically gets pushed on)
             currentIndex++;
             break;
@@ -604,25 +604,29 @@ void RenderWindow::SetDialogueText(const char* text, int ticks) {
     dialogueText = strdup(text);
     dialogueTicksLeft = ticks;
 }
+// Returns whatever is currently supposed to be inside the dialogue box (exclused custom text)
 char* RenderWindow::GetDialogueText() {
     return dialogueText;
 }
-void RenderWindow::DrawDialogueBox() {
+// Draws the dialogue box and fills it with the given text
+// Text defaults to a nullptrs, at which point it will draw the given dialogue text instead
+void RenderWindow::DrawDialogueBox(char* text) {
     // Top pixel of dialogue box
     int dboxtop = innerHeight + offsetY;
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
     SDL_RenderDrawLine(canvas,0,dboxtop,x,innerHeight+offsetY);
     
+    if (text == nullptr) text = dialogueText;
 
     // Only render text if it exists
-    if (dialogueText && dialogueText[0]) {
+    if (text && text[0]) {
         // Add in half a line-space to center text
         dboxtop+=dialogueBoxY*DialogueBoxLineSpacing/2;
 
         int shave = 0;
-        for (int i = 0; i < DialogueBoxLines && dialogueText[shave]; i++) {
+        for (int i = 0; i < DialogueBoxLines && text[shave]; i++) {
             int top = dboxtop + i*dialogueBoxLineHeight + i*dialogueBoxY*DialogueBoxLineSpacing;
-            shave = WriteText(0, top, x, top + dialogueBoxLineHeight, dialogueText, shave);
+            shave = WriteText(0, top, x, top + dialogueBoxLineHeight, text, shave, -1);
         }
 
         // Remove the offset to keep frame bottom consistent
@@ -635,7 +639,7 @@ void RenderWindow::DrawDialogueBox() {
 
 
 
-
+// Draws the status bar, informing player of their health and whether or not all the puzzles in the current level have been completed or not
 void RenderWindow::DrawStatusBar(int HP, bool PuzzleCompleted) {
     if (!statusBarVisible) return;
 
@@ -663,6 +667,7 @@ void RenderWindow::DrawStatusBar(int HP, bool PuzzleCompleted) {
         SDL_RenderFillRect(canvas, &completionRect);
     }
 }
+// Enables or disables the Status Bar depending on input
 void RenderWindow::ToggleStatusBar(bool toggle) {
     statusBarVisible = toggle;
     UpdateSize();
@@ -685,7 +690,7 @@ void RenderWindow::DrawMenuBackground() {
     SDL_RenderFillRect(canvas, &back);
 }
 // Draws a menu and highlights selected item
-void RenderWindow::DrawMenu(int menuSize, const char** menuText, int itemSelected, bool shrunk) {
+void RenderWindow::DrawMenu(int menuSize, char** menuText, int itemSelected, bool shrunk) {
     SDL_Rect back;
     back.w = tileRes * MapWidth; 
     back.h = tileRes * MapHeight;
@@ -695,8 +700,8 @@ void RenderWindow::DrawMenu(int menuSize, const char** menuText, int itemSelecte
     int left = back.w * 0.25 + back.x;
     int right = back.w * 0.75;
 
-    int yScale = back.h / (menuSize + 1);
-    int yScaleInbetween = (back.h - yScale * menuSize) / (menuSize + 1);
+    int yScale = min(back.h / (menuSize + 1), back.h / 5);
+    int yScaleInbetween = min((back.h - yScale * menuSize) / (menuSize + 1), yScale / 2);
 
     if (shrunk) { // Shifts menu to top left corner
         left *= 0.2;

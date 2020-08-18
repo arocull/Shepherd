@@ -50,6 +50,9 @@ void Map::SetScroll(const char* text, const char* name) {
 char* Map::GetScroll() {
     return scroll;
 }
+char* Map::GetScrollName() {
+    return scrollName;
+}
 bool Map::HasScroll() {
     return scrollSet;
 }
