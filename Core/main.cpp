@@ -64,6 +64,20 @@ int main(int argc, char **argv) {
     // Randomize seed based off of current time
     //srand(time(0));
 
+    int PauseMenuSelection = 0;
+    int PauseSubmenuSelection = 0;
+    bool inPauseSubmenu = false;
+    bool KeyEscapeDown = false;
+    bool KeyFullscreenDown = false;
+
+    const char* PauseMenuText[PauseMainMenuOptions] = {
+        "Resume",
+        "Scrolls",
+        "Map",
+        "Settings",
+        "Close"
+    };
+
     SDL_Event event;
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
@@ -147,9 +161,14 @@ int main(int argc, char **argv) {
         // Key Presses
         if (event.type == SDL_KEYDOWN) {
             SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_ESCAPE)
-                break;
-            else if (key == SDLK_F11)
+            if (key == SDLK_ESCAPE && !KeyEscapeDown) { // Escape requires a let go and then another press so the menu does not rapidly switch
+                KeyEscapeDown = true; // Make sure escape does not spam
+                if (inPauseSubmenu) inPauseSubmenu = false; // Use escape to back out of submenus
+                else GamePaused = !GamePaused;  // Otherwise unpause game
+                
+                MoveFireballQueued = false; // Clear inputs
+                Movement_Clear();
+            } else if (key == SDLK_F11)
                 window.ToggleFullscreen();
             else if (key == SDLK_w || key == SDLK_UP) {
                 Movement_Clear();
@@ -163,38 +182,81 @@ int main(int argc, char **argv) {
             } else if (key == SDLK_a || key == SDLK_LEFT) {
                 Movement_Clear();
                 MoveLeft = true;
-            } else if (key == SDLK_SPACE) {
+            } else if (key == SDLK_SPACE || key == SDLK_RETURN || key == SDLK_RETURN2) {
                 MoveFireballQueued = true;
             }
             #ifdef DEBUG_MODE   // In Debug Mode, we can hold Left Shift to accelerate the game
-                if (key == SDLK_LSHIFT)
+                else if (key == SDLK_LSHIFT)
                     accelerate = true;
             #endif
+
+            if (GamePaused) { // Interpret keypresses
+                if (MoveLeft) inPauseSubmenu = false; // Back out of submenus if left was pressed (same functionality as escape without unpausing)
+
+                if (inPauseSubmenu) { // If in submenu, manipulate index
+                    if (MoveUp) PauseSubmenuSelection--;
+                    else if (MoveDown) PauseSubmenuSelection++;
+                    else if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar
+                        MoveFireballQueued = false;
+                        printf("Enter functionality\n");
+                    }
+                    
+                    // TODO: Submenu wrapping and sizes
+                } else {
+                    if (MoveUp) PauseMenuSelection--;
+                    else if (MoveDown) PauseMenuSelection++;
+                    else if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar is pressed
+                        MoveFireballQueued = false;
+                        if (PauseMenuSelection == 0) GamePaused = false; // Resume game
+                        else if (PauseMenuSelection == (PauseMainMenuOptions - 1)) break; // Close game if close is hit
+                        else inPauseSubmenu = true; // Otherwise, enter submenu
+                    }
+
+                    if (PauseMenuSelection >= PauseMainMenuOptions) PauseMenuSelection = 0; // Wrap to top
+                    else if (PauseMenuSelection < 0) PauseMenuSelection = PauseMainMenuOptions - 1; // Wrap to bottom
+                }
+
+                Movement_Clear();
+            }
         } else if (event.type == SDL_KEYUP) {
             SDL_Keycode key = event.key.keysym.sym;
             if (key == SDLK_w || key == SDLK_UP || key == SDLK_s || key == SDLK_DOWN || key == SDLK_d || key == SDLK_RIGHT || key == SDLK_a || key == SDLK_LEFT)
                 Move_QueueClear = true;
             #ifdef DEBUG_MODE
-                if (key == SDLK_LSHIFT)
+                else if (key == SDLK_LSHIFT)
                     accelerate = false;
             #endif
+            else if (key == SDLK_ESCAPE)
+                KeyEscapeDown = false;
         }
         
 
 
 
-        // Game Logic
-        if (!GamePaused) {
-            #ifdef DEBUG_MODE
-                if (accelerate)
-                    GameTick+=DeltaTime*TickRate*TickAcceleration;
-                else
-                    GameTick+=DeltaTime*TickRate;
-            #else
-                GameTick+=DeltaTime*TickRate;
-            #endif
+        if (GamePaused) { // If the game is paused, just render GUI and skip ahead
+            SDL_SetRenderDrawColor(window.canvas, 0, 0, 0, 0);
+            SDL_RenderClear(window.canvas);
+            window.UpdateSize();
+
+            window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
+            window.DrawDialogueBox();
+            window.DrawMenuBackground();
+            window.DrawMenu(PauseMainMenuOptions, PauseMenuText, PauseMenuSelection, inPauseSubmenu);
+
+            SDL_RenderPresent(window.canvas);
+            continue;
         }
-        if (GameTick <= 0.5f && Move_QueueClear && !GamePaused)    // Prevent any 'sliding'
+
+        // Game Logic
+        #ifdef DEBUG_MODE
+            if (accelerate)
+                GameTick+=DeltaTime*TickRate*TickAcceleration;
+            else
+                GameTick+=DeltaTime*TickRate;
+        #else
+            GameTick+=DeltaTime*TickRate;
+        #endif
+        if (GameTick <= 0.5f && Move_QueueClear)    // Prevent any 'sliding'
             Movement_Clear();
         else if (GameTick >= 1) {
             ticks++;
@@ -493,8 +555,6 @@ int main(int argc, char **argv) {
         // Draw GUI
         window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
         window.DrawDialogueBox();
-        if (GamePaused)
-            window.DrawPauseMenu(0);
         
         SDL_RenderPresent(window.canvas);
         soundService.Tick(DeltaTime);

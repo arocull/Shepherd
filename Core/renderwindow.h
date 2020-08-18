@@ -111,7 +111,8 @@ class RenderWindow {
         void DrawStatusBar(int HP, bool PuzzleCompleted);
         void ToggleStatusBar(bool toggle);
 
-        void DrawPauseMenu(int itemSelected);
+        void DrawMenuBackground();
+        void DrawMenu(int menuSize, const char** menuText, int itemSelected, bool shrunk = false);
         void LoadScreen();
 
         bool IsInitialized();
@@ -125,5 +126,5 @@ class RenderWindow {
     
     private:
         void DrawLetter(int posX, int posY, int sizeX, int sizeY, char letter);
-        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start = 0, int end = -1);
+        int WriteText(int leftX, int topY, int rightX, int bottomY, const char* text, int start = 0, int end = -1);
 };

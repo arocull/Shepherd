@@ -553,7 +553,7 @@ Returns the index of whatever letter it was cut off on (the next letter that wou
 
 Start and end describe what sections of the string to scan, defaults to 0 and -1
 Set 'end' to -1 for no end*/
-int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start, int end) {
+int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, const char* text, int start, int end) {
     int sizeY = bottomY-topY;
     int sizeX = (int) sizeY * (5.0f/8.0f);
 
@@ -672,10 +672,48 @@ void RenderWindow::ToggleStatusBar(bool toggle) {
 
 
 
+// Draws a blank menu background
+void RenderWindow::DrawMenuBackground() {
+    SDL_SetRenderDrawColor(canvas, 20, 20, 20, 0);
+    
+    SDL_Rect back;
+    back.w = tileRes * MapWidth; 
+    back.h = tileRes * MapHeight;
+    back.x = offsetX;
+    back.y = offsetY;
 
-// Draws a pause menu for interacting with
-void RenderWindow::DrawPauseMenu(int itemSelected) {
+    SDL_RenderFillRect(canvas, &back);
+}
+// Draws a menu and highlights selected item
+void RenderWindow::DrawMenu(int menuSize, const char** menuText, int itemSelected, bool shrunk) {
+    SDL_Rect back;
+    back.w = tileRes * MapWidth; 
+    back.h = tileRes * MapHeight;
+    back.x = offsetX;
+    back.y = offsetY;
 
+    int left = back.w * 0.25 + back.x;
+    int right = back.w * 0.75;
+
+    int yScale = back.h / (menuSize + 1);
+    int yScaleInbetween = (back.h - yScale * menuSize) / (menuSize + 1);
+
+    if (shrunk) { // Shifts menu to top left corner
+        left *= 0.2;
+        right *= 0.2;
+        yScale *= 0.2;
+        yScaleInbetween *= 0.2;
+    }
+
+    int posY = back.y + yScaleInbetween;
+    for (int i = 0; i < menuSize; i++) {
+        if (i == itemSelected) { // Draw the item with a little scale boost if it is currently selected
+            WriteText(left * 0.9, posY - yScaleInbetween / 2, right * 1.1, posY + yScale + yScaleInbetween / 2, menuText[i]);
+        } else
+            WriteText(left, posY, right, posY + yScale, menuText[i]);
+        
+        posY += yScale + yScaleInbetween;
+    }
 }
 // Draws a pop-up that covers the whole screen if something is expected to take a while to process
 void RenderWindow::LoadScreen() {
