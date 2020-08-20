@@ -117,6 +117,7 @@ class RenderWindow {
 
         bool IsInitialized();
         void ToggleFullscreen();
+        bool InFullscreen();
 
         void UpdateSize();
         void TickDeltaTime(float DeltaTime);

@@ -105,6 +105,9 @@ void RenderWindow::ToggleFullscreen() {
         fullscreen = false;
     }
 }
+bool RenderWindow::InFullscreen() {
+    return fullscreen;
+}
 void RenderWindow::UpdateSize() {
     SDL_GetWindowSize(window, &x, &y);
 

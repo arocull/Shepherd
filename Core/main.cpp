@@ -24,6 +24,7 @@ $> run
 #include "Core/mathutil.h"
 
 #include "Core/UI/menu.h"
+#include "Core/UI/menu_manager.h"
 #include "Core/renderwindow.h"
 
 #include "Audio/sound_service.h"
@@ -65,28 +66,8 @@ int main(int argc, char **argv) {
     // Randomize seed based off of current time
     //srand(time(0));
 
-    Menu* pauseMenu = new Menu(5); // Fill out pause menu (cast to char array to prevent compiler auto-conversion to string)
-    pauseMenu->optionNames[0] = (char*) "Resume";
-    pauseMenu->optionNames[1] = (char*) "Map";
-    pauseMenu->optionNames[2] = (char*) "Scrolls";
-    pauseMenu->optionNames[3] = (char*) "Settings";
-    pauseMenu->optionNames[4] = (char*) "Close";
-    pauseMenu->optionDesc[0] = (char*) "Resumes the game";
-    pauseMenu->optionDesc[1] = (char*) "Displays a map of the explored areas";
-    pauseMenu->optionDesc[2] = (char*) "Any hidden texts you have found";
-    pauseMenu->optionDesc[3] = (char*) "Tailor your game experience with things like volume and fullscreen";
-    pauseMenu->optionDesc[4] = (char*) "Closes the game";
+    MenuManager* menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
 
-    Menu* mapMenu;
-    Menu* scrollsMenu;
-    Menu* settingsMenu = new Menu(1);
-    settingsMenu->optionNames[0] = (char*) "Testing";
-    settingsMenu->optionDesc[0] = (char*) "This is a submenu test.";
-
-    Menu* activeMenu = pauseMenu;
-
-
-    bool inPauseSubmenu = false;
     bool KeyEscapeDown = false;
     bool KeyFullscreenDown = false;
 
@@ -142,15 +123,14 @@ int main(int argc, char **argv) {
             }
         }
 
-        scrollsMenu = new Menu(numScrolls);
+        menus->InitScrolls(numScrolls);
         int currentScroll = 0;
 
         // TODO: Obscure undiscovered scrolls until found
         for (int x = 0; x < WorldWidth && currentScroll < numScrolls; x++) {
             for (int y = 0; y < WorldHeight && currentScroll < numScrolls; y++) {
                 if (world[x][y]->HasScroll()) {
-                    scrollsMenu->optionNames[currentScroll] = world[x][y]->GetScrollName();
-                    scrollsMenu->optionDesc[currentScroll] = world[x][y]->GetScroll();
+                    menus->UnlockScroll(currentScroll, world[x][y]->GetScrollName(), world[x][y]->GetScroll());
                     currentScroll++;
                 }
             }
@@ -193,14 +173,15 @@ int main(int argc, char **argv) {
             SDL_Keycode key = event.key.keysym.sym;
             if (key == SDLK_ESCAPE && !KeyEscapeDown) { // Escape requires a let go and then another press so the menu does not rapidly switch
                 KeyEscapeDown = true; // Make sure escape does not spam
-                if (inPauseSubmenu) inPauseSubmenu = false; // Use escape to back out of submenus
+                if (menus->inSubmenu()) menus->Back(); // Use escape to back out of submenus
                 else GamePaused = !GamePaused;  // Otherwise unpause game
                 
                 MoveFireballQueued = false; // Clear inputs
                 Movement_Clear();
-            } else if (key == SDLK_F11)
+            } else if (key == SDLK_F11) {
                 window.ToggleFullscreen();
-            else if (key == SDLK_w || key == SDLK_UP) {
+                menus->ToggleFullscreen(window.InFullscreen());
+            } else if (key == SDLK_w || key == SDLK_UP) {
                 Movement_Clear();
                 MoveUp = true;
             } else if (key == SDLK_s || key == SDLK_DOWN) {
@@ -222,36 +203,31 @@ int main(int argc, char **argv) {
 
             if (GamePaused) { // Interpret keypresses
                 if (MoveLeft) { // Back out of submenus if left was pressed (same functionality as escape without unpausing)
-                    inPauseSubmenu = false;
-                    activeMenu = pauseMenu;
+                    menus->Back();
                 }
 
-                if (MoveUp) activeMenu->optionIndex--; // Move up in menu
-                else if (MoveDown) activeMenu->optionIndex++; // Move down in menu
+                if (MoveUp) menus->OptionUp(); // Move up in menu
+                else if (MoveDown) menus->OptionDown(); // Move down in menu
 
-                if (activeMenu->optionIndex >= activeMenu->getNumOptions()) activeMenu->optionIndex = 0; // Wrap to top
-                else if (activeMenu->optionIndex < 0) activeMenu->optionIndex = activeMenu->getNumOptions() - 1; // Wrap to bottom
-
-                if (inPauseSubmenu) { // If in submenu, manipulate index
+                if (menus->inSubmenu()) { // If in submenu, manipulate index
                     if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar
                         MoveFireballQueued = false;
                         printf("Enter functionality\n");
                     }
-                } else if (activeMenu == pauseMenu) {
+                } else {
                     if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar is pressed
                         MoveFireballQueued = false;
 
                         bool closeGame = false;
 
-                        switch (activeMenu->optionIndex) {
+                        switch (menus->OptionIndex()) {
                             case 0: GamePaused = false; break; // Resume
                             // case 1: activeMenu // Display map
-                            case 2: activeMenu = scrollsMenu; break;
-                            case 3: activeMenu = settingsMenu; break;
+                            case 2: menus->EnterMenuScrolls(); break;
+                            case 3: menus->EnterMenuSettings(); break;
                             case 4: closeGame = true; break;
                         }
 
-                        if (activeMenu != pauseMenu) inPauseSubmenu = true; // Entered submenu
                         if (closeGame) break;
                     }
                 }
@@ -279,13 +255,14 @@ int main(int argc, char **argv) {
             SDL_RenderClear(window.canvas);
             window.UpdateSize();
 
+            // TODO: Currently this is a lot of pointers to pointers to pointers, maybe clean up a bit?
             window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
-            window.DrawDialogueBox(activeMenu->optionDesc[activeMenu->optionIndex]);
+            window.DrawDialogueBox(menus->activeMenu->optionDesc[menus->activeMenu->optionIndex]);
             window.DrawMenuBackground();
-            window.DrawMenu(pauseMenu->getNumOptions(), pauseMenu->optionNames, pauseMenu->optionIndex, inPauseSubmenu);
+            window.DrawMenu(menus->pauseMenu->getNumOptions(), menus->pauseMenu->optionNames, menus->pauseMenu->optionIndex, menus->inSubmenu());
 
-            if (activeMenu != pauseMenu) { // Draw submenu as well if it is active
-                window.DrawMenu(activeMenu->getNumOptions(), activeMenu->optionNames, activeMenu->optionIndex, false);
+            if (menus->inSubmenu()) { // Draw submenu as well if it is active
+                window.DrawMenu(menus->activeMenu->getNumOptions(), menus->activeMenu->optionNames, menus->activeMenu->optionIndex, false);
             }
 
             SDL_RenderPresent(window.canvas);
@@ -611,15 +588,8 @@ int main(int argc, char **argv) {
     soundService.CloseSoundService();
 
     // Free menus
-    activeMenu = nullptr;
-
-    pauseMenu->Free();
-    scrollsMenu->Free();
-    settingsMenu->Free();
-
-    delete pauseMenu;
-    delete scrollsMenu;
-    delete settingsMenu;
+    menus->Free();
+    delete menus;
 
     // Free in-game effects
     StopParticles(particles);

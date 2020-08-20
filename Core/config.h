@@ -13,8 +13,6 @@
 #define DialogueBoxLineSpacing .05
 // Scale of the top GUI status bar in comparison to the viewport scale
 #define StatusBarScale .05
-// How many options are listed on the main pause menu
-#define PauseMainMenuOptions 5
 
 // Maximum entities that can exist at a time (not counting player)
 #define MaxEntities 25
