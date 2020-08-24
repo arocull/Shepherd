@@ -1,3 +1,6 @@
+#pragma once
+
+#include "Core/enums.h"
 #include "Core/UI/menu.h"
 
 class MenuManager {

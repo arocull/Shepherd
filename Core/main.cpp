@@ -23,6 +23,8 @@ $> run
 #include "Core/config.h"
 #include "Core/mathutil.h"
 
+#include "Core/Input/input_action.h"
+#include "Core/Input/controller.h"
 #include "Core/UI/menu.h"
 #include "Core/UI/menu_manager.h"
 #include "Core/renderwindow.h"
@@ -67,9 +69,8 @@ int main(int argc, char **argv) {
     //srand(time(0));
 
     MenuManager* menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
+    Controller* controller = new Controller(menus, &soundService); // Player controller input (done as pointer in-case multiple are used in future)
 
-    bool KeyEscapeDown = false;
-    bool KeyFullscreenDown = false;
 
     SDL_Event event;
     float LastTick = 0;
@@ -77,9 +78,6 @@ int main(int argc, char **argv) {
     float DeltaTime = 0;
     float GameTick = 0;
     int ticks = 0;
-    #ifdef DEBUG_MODE
-        bool accelerate = false;
-    #endif
     bool GamePaused = false;
 
     // Load world from files
@@ -168,85 +166,15 @@ int main(int argc, char **argv) {
         // Check Events
         SDL_PollEvent(&event);
 
-        // Key Presses
-        if (event.type == SDL_KEYDOWN) {
-            SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_ESCAPE && !KeyEscapeDown) { // Escape requires a let go and then another press so the menu does not rapidly switch
-                KeyEscapeDown = true; // Make sure escape does not spam
-                if (menus->inSubmenu()) menus->Back(); // Use escape to back out of submenus
-                else GamePaused = !GamePaused;  // Otherwise unpause game
-                
-                MoveFireballQueued = false; // Clear inputs
-                Movement_Clear();
-            } else if (key == SDLK_F11) {
-                window.ToggleFullscreen();
-                menus->ToggleFullscreen(window.InFullscreen());
-            } else if (key == SDLK_w || key == SDLK_UP) {
-                Movement_Clear();
-                MoveUp = true;
-            } else if (key == SDLK_s || key == SDLK_DOWN) {
-                Movement_Clear();
-                MoveDown = true;
-            } else if (key == SDLK_d || key == SDLK_RIGHT) {
-                Movement_Clear();
-                MoveRight = true;
-            } else if (key == SDLK_a || key == SDLK_LEFT) {
-                Movement_Clear();
-                MoveLeft = true;
-            } else if (key == SDLK_SPACE || key == SDLK_RETURN || key == SDLK_RETURN2) {
-                MoveFireballQueued = true;
-            }
-            #ifdef DEBUG_MODE   // In Debug Mode, we can hold Left Shift to accelerate the game
-                else if (key == SDLK_LSHIFT)
-                    accelerate = true;
-            #endif
-
-            if (GamePaused) { // Interpret keypresses
-                if (MoveLeft) { // Back out of submenus if left was pressed (same functionality as escape without unpausing)
-                    menus->Back();
-                }
-
-                if (MoveUp) menus->OptionUp(); // Move up in menu
-                else if (MoveDown) menus->OptionDown(); // Move down in menu
-
-                if (menus->inSubmenu()) { // If in submenu, manipulate index
-                    if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar
-                        MoveFireballQueued = false;
-                        printf("Enter functionality\n");
-                    }
-                } else {
-                    if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar is pressed
-                        MoveFireballQueued = false;
-
-                        bool closeGame = false;
-
-                        switch (menus->OptionIndex()) {
-                            case 0: GamePaused = false; break; // Resume
-                            // case 1: activeMenu // Display map
-                            case 2: menus->EnterMenuScrolls(); break;
-                            case 3: menus->EnterMenuSettings(); break;
-                            case 4: closeGame = true; break;
-                        }
-
-                        if (closeGame) break;
-                    }
-                }
-
-
-                Movement_Clear();
-            }
-        } else if (event.type == SDL_KEYUP) {
-            SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_w || key == SDLK_UP || key == SDLK_s || key == SDLK_DOWN || key == SDLK_d || key == SDLK_RIGHT || key == SDLK_a || key == SDLK_LEFT)
-                Move_QueueClear = true;
-            #ifdef DEBUG_MODE
-                else if (key == SDLK_LSHIFT)
-                    accelerate = false;
-            #endif
-            else if (key == SDLK_ESCAPE)
-                KeyEscapeDown = false;
+        // Process Input (movement applied automatically using globals, window-specific functions happen here)
+        struct InputAction inputAction;
+        controller->ProcessInput(&event, &inputAction, GamePaused, window.InFullscreen());
+        if (inputAction.close) break; // Close program
+        GamePaused = inputAction.pause; // Pause / Unpause game
+        if (inputAction.fullscreen != window.InFullscreen()) { // Toggle fullscreen
+            window.ToggleFullscreen(inputAction.fullscreen);
+            menus->ToggleFullscreen(inputAction.fullscreen);
         }
-        
 
 
 
@@ -265,13 +193,14 @@ int main(int argc, char **argv) {
                 window.DrawMenu(menus->activeMenu->getNumOptions(), menus->activeMenu->optionNames, menus->activeMenu->optionIndex, false);
             }
 
+            soundService.Tick(DeltaTime);
             SDL_RenderPresent(window.canvas);
             continue;
         }
 
         // Game Logic
         #ifdef DEBUG_MODE
-            if (accelerate)
+            if (controller->accelerate)
                 GameTick+=DeltaTime*TickRate*TickAcceleration;
             else
                 GameTick+=DeltaTime*TickRate;

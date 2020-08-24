@@ -92,8 +92,8 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
 bool RenderWindow::IsInitialized(){
     return initialized;
 }
-void RenderWindow::ToggleFullscreen() {
-    if (!fullscreen) {
+void RenderWindow::ToggleFullscreen(bool setFullscreen) {
+    if (setFullscreen) {
         windowedX = x;
         windowedY = y;
         
@@ -104,6 +104,9 @@ void RenderWindow::ToggleFullscreen() {
         SDL_SetWindowSize(window, windowedX, windowedY);
         fullscreen = false;
     }
+}
+void RenderWindow::ToggleFullscreen() {
+    ToggleFullscreen(!fullscreen);
 }
 bool RenderWindow::InFullscreen() {
     return fullscreen;

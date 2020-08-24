@@ -1,7 +1,7 @@
 #include "Core/UI/menu_manager.h"
 
 MenuManager::MenuManager() {
-    pauseMenu = new Menu(5); // Fill out pause menu (cast to char array to prevent compiler auto-conversion to string)
+    pauseMenu = new Menu(MenuID::EM_Pause, 5); // Fill out pause menu (cast to char array to prevent compiler auto-conversion to string)
     pauseMenu->optionNames[0] = (char*) "Resume";
     pauseMenu->optionNames[1] = (char*) "Map";
     pauseMenu->optionNames[2] = (char*) "Scrolls";
@@ -18,22 +18,22 @@ MenuManager::MenuManager() {
     scrollsMenu;
     scrollsInitialized = false;
 
-    settingsMenu = new Menu(3);
+    settingsMenu = new Menu(MenuID::EM_Settings, 3);
     settingsMenu->optionNames[0] = (char*) "Volume";
-    settingsMenu->optionNames[1] = (char*) "Fullscreen";
+    settingsMenu->optionNames[1] = (char*) "Windowed";
     settingsMenu->optionNames[2] = (char*) "Reset Save";
-    settingsMenu->optionDesc[0] = (char*) "This is a submenu test. (Not currently functional.)";
-    settingsMenu->optionDesc[1] = (char*) "Select to toggle between fullscreen and windowed mode. Also toggleable with F11. (Not currently functional.)";
-    settingsMenu->optionDesc[2] = (char*) "Resets all save data. Forcecloses game. (Not currently functional.)";
+    settingsMenu->optionDesc[0] = (char*) "Change volume of music and sound effects.";
+    settingsMenu->optionDesc[1] = (char*) "Toggles between fullscreen and windowed mode--also toggleable with F11.";
+    settingsMenu->optionDesc[2] = (char*) "Resets all save data and forcibly closes the game.";
 
     activeMenu = pauseMenu;
 }
 
 
-
+// Initializes the scrolls menu based off the total number of scrolls loaded 
 void MenuManager::InitScrolls(int totalScrolls) {
     if (scrollsInitialized) return; // Do not allow re-initialization
-    scrollsMenu = new Menu(totalScrolls);
+    scrollsMenu = new Menu(MenuID::EM_Scrolls, totalScrolls);
 
     // Fill scrolls with blanks
     for (int i = 0; i < totalScrolls; i++) {
@@ -41,6 +41,7 @@ void MenuManager::InitScrolls(int totalScrolls) {
         scrollsMenu->optionDesc[i] = (char*) "Scroll undiscovered.";
     }
 }
+// Adds a scroll into the scroll library
 void MenuManager::UnlockScroll(int scrollIndex, char* name, char* desc) {
     scrollsMenu->optionNames[scrollIndex] = name;
     scrollsMenu->optionDesc[scrollIndex] = desc;
@@ -85,8 +86,8 @@ void MenuManager::EnterMenuSettings() {
 
 
 void MenuManager::ToggleFullscreen(bool inFullscreen) {
-    if (inFullscreen) settingsMenu->optionNames[1] = (char*) "Windowed";
-    else if (inFullscreen) settingsMenu->optionNames[1] = (char*) "Fullscreen";
+    if (inFullscreen) settingsMenu->optionNames[1] = (char*) "Fullscreen";
+    else settingsMenu->optionNames[1] = (char*) "Windowed";
 }
 
 

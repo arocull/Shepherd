@@ -1,6 +1,7 @@
 #include "Core/UI/menu.h"
 
-Menu::Menu(int numItems) {
+Menu::Menu(MenuID menu, int numItems) {
+    id = menu;
     numOptions = numItems;
     optionIndex = 0;
 
@@ -12,6 +13,10 @@ Menu::Menu(int numItems) {
 
 int Menu::getNumOptions() {
     return numOptions;
+}
+
+MenuID Menu::getMenuID() {
+    return id;
 }
 
 // Frees allocated memory for optionNames and optionDesc

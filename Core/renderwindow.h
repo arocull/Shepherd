@@ -116,6 +116,7 @@ class RenderWindow {
         void LoadScreen();
 
         bool IsInitialized();
+        void ToggleFullscreen(bool setFullscreen);
         void ToggleFullscreen();
         bool InFullscreen();
 
