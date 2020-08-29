@@ -38,7 +38,7 @@ void MenuManager::InitScrolls(int totalScrolls) {
     // Fill scrolls with blanks
     for (int i = 0; i < totalScrolls; i++) {
         scrollsMenu->optionNames[i] = (char*) "??????";
-        scrollsMenu->optionDesc[i] = (char*) "Scroll undiscovered.";
+        scrollsMenu->optionDesc[i] = (char*) "Scroll not discovered.";
     }
 }
 // Adds a scroll into the scroll library

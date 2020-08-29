@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
         for (int x = 0; x < WorldWidth && currentScroll < numScrolls; x++) {
             for (int y = 0; y < WorldHeight && currentScroll < numScrolls; y++) {
                 if (world[x][y]->HasScroll()) {
-                    menus->UnlockScroll(currentScroll, world[x][y]->GetScrollName(), world[x][y]->GetScroll());
+                    world[x][y]->SetScrollIndex(currentScroll);
                     currentScroll++;
                 }
             }
@@ -265,8 +265,10 @@ int main(int argc, char **argv) {
                 player->HasFire = true;
             else if (standingTile < 0)
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
-            else if (standingTile == TileID::ET_Scroll)
-                Trigger_OnScroll(&window, &soundService, currentLevel, levelEntities);
+            else if (standingTile == TileID::ET_Scroll && currentLevel->HasScroll()) {
+                Trigger_OnScroll(&window, &soundService, currentLevel, levelEntities); // Do scroll trigger
+                menus->UnlockScroll(currentLevel->GetScrollIndex(), currentLevel->GetScrollName(), currentLevel->GetScroll()); // Unlock scroll in index
+            }
 
             // Toss Fireball
             if (MoveFireballQueued) {
@@ -519,6 +521,7 @@ int main(int argc, char **argv) {
     // Free menus
     menus->Free();
     delete menus;
+    delete controller;
 
     // Free in-game effects
     StopParticles(particles);

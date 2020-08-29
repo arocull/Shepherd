@@ -35,6 +35,8 @@ class Map {
         bool HasScroll();
         char* GetScroll();
         char* GetScrollName();
+        void SetScrollIndex(int newScrollIndex);
+        int GetScrollIndex();
 
         void SetTile(int x, int y, int newID);
         int GetTileID(int x, int y);
@@ -57,4 +59,5 @@ class Map {
         bool scrollSet = false;
         char* scroll = NULL;          // Scroll text for this area
         char* scrollName = NULL;      // Scroll name for this area
+        int scrollIndex = -1;         // Index of the scroll in the collectibles list
 };
