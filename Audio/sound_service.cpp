@@ -69,7 +69,7 @@ void SoundService::Tick(float DeltaTime) {
 }
 void SoundService::SetVolume(float volume, int channel) {
     currentVolume = volume;
-    Mix_Volume(channel, (int) (pow(volume, 2) * 128));
+    Mix_Volume(channel, (int) (pow(volume * configuredVolume, 2) * 128));
 }
 void SoundService::FadeVolume(float newVolume, float fadeTime, int channel) {
     fadeChannel = channel;
@@ -109,7 +109,7 @@ void SoundService::QueueMusic(float timer, const char* MusicFile) {
 }
 void SoundService::SetVolumeMusic(float volume) {
     musicVolume = volume;
-    Mix_VolumeMusic((int) (pow(volume, 2) *128));
+    Mix_VolumeMusic((int) (pow(volume * configuredVolume, 2) * 128));
 }
 void SoundService::FadeVolumeMusic(float newVolume, float fadeTime) {
     musicFadeStartVolume = musicVolume;
@@ -119,6 +119,26 @@ void SoundService::FadeVolumeMusic(float newVolume, float fadeTime) {
     musicFading = true;
 }
 
+
+void SoundService::ConfiguredVolumeDecrease() {
+    if (configuredVolume <= 0.03) {
+        configuredVolume = 1.0f; // Wrap back to top
+    } else {
+        configuredVolume -= 0.2f;
+        if (configuredVolume < 0.03) configuredVolume = 0.0f; // Set volume to zero if negative, with some float threshold
+    }
+
+    // TODO: Clean up volume so it is more consistent with fading
+    SetVolume(currentVolume);
+    SetVolumeMusic(musicVolume);
+
+    #ifdef DEBUG_MODE
+        printf("Current configured volume is %f\n", configuredVolume);
+    #endif
+}
+float SoundService::ConfiguredVolumeGet() {
+    return configuredVolume;
+}
 
 
 SoundData* SoundService::PlaySound(const char* FilePath) {

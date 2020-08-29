@@ -47,11 +47,25 @@ void Map::SetScroll(const char* text, const char* name) {
         scrollName = strdup(name);
     }
 }
+// Returns the scroll text
 char* Map::GetScroll() {
     return scroll;
 }
+// Returns the name of the scroll
+char* Map::GetScrollName() {
+    return scrollName;
+}
+// Returns true if a scroll was set
 bool Map::HasScroll() {
     return scrollSet;
+}
+// Used for keeping track of the numeric index of the scroll information
+void Map::SetScrollIndex(int newScrollIndex) {
+    scrollIndex = newScrollIndex;
+}
+// Returns the numeric index of the scroll
+int Map::GetScrollIndex() {
+    return scrollIndex;
 }
 
 

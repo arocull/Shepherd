@@ -1,5 +1,6 @@
 #pragma once
 
+// Used for determining what tile and collision is drawn and utilized on a given space
 enum TileID {   // : int_fast8_t
     ET_Wall = 1,
     ET_Water = 2,
@@ -24,6 +25,7 @@ enum TileID {   // : int_fast8_t
     ET_Trigger4 = -4,  // Trigger 4 has no debounce, it is called repeatedly as long as player is ontop of it
 };
 
+// Used for determining what an entity is--used in casting and trigger/interaction functionality
 enum EntityID {     // : uint_fast8_t
     EE_Shepherd = 1,
     EE_Sheep = 2,
@@ -34,4 +36,12 @@ enum EntityID {     // : uint_fast8_t
     EE_Lever = 7,
 
     EE_None = 0,
+};
+
+// Used for determining what menu is currently being accessed
+enum MenuID {
+    EM_Pause = 0,
+    EM_Map = 1,
+    EM_Scrolls = 2,
+    EM_Settings = 3
 };

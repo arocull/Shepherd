@@ -30,6 +30,8 @@ class SoundService {
     private:
         bool Initialized = false;
 
+        float configuredVolume = 1.0f;
+
         float currentVolume = 1.0f;
         float fadeStartVolume = 1.0f;
         float fadeEndVolume = 1.0f;
@@ -73,6 +75,9 @@ class SoundService {
         void SetVolumeMusic(float volume);
         // Fades the music volume to a certain value over a set amount of time
         void FadeVolumeMusic(float newVolume, float fadeTime);
+
+        void ConfiguredVolumeDecrease();
+        float ConfiguredVolumeGet();
 
         // Ticks the Sound Service
         // * Automatically stops sounds that have finished and fades volume

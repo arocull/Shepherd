@@ -23,6 +23,10 @@ $> run
 #include "Core/config.h"
 #include "Core/mathutil.h"
 
+#include "Core/Input/input_action.h"
+#include "Core/Input/controller.h"
+#include "Core/UI/menu.h"
+#include "Core/UI/menu_manager.h"
 #include "Core/renderwindow.h"
 
 #include "Audio/sound_service.h"
@@ -64,15 +68,16 @@ int main(int argc, char **argv) {
     // Randomize seed based off of current time
     //srand(time(0));
 
+    MenuManager* menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
+    Controller* controller = new Controller(menus, &soundService); // Player controller input (done as pointer in-case multiple are used in future)
+
+
     SDL_Event event;
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
     float DeltaTime = 0;
     float GameTick = 0;
     int ticks = 0;
-    #ifdef DEBUG_MODE
-        bool accelerate = false;
-    #endif
     bool GamePaused = false;
 
     // Load world from files
@@ -106,10 +111,27 @@ int main(int argc, char **argv) {
     world[6][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid21");
 
 
-    // Perform first-time setup for levels that need it (set up puzzles, update entity data)
-    for (int x = 0; x < WorldWidth; x++) {
-        for (int y = 0; y < WorldHeight; y++) {
-            Trigger_SetupPuzzles(world[x][y]);
+    // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
+    {
+        int numScrolls = 0;
+        for (int x = 0; x < WorldWidth; x++) {
+            for (int y = 0; y < WorldHeight; y++) {
+                Trigger_SetupPuzzles(world[x][y]);
+                if (world[x][y]->HasScroll()) numScrolls++;
+            }
+        }
+
+        menus->InitScrolls(numScrolls);
+        int currentScroll = 0;
+
+        // TODO: Obscure undiscovered scrolls until found
+        for (int x = 0; x < WorldWidth && currentScroll < numScrolls; x++) {
+            for (int y = 0; y < WorldHeight && currentScroll < numScrolls; y++) {
+                if (world[x][y]->HasScroll()) {
+                    world[x][y]->SetScrollIndex(currentScroll);
+                    currentScroll++;
+                }
+            }
         }
     }
 
@@ -144,57 +166,48 @@ int main(int argc, char **argv) {
         // Check Events
         SDL_PollEvent(&event);
 
-        // Key Presses
-        if (event.type == SDL_KEYDOWN) {
-            SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_ESCAPE)
-                break;
-            else if (key == SDLK_F11)
-                window.ToggleFullscreen();
-            else if (key == SDLK_w || key == SDLK_UP) {
-                Movement_Clear();
-                MoveUp = true;
-            } else if (key == SDLK_s || key == SDLK_DOWN) {
-                Movement_Clear();
-                MoveDown = true;
-            } else if (key == SDLK_d || key == SDLK_RIGHT) {
-                Movement_Clear();
-                MoveRight = true;
-            } else if (key == SDLK_a || key == SDLK_LEFT) {
-                Movement_Clear();
-                MoveLeft = true;
-            } else if (key == SDLK_SPACE) {
-                MoveFireballQueued = true;
-            }
-            #ifdef DEBUG_MODE   // In Debug Mode, we can hold Left Shift to accelerate the game
-                if (key == SDLK_LSHIFT)
-                    accelerate = true;
-            #endif
-        } else if (event.type == SDL_KEYUP) {
-            SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_w || key == SDLK_UP || key == SDLK_s || key == SDLK_DOWN || key == SDLK_d || key == SDLK_RIGHT || key == SDLK_a || key == SDLK_LEFT)
-                Move_QueueClear = true;
-            #ifdef DEBUG_MODE
-                if (key == SDLK_LSHIFT)
-                    accelerate = false;
-            #endif
+        // Process Input (movement applied automatically using globals, window-specific functions happen here)
+        struct InputAction inputAction;
+        controller->ProcessInput(&event, &inputAction, GamePaused, window.InFullscreen());
+        if (inputAction.close) break; // Close program
+        GamePaused = inputAction.pause; // Pause / Unpause game
+        if (inputAction.fullscreen != window.InFullscreen()) { // Toggle fullscreen
+            window.ToggleFullscreen(inputAction.fullscreen);
+            menus->ToggleFullscreen(inputAction.fullscreen);
         }
-        
 
 
+
+        if (GamePaused) { // If the game is paused, just render GUI and skip ahead
+            SDL_SetRenderDrawColor(window.canvas, 0, 0, 0, 0);
+            SDL_RenderClear(window.canvas);
+            window.UpdateSize();
+
+            // TODO: Currently this is a lot of pointers to pointers to pointers, maybe clean up a bit?
+            window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
+            window.DrawDialogueBox(menus->activeMenu->optionDesc[menus->activeMenu->optionIndex]);
+            window.DrawMenuBackground();
+            window.DrawMenu(menus->pauseMenu->getNumOptions(), menus->pauseMenu->optionNames, menus->pauseMenu->optionIndex, menus->inSubmenu());
+
+            if (menus->inSubmenu()) { // Draw submenu as well if it is active
+                window.DrawMenu(menus->activeMenu->getNumOptions(), menus->activeMenu->optionNames, menus->activeMenu->optionIndex, false);
+            }
+
+            soundService.Tick(DeltaTime);
+            SDL_RenderPresent(window.canvas);
+            continue;
+        }
 
         // Game Logic
-        if (!GamePaused) {
-            #ifdef DEBUG_MODE
-                if (accelerate)
-                    GameTick+=DeltaTime*TickRate*TickAcceleration;
-                else
-                    GameTick+=DeltaTime*TickRate;
-            #else
+        #ifdef DEBUG_MODE
+            if (controller->accelerate)
+                GameTick+=DeltaTime*TickRate*TickAcceleration;
+            else
                 GameTick+=DeltaTime*TickRate;
-            #endif
-        }
-        if (GameTick <= 0.5f && Move_QueueClear && !GamePaused)    // Prevent any 'sliding'
+        #else
+            GameTick+=DeltaTime*TickRate;
+        #endif
+        if (GameTick <= 0.5f && Move_QueueClear)    // Prevent any 'sliding'
             Movement_Clear();
         else if (GameTick >= 1) {
             ticks++;
@@ -252,8 +265,10 @@ int main(int argc, char **argv) {
                 player->HasFire = true;
             else if (standingTile < 0)
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
-            else if (standingTile == TileID::ET_Scroll)
-                Trigger_OnScroll(&window, &soundService, currentLevel, levelEntities);
+            else if (standingTile == TileID::ET_Scroll && currentLevel->HasScroll()) {
+                Trigger_OnScroll(&window, &soundService, currentLevel, levelEntities); // Do scroll trigger
+                menus->UnlockScroll(currentLevel->GetScrollIndex(), currentLevel->GetScrollName(), currentLevel->GetScroll()); // Unlock scroll in index
+            }
 
             // Toss Fireball
             if (MoveFireballQueued) {
@@ -493,8 +508,6 @@ int main(int argc, char **argv) {
         // Draw GUI
         window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
         window.DrawDialogueBox();
-        if (GamePaused)
-            window.DrawPauseMenu(0);
         
         SDL_RenderPresent(window.canvas);
         soundService.Tick(DeltaTime);
@@ -505,9 +518,16 @@ int main(int argc, char **argv) {
     window.Close();
     soundService.CloseSoundService();
 
+    // Free menus
+    menus->Free();
+    delete menus;
+    delete controller;
+
+    // Free in-game effects
     StopParticles(particles);
     free(particles);
 
+    // Free world, entities, and finally the player
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
             world[x][y]->Free();

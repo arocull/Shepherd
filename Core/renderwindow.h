@@ -106,16 +106,19 @@ class RenderWindow {
         
         void SetDialogueText(const char* newText, int ticks = 50);
         char* GetDialogueText();
-        void DrawDialogueBox();
+        void DrawDialogueBox(char* text = nullptr);
 
         void DrawStatusBar(int HP, bool PuzzleCompleted);
         void ToggleStatusBar(bool toggle);
 
-        void DrawPauseMenu(int itemSelected);
+        void DrawMenuBackground();
+        void DrawMenu(int menuSize, char** menuText, int itemSelected, bool shrunk = false);
         void LoadScreen();
 
         bool IsInitialized();
+        void ToggleFullscreen(bool setFullscreen);
         void ToggleFullscreen();
+        bool InFullscreen();
 
         void UpdateSize();
         void TickDeltaTime(float DeltaTime);
@@ -125,5 +128,5 @@ class RenderWindow {
     
     private:
         void DrawLetter(int posX, int posY, int sizeX, int sizeY, char letter);
-        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start = 0, int end = -1);
+        int WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start = 0, int end = -2);
 };

@@ -92,8 +92,8 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
 bool RenderWindow::IsInitialized(){
     return initialized;
 }
-void RenderWindow::ToggleFullscreen() {
-    if (!fullscreen) {
+void RenderWindow::ToggleFullscreen(bool setFullscreen) {
+    if (setFullscreen) {
         windowedX = x;
         windowedY = y;
         
@@ -104,6 +104,12 @@ void RenderWindow::ToggleFullscreen() {
         SDL_SetWindowSize(window, windowedX, windowedY);
         fullscreen = false;
     }
+}
+void RenderWindow::ToggleFullscreen() {
+    ToggleFullscreen(!fullscreen);
+}
+bool RenderWindow::InFullscreen() {
+    return fullscreen;
 }
 void RenderWindow::UpdateSize() {
     SDL_GetWindowSize(window, &x, &y);
@@ -513,7 +519,7 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
 
 
 
-
+// Draws a given letter at the given position with the given size
 void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char letter) {
     if (letter == ' ') return;
 
@@ -536,7 +542,7 @@ void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char let
     sample.x = 5*sx;
     sample.y = 8*sy;
 
-    switch (letter) {
+    switch (letter) { // Letters that need to be shifted down hlaf a line
         case 'g':
         case 'j':
         case 'p':
@@ -551,8 +557,8 @@ void RenderWindow::DrawLetter(int xPos, int yPos, int sizeX, int sizeY, char let
 
 Returns the index of whatever letter it was cut off on (the next letter that would not fit in the box)
 
-Start and end describe what sections of the string to scan, defaults to 0 and -1
-Set 'end' to -1 for no end*/
+Start and end describe what sections of the string to scan, defaults to 0 and -2
+Set 'end' to -2 for no end, -1 for auto cut-off */
 int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* text, int start, int end) {
     int sizeY = bottomY-topY;
     int sizeX = (int) sizeY * (5.0f/8.0f);
@@ -561,7 +567,7 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* 
     int lastWordEnd = start;
     int leftXSim = leftX;
     // First, estimate how much space the text will take up so we don't end up splitting up a new word
-    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftXSim <= rightX-sizeX) {
+    while (text[currentIndex] && ((end == -1 || currentIndex < end) && leftXSim <= rightX-sizeX) || end <= -2) {
         currentIndex++;
 
         char l = text[currentIndex];
@@ -578,7 +584,7 @@ int RenderWindow::WriteText(int leftX, int topY, int rightX, int bottomY, char* 
     currentIndex = start;   // Reset index and actually draw the text (same method)
     if (text[currentIndex] == ' ')
         currentIndex++;
-    while (text[currentIndex] && (end <= -1 || currentIndex < end) && leftX <= rightX-sizeX && currentIndex <= lastWordEnd) {
+    while (text[currentIndex] && (((end == -1 || currentIndex < end) && leftX <= rightX-sizeX && currentIndex <= lastWordEnd) || end <= -2)) {
         if (text[currentIndex] == '\n' || text[currentIndex] == '\0') { //If it's a new line, move on (automatically gets pushed on)
             currentIndex++;
             break;
@@ -604,25 +610,29 @@ void RenderWindow::SetDialogueText(const char* text, int ticks) {
     dialogueText = strdup(text);
     dialogueTicksLeft = ticks;
 }
+// Returns whatever is currently supposed to be inside the dialogue box (exclused custom text)
 char* RenderWindow::GetDialogueText() {
     return dialogueText;
 }
-void RenderWindow::DrawDialogueBox() {
+// Draws the dialogue box and fills it with the given text
+// Text defaults to a nullptrs, at which point it will draw the given dialogue text instead
+void RenderWindow::DrawDialogueBox(char* text) {
     // Top pixel of dialogue box
     int dboxtop = innerHeight + offsetY;
     SDL_SetRenderDrawColor(canvas, 120, 120, 120, 0);
     SDL_RenderDrawLine(canvas,0,dboxtop,x,innerHeight+offsetY);
     
+    if (text == nullptr) text = dialogueText;
 
     // Only render text if it exists
-    if (dialogueText && dialogueText[0]) {
+    if (text && text[0]) {
         // Add in half a line-space to center text
         dboxtop+=dialogueBoxY*DialogueBoxLineSpacing/2;
 
         int shave = 0;
-        for (int i = 0; i < DialogueBoxLines && dialogueText[shave]; i++) {
+        for (int i = 0; i < DialogueBoxLines && text[shave]; i++) {
             int top = dboxtop + i*dialogueBoxLineHeight + i*dialogueBoxY*DialogueBoxLineSpacing;
-            shave = WriteText(0, top, x, top + dialogueBoxLineHeight, dialogueText, shave);
+            shave = WriteText(0, top, x, top + dialogueBoxLineHeight, text, shave, -1);
         }
 
         // Remove the offset to keep frame bottom consistent
@@ -635,7 +645,7 @@ void RenderWindow::DrawDialogueBox() {
 
 
 
-
+// Draws the status bar, informing player of their health and whether or not all the puzzles in the current level have been completed or not
 void RenderWindow::DrawStatusBar(int HP, bool PuzzleCompleted) {
     if (!statusBarVisible) return;
 
@@ -663,6 +673,7 @@ void RenderWindow::DrawStatusBar(int HP, bool PuzzleCompleted) {
         SDL_RenderFillRect(canvas, &completionRect);
     }
 }
+// Enables or disables the Status Bar depending on input
 void RenderWindow::ToggleStatusBar(bool toggle) {
     statusBarVisible = toggle;
     UpdateSize();
@@ -672,10 +683,48 @@ void RenderWindow::ToggleStatusBar(bool toggle) {
 
 
 
+// Draws a blank menu background
+void RenderWindow::DrawMenuBackground() {
+    SDL_SetRenderDrawColor(canvas, 20, 20, 20, 0);
+    
+    SDL_Rect back;
+    back.w = tileRes * MapWidth; 
+    back.h = tileRes * MapHeight;
+    back.x = offsetX;
+    back.y = offsetY;
 
-// Draws a pause menu for interacting with
-void RenderWindow::DrawPauseMenu(int itemSelected) {
+    SDL_RenderFillRect(canvas, &back);
+}
+// Draws a menu and highlights selected item
+void RenderWindow::DrawMenu(int menuSize, char** menuText, int itemSelected, bool shrunk) {
+    SDL_Rect back;
+    back.w = tileRes * MapWidth; 
+    back.h = tileRes * MapHeight;
+    back.x = offsetX;
+    back.y = offsetY;
 
+    int left = back.w * 0.25 + back.x;
+    int right = back.w * 0.75;
+
+    int yScale = min(back.h / (menuSize + 1), back.h / 5);
+    int yScaleInbetween = min((back.h - yScale * menuSize) / (menuSize + 1), yScale / 2);
+
+    if (shrunk) { // Shifts menu to top left corner
+        left *= 0.2;
+        right *= 0.2;
+        yScale *= 0.2;
+        yScaleInbetween *= 0.2;
+    }
+
+    int posY = back.y + yScaleInbetween;
+    for (int i = 0; i < menuSize; i++) {
+        if (i == itemSelected) { // Draw the item with a little scale boost if it is currently selected
+            WriteText(left * 0.9, posY - yScaleInbetween / 2, right * 1.1, posY + yScale + yScaleInbetween / 2, menuText[i]);
+        } else
+            WriteText(left, posY, right, posY + yScale, menuText[i]);
+        
+        posY += yScale + yScaleInbetween;
+    }
 }
 // Draws a pop-up that covers the whole screen if something is expected to take a while to process
 void RenderWindow::LoadScreen() {
