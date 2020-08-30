@@ -13,10 +13,9 @@ MenuManager::MenuManager() {
     pauseMenu->optionDesc[3] = (char*) "Tailor your game experience with things like volume and fullscreen";
     pauseMenu->optionDesc[4] = (char*) "Closes the game";
 
-    mapMenu;
+    mapMenu = nullptr;
 
-    scrollsMenu;
-    scrollsInitialized = false;
+    scrollsMenu = nullptr;
 
     settingsMenu = new Menu(MenuID::EM_Settings, 3);
     settingsMenu->optionNames[0] = (char*) "Volume";
@@ -32,7 +31,7 @@ MenuManager::MenuManager() {
 
 // Initializes the scrolls menu based off the total number of scrolls loaded 
 void MenuManager::InitScrolls(int totalScrolls) {
-    if (scrollsInitialized) return; // Do not allow re-initialization
+    if (scrollsMenu) return; // Do not allow re-initialization
     scrollsMenu = new Menu(MenuID::EM_Scrolls, totalScrolls);
 
     // Fill scrolls with blanks
@@ -100,12 +99,10 @@ void MenuManager::Free() {
     activeMenu = nullptr;
 
     pauseMenu->Free();
-    if (scrollsInitialized) scrollsMenu->Free();
+    if (scrollsMenu) scrollsMenu->Free();
     settingsMenu->Free();
 
     delete pauseMenu;
-    if (scrollsInitialized) delete scrollsMenu;
+    if (scrollsMenu) delete scrollsMenu;
     delete settingsMenu;
-
-    scrollsInitialized = false;
 }

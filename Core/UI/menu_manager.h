@@ -33,7 +33,5 @@ class MenuManager {
         Menu* scrollsMenu;
         Menu* settingsMenu;
 
-        bool scrollsInitialized;
-
         void ClampOptionIndex();
 };

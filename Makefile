@@ -40,6 +40,12 @@ run:
 	./build/main
 
 debug:
+	gdb ./build/main
+
+debug-mem:
 	valgrind ./build/main
+
+debug-mem-heavy:
+	valgrind --leak-check=full --track-origins=yes ./build/main
 
 $(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))

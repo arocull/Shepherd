@@ -12,6 +12,7 @@ Sheep::Sheep(int xPos, int yPos) {
 
 void Sheep::Unload() {
     Path_FreePath(currentPath);
+    currentPath = nullptr;
 }
 
 bool Sheep::TakeDamage(int dmgAmount, Entity* attacker) {

@@ -14,8 +14,8 @@ Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* lev
     // Free current entity array and clean it (delete everything but the Shepherd)
     for (int i = 0; i < MaxEntities; i++) {
         if (levelEntities[i] && levelEntities[i]->GetID() != 1) {
+            levelEntities[i]->Unload();
             if (currentMap && levelEntities[i]->archivable) {
-                levelEntities[i]->Unload();
                 AppendEntityDetailed(currentMap->StoredEntities, levelEntities[i], MaxEntitiesStoreable, levelEntities[i]->GetID());
             } else
                 delete levelEntities[i];

@@ -158,6 +158,7 @@ int main(int argc, char **argv) {
     Trigger_GameStart(&window, &soundService, currentLevel, levelEntities);
 
 
+    SDL_PollEvent(&event);
     while (event.type != SDL_QUIT) {
         LastTick = CurrentTick;
         CurrentTick = SDL_GetPerformanceCounter();
@@ -535,8 +536,10 @@ int main(int argc, char **argv) {
         }
     }
     for (int i = 0; i < MaxEntities; i++) {
-        if (levelEntities[i] && levelEntities[i]->GetID() != 1)
+        if (levelEntities[i] && levelEntities[i]->GetID() != 1) {
+            levelEntities[i]->Unload();
             delete levelEntities[i];
+        }
     }
     delete player;
 
