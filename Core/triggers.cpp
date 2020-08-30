@@ -59,15 +59,39 @@ void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* ma
         Entity* ent = entities[i];
         if (ent) {
             ent->Paused = true;
-            if (ent->GetID() == 2)
+            if (ent->GetID() == EntityID::EE_Sheep)
                 ent->animation = 1;
-            else if (ent->GetID() == 1)
+            else if (ent->GetID() == EntityID::EE_Shepherd)
                 ent->animation = 3;
         }
     }
     window->SetDialogueText("\nHit spacebar to rally your sheep.", 0);
 
     soundService->PlayMusic("Audio/Resources/AmbientWind.wav");
+}
+void Trigger_GameOver(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
+    // Starting Level Cinematic
+    for (int i = 0; i < MaxEntities; i++) {
+        Entity* ent = entities[i];
+        if (ent) {
+            ent->Paused = true;
+            ent->lastX = ent->x;
+            ent->lastY = ent->y;
+            ent->shovedX = 0;
+            ent->shovedY = 0;
+            switch (ent->GetID()) {
+                case EntityID::EE_Sheep: ent->animation = 1; break;
+                case EntityID::EE_Wolf: ent->animation = 2; break;
+                case EntityID::EE_Shepherd: ent->animation = 3; break;
+            }
+        }
+    }
+    window->SetDialogueText("\nLet the tears flow.", 0);
+
+    soundService->StopAllSounds();
+    soundService->PlayMusic("Audio/Resources/AmbientWind.wav");
+    soundService->SetVolumeMusic(0);
+    soundService->FadeVolumeMusic(1.0f, 3.0f);
 }
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 

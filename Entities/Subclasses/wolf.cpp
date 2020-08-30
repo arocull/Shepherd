@@ -19,6 +19,7 @@ void Wolf::Unload() {
     stun = 0;
 
     Path_FreePath(currentPath);
+    currentPath = nullptr;
 }
 
 

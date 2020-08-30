@@ -27,6 +27,9 @@ void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map
 // Triggered whenever a new game starts--use for opening cinematic when very first area is loaded
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 
+// Triggered when a game over occurs--freezes all entities and forces the shepherd to lay down
+void Trigger_GameOver(RenderWindow* window, SoundService* SoundService, Map* map, Entity* entities[]);
+
 // Triggered whenever the player swings their staff--Allows unique functionality for specific maps and helps with tutorials
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 

@@ -1,16 +1,17 @@
 /*
 Written by Alan O'Cull
 To compile:
-$make clean
-$make
+$ make clean
+$ make
 
-To Debug:
-$make run
-$make debug
+To Run: $ make run
 
-$gdb ./build/program
-$> break FunctionNameToStopAt
-$> run
+$ make debug
+$ > break FunctionNameToStopAt
+$ > run
+
+$ make debug-mem // Basic memory tracking
+$ make debug-mem-heavy // Attempts to locate all memory leaks
 */
 
 
@@ -44,6 +45,7 @@ $> run
 #include "Entities/entity_management.h"
 #include "Entities/movement.h"
 #include "Entities/AI/path_manager.h"
+#include "Entities/AI/ai_manager.h"
 #include "Map/map_loading.h"
 
 #include "Core/triggers.h"
@@ -65,12 +67,10 @@ int main(int argc, char **argv) {
 
     SoundService soundService = SoundService();
 
-    // Randomize seed based off of current time
-    //srand(time(0));
-
     MenuManager* menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
     Controller* controller = new Controller(menus, &soundService); // Player controller input (done as pointer in-case multiple are used in future)
 
+    AIManager* ai = new AIManager();
 
     SDL_Event event;
     float LastTick = 0;
@@ -214,9 +214,20 @@ int main(int argc, char **argv) {
             ticks++;
             window.LogTick();
 
+            // Tally sheep
+            int sheepLeft = 0;
+            for (int i = 0; i < MaxEntities && sheepLeft < MaxSheep; i++) {
+                if (levelEntities[i] && levelEntities[i]->GetID() == EntityID::EE_Sheep) sheepLeft++;
+            }
+            if (sheepLeft < MaxSheep) {
+                Trigger_GameOver(&window, &soundService, currentLevel, levelEntities);
+                player->Paused = true;
+            }
+
             player->ticksIdled++;
-            if (player->ticksIdled == TicksUntilIdle)   //If the player sits still, feed them hints or story
+            if (player->ticksIdled == TicksUntilIdle && sheepLeft >= MaxSheep) {   //If the player sits still, feed them hints or story
                 Trigger_Idled(&window, &soundService, currentLevel, levelEntities);
+            }
 
             if (!player->Paused) {      //If they player is not paused, let them move if input is given
                 player->animation = 0;
@@ -272,7 +283,7 @@ int main(int argc, char **argv) {
             }
 
             // Toss Fireball
-            if (MoveFireballQueued) {
+            if (MoveFireballQueued && sheepLeft >= MaxSheep) {
                 MoveFireballQueued = false;
 
                 if (player->HasFire) {          // Sling Fireball
@@ -286,7 +297,7 @@ int main(int argc, char **argv) {
             } else
                 MoveFireballQueued = false;
 
-
+            ai->SetContext(player, currentLevel, levelEntities, ticks);
 
             // Tick Entities and Tally Pressure Plates
             bool currentPuzzleStatus = currentLevel->PuzzleStatus;
@@ -325,7 +336,7 @@ int main(int argc, char **argv) {
                 }
 
                 if (a->Paused) continue;
-
+                ai->TickAI(a);
                 
 
                 if (a->GetID() == EntityID::EE_Fireball) {      //Fireball, move in a straight line
@@ -343,67 +354,13 @@ int main(int argc, char **argv) {
                             continue;
                         }
                     }
-
-
-                } else if (a->GetID() == EntityID::EE_Sheep && ((ticks % 2) == 0 || distGrid(a->x, a->y, player->x, player->y) > 4)) {   //Sheep AI; follow player every other tick
-                    a->animation = 0;
-
-                    Sheep* sheep = dynamic_cast<Sheep*>(a);
-
-                    int dirX = 0;
-                    int dirY = 0;
-
-                    CheckPathObscurity(sheep->currentPath, currentLevel, levelEntities, true, EntityID::EE_Sheep);
-                    if (!sheep->currentPath || !sheep->currentPath->complete || !(sheep->currentPath->goalX == player->x && sheep->currentPath->goalY == player->y)) {
-                        Path_FreePath(sheep->currentPath);
-                        sheep->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, sheep, true, true, EntityID::EE_Wolf);
-                    }
-                    GetNextMovement(a->x, a->y, sheep->currentPath, &dirX, &dirY);
-
-                    Movement_ShiftEntity(currentLevel, levelEntities, a, dirX, -dirY);
-
-                } else if (a->GetID() == EntityID::EE_Wolf) {   //Wolf AI, hunt down closest sheep--if none left, attack player
-                    Wolf* wolf = dynamic_cast<Wolf*>(a);
-                    if (wolf) {
-                        if (wolf->InStun()) {
-                            wolf->TickStun();
-                        } else if (!wolf->IsHunting()) {
-                            Entity* target = GetNearestEntity(levelEntities, a->x, a->y, MaxEntities, 2);
-                            if (!target)
-                                target = player;
-                            
-                            if (target)
-                                wolf->InitiateHunt(target);
-                            else
-                                a->animation = 0;
-                        } else {
-                            Entity* target = wolf->GetTarget();
-
-                            if (distGrid(wolf->x, wolf->y, target->x, target->y) <= 1) {
-                                target->TakeDamage(1, wolf);
-                                wolf->EndHunt();
-                            }
-
-                            int dirX = 0;
-                            int dirY = 0;
-
-                            CheckPathObscurity(wolf->currentPath, currentLevel, levelEntities, false);
-                            if (!wolf->currentPath || !wolf->currentPath->complete || !(wolf->currentPath->goalX == target->x && wolf->currentPath->goalY == target->y)) {
-                                Path_FreePath(wolf->currentPath);
-                                wolf->currentPath = GetPath(a->x, a->y, player->x, player->y, currentLevel, levelEntities, wolf, false, true, EntityID::EE_Shepherd);
-                            }
-                            GetNextMovement(a->x, a->y, wolf->currentPath, &dirX, &dirY);
-
-                            Movement_ShiftEntity(currentLevel, levelEntities, a, dirX, -dirY);
-                            a->animation = 1;
-                        }       
-                    }
                 } else if (a->GetID() == EntityID::EE_Lever) {
                     Lever* lever = dynamic_cast<Lever*>(a);
                     if (lever->stateChanged) LeversChanged = true;
                 }
             }
             // Clean Entity List
+            ai->ClearContext();
             CleanEntities(levelEntities);
 
             bool doTriggerPuzzleInput = false;
@@ -510,8 +467,8 @@ int main(int argc, char **argv) {
         window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
         window.DrawDialogueBox();
         
-        SDL_RenderPresent(window.canvas);
         soundService.Tick(DeltaTime);
+        SDL_RenderPresent(window.canvas);
     }
 
 
@@ -529,6 +486,9 @@ int main(int argc, char **argv) {
     free(particles);
 
     // Free world, entities, and finally the player
+    ai->ClearContext();
+    delete ai;
+
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
             world[x][y]->Free();
