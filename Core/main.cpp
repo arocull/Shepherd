@@ -82,34 +82,20 @@ int main(int argc, char **argv) {
 
     // Load world from files
     Map* world[WorldWidth][WorldHeight];
-    world[0][2] = GenerateMapFromFile("Map/Maps/Desert/Desert1");
-    world[0][1] = GenerateMapFromFile("Map/Maps/Desert/Desert2");
-    world[0][0] = GenerateMapFromFile("Map/Maps/Desert/Desert3");
+    world[0][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start1");
+    world[1][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start2");
+    world[2][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start3");
+    world[3][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start4");
 
-    world[1][2] = GenerateMapFromFile("Map/Maps/Desert/Desert4");
-    world[1][1] = GenerateMapFromFile("Map/Maps/Desert/Desert5");
-    world[1][0] = GenerateMapFromFile("Map/Maps/Desert/Desert6");
+    world[0][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[1][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[2][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[3][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Start5");
 
-    world[2][2] = GenerateMapFromFile("Map/Maps/Desert/Desert7");
-    world[2][1] = GenerateMapFromFile("Map/Maps/Desert/Desert8");
-    world[2][0] = GenerateMapFromFile("Map/Maps/Desert/Desert9");
-
-    world[3][2] = GenerateMapFromFile("Map/Maps/Desert/Desert10");
-    world[3][1] = GenerateMapFromFile("Map/Maps/Desert/Desert11");
-    world[3][0] = GenerateMapFromFile("Map/Maps/Desert/Desert12");
-
-    world[4][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid13");
-    world[4][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid14");
-    world[4][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid15");
-
-    world[5][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid16");
-    world[5][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid17");
-    world[5][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid18");
-
-    world[6][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid19");
-    world[6][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid20");
-    world[6][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid21");
-
+    world[0][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[1][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[2][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[3][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
@@ -136,8 +122,8 @@ int main(int argc, char **argv) {
     }
 
     // World indexing, current X and Y is the currently loaded level, world X and Y is changed based upon movement and says what level to load
-    int worldX = 1;
-    int worldY = 1;
+    int worldX = 0;
+    int worldY = 2;
     int currentWorldX = worldX;
     int currentWorldY = worldY;
     

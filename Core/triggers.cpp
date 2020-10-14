@@ -10,27 +10,10 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         if (triggerID <= 3)
             map->Triggers[triggerID - 1] = true;
         
-        // Staring Area
+        // Starting Area
         if (id == 1 && triggerID == 1)
-            window->SetDialogueText("Pressure plates can be weighed down by standing on them.", 75);
-        else if (id == 3 && triggerID == 4 && !map->Puzzles[0].Solved)
-            window->SetDialogueText("Levers can be flipped by swinging your staff near them, but need to be unlocked first.", 75);
-        else if (id == 5 && triggerID == 1)
-            window->SetDialogueText("Your sheep will always follow you. Try to keep track of all of them.", 75);
-        else if (id == 5 && triggerID == 2)
-            window->SetDialogueText("You cannot leave an area without all of your sheep gathered around you.", 75);
-        else if (id == 7 && triggerID == 1)
-            window->SetDialogueText("Swing your staff while near torches to pick up their flames.", 75);
-        else if (id == 7 && triggerID == 4 && entities[0])  // Extinguish player's flame when leaving
-            entities[0]->HasFire = false;
-        else if (id == 9 && triggerID == 1)
-            window->SetDialogueText("You can push crates around by walking into them.", 75);
-        else if (id == 9 && triggerID == 2)
-            window->SetDialogueText("Crates cannot be pushed off of surfaces.");
-        else if (id == 11 && triggerID == 1)
-            window->SetDialogueText("These torches are covered in odd glyphs, but you sense they might be related to the nearby ruins.", 125);
-        else if (id == 11 && triggerID == 2)
-            soundService->FadeVolumeMusic(0.0f, 0.5f);
+            window->SetDialogueText("Remember to have all your sheep gathered nearby before you leave.", 0);
+        // Examples
         else if (id == 11 && triggerID == 3)
             soundService->FadeVolumeMusic(0.2f, 0.5f);
         else if (id == 11 && triggerID == 4)
@@ -96,28 +79,20 @@ void Trigger_GameOver(RenderWindow* window, SoundService* soundService, Map* map
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
 
     // On starting area, if the player has not done so yet, instruct them on how to move
-    if (map->GetMapID() == 5 && (map->Triggers[2] == false || (entities[0] && entities[0]->Paused == true))) {
-        map->Triggers[2] = true;
+    if (map->GetMapID() == 1 && (entities[0] && entities[0]->Paused == true)) {
         entities[0]->Paused = false;
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolumeMusic(0.2f, 1.0f);
-    } else if (map->GetMapID() == 7 && (entities[0] && entities[0]->HasFire))
-        window->SetDialogueText("Walk towards the unlit torch, then swing your staff to toss a fireball.");
+    }
 }
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     if ((entities[0] && entities[0]->Paused)) return;
     bool producedThought = true;
 
     switch (map->GetMapID()) {
-        case 1: window->SetDialogueText("Some puzzles might require a bit of help from your wooly friends.", 100); break;
-        case 2: window->SetDialogueText("A hungry sheep bleats timidly. You wonder worriedly on when you will be able to feed them again.", 100); break;
-        case 6: window->SetDialogueText("The desert is quiet and oddly calming, though it seems to deprive its inhabitants of a sense of life as well.", 100); break;
-        case 8: window->SetDialogueText("Looking forward, a pyramid looms over you. Behind are some mountains, hopefully with greener pastures on the other side.", 100); break;
-        case 9: window->SetDialogueText("Crates can be pushed by moving into them.", 100); break;
-        case 10: window->SetDialogueText("You sense a powerful presence residing in this room. Almost... embracing you.", 100); break;
-        case 11: window->SetDialogueText("The pyramid entrance is somewhat ominous, and you sense a faint, supernatural presence.", 100); break;
-        case 14: window->SetDialogueText("The walls are covered in ancient glyphs, worn away by the patient, eternal hands of time.", 100); break;
-        case 15: window->SetDialogueText("The floor is covered in a confusing maze of carved glyphs and lines.", 100); break;
+        case 1: window->SetDialogueText("An opening lies in the east wall on your right. Perhaps it should be investigated.", 0); break;
+        case 2: window->SetDialogueText("The stray tile in the sand looks like it could be stood upon.", 0); break;
+        case 3: window->SetDialogueText("The box looks like it could be pushed along the arrow from left to right.", 0); break;
         default: producedThought = false; // No default case
     }
 
@@ -125,6 +100,27 @@ void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, E
 }
 void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
 
+    if (map->GetMapID() == 2) {
+        if (map->PressurePlatesPressed == 1) {
+            map->FillRectangle(37, 1, 38, 14, TileID::ET_None);
+            window->SetDialogueText("As the pressure plate clicks, the wall slides away into the shifting sands below.", 100);
+        }
+    } else if (map->GetMapID() == 3) {
+        if (map->PressurePlatesPressed == 1) {
+            map->FillRectangle(37, 1, 38, 14, TileID::ET_None);
+        } else {
+            map->FillRectangle(37, 1, 38, 14, TileID::ET_Door_Vertical);
+        }
+    } else if (map->GetMapID() == 4) {
+        if (map->PressurePlatesPressed == 2) {
+            map->FillRectangle(27, 1, 28, 14, TileID::ET_None);
+            map->Triggers[0] = true;
+        } else if (map->PressurePlatesPressed == 1 && !map->Triggers[0]) {
+            window->SetDialogueText("Perhaps its time to put the sheep to work. Rest or rally them with spacebar.", 0);
+        }
+    }
+
+    /*
     if (map->GetMapID() == 1) {
         if (map->PressurePlatesPressed == 1) {
             for (int i = 0; i < MaxEntities; i++) {
@@ -188,10 +184,12 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         Puzzle_CheckSolution(&map->Puzzles[0]);
         Trigger_Internal_DisplayPuzzleStatus_Torch(solution, map->Puzzles[0].Solved);
     }
+    */
 
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 
+    /*
     if (map->GetMapID() == 11) {    // Pyramid Gateway
         int DoorRequirements = 0;
 
@@ -240,6 +238,7 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
         if (crate && crate->y == 3) map->FillRectangle(7, 7, 8, 10, TileID::ET_Empty_Puzzle_Piece);
         else map->FillRectangle(7, 7, 8, 10, TileID::ET_Wall);
     }
+    */
 
     map->HasLoaded = true;
 }
@@ -300,7 +299,13 @@ void Trigger_Internal_DisplayPuzzleStatus_Torch(Entity* torch, bool puzzleStatus
 void Trigger_SetupPuzzles(Map* map) {
     Puzzle* p = &(map->Puzzles[0]);
 
+    if (map->GetMapID() == 3) { // Set up puzzle on Start3
+        p->Enabled = true; // Enable use of puzzle
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable); // The crate is part of this puzzle
+        p->PlatesPressed = 1; // We want 1 pressure plate to be pressed by the entities inside this puzzle
+    }
 
+    /*
     if (map->GetMapID() == 1) {
         Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
     } if (map->GetMapID() == 3) {
@@ -354,4 +359,5 @@ void Trigger_SetupPuzzles(Map* map) {
         p->entities[3] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 5, MaxEntitiesStoreable);
         p->FireType = 1;
     }
+    */
 }
