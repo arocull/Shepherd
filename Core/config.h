@@ -1,4 +1,4 @@
-#define WorldWidth 4
+#define WorldWidth 5
 #define WorldHeight 3
 #define MapWidth 40
 #define MapHeight 15
@@ -56,7 +56,7 @@
 // Debug //
 
 // Uncomment if you want certain debug labels to be read
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 // Do we want to test a breakpoint without spawning sheep?
 #define DEBUG_RequireSheep true

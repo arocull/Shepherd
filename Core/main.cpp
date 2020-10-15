@@ -87,15 +87,19 @@ int main(int argc, char **argv) {
     world[2][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start3");
     world[3][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start4");
 
-    world[0][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
-    world[1][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
-    world[2][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
-    world[3][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Start5");
+    world[0][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert1");
+    world[1][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert2");
+    world[2][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert3");
+    world[3][1] = GenerateMapFromFile("Map/Maps/DesertTrek/GateArea");
 
-    world[0][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
-    world[1][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
-    world[2][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
-    world[3][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[0][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert4");
+    world[1][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert5");
+    world[2][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert6");
+    world[3][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert7");
+
+    world[4][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[4][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidHall");
+    world[4][0] = GenerateMapFromFile("Map/Maps/DesertTrek/DesertScroll");
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
@@ -363,7 +367,12 @@ int main(int argc, char **argv) {
                     Puzzle_CheckSolution(&currentLevel->Puzzles[i]);
                     if (currentLevel->Puzzles[i].Solved) {
                         puzzlesCompleted++;
-                        if (!wasSolved) doTriggerPuzzleInput = true;
+                        if (wasSolved != currentLevel->Puzzles[i].Solved) {
+                            doTriggerPuzzleInput = true;
+                            #ifdef DEBUG_MODE
+                            printf("Puzzle solved!\n");
+                            #endif
+                        }
                     }
                 }
             }
