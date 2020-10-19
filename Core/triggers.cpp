@@ -23,17 +23,13 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
             window->SetDialogueText("A large pyramid looms overhead. The gate is covered in strange glyphs.", 100);
         else if (id == 8 && triggerID == 3)
             window->SetDialogueText("The torches are identified with unique glyphs. Stone moulding runs into the sand below them, disappearing from view.", 120);
-        
+        else if (id == 13 && triggerID == 1) {
+            window->SetDialogueText("The air is dry, but cool. Your footsteps echo around the walls of the corridor as you march your flock along.", 100);
+            soundService->FadeVolumeMusic(0.0f, 1.0f);
+        }
+
         /* Examples
-        else if (id == 11 && triggerID == 3)
-            soundService->FadeVolumeMusic(0.2f, 0.5f);
-        else if (id == 11 && triggerID == 4)
-            window->SetDialogueText("The door is marked by four flame-like symbols.");
-        else if (id == 13 && triggerID == 1 && !map->Puzzles[1].Solved)
-            window->SetDialogueText("The torch is cold, and is marked with a glyph shaped like a weight.", 75);
-        else if (id == 13 && triggerID == 4 && !map->Puzzles[0].Solved)
-            window->SetDialogueText("The only thing that seems to be able to reach that crate is a well-aimed fireball.");
-        else if (id == 14 && triggerID == 1) {
+        if (id == 14 && triggerID == 1) {
             soundService->SetVolumeMusic(0.75f);
             soundService->PlayMusic("Audio/Resources/IntoTheCastle.wav", 1);
             soundService->QueueMusic(23.0f, "Audio/Resources/CastleHalls.wav");
@@ -174,73 +170,6 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 
 
     // THE PYRAMID //
-
-    /*
-    if (map->GetMapID() == 1) {
-        if (map->PressurePlatesPressed == 1) {
-            for (int i = 0; i < MaxEntities; i++) {
-                Entity* a = entities[i];
-                if (a && a->OnPressurePlate && a->GetID() == EntityID::EE_Sheep && !a->Paused)
-                    window->SetDialogueText("Make your sheep rest by swinging your staff over them (spacebar).");
-            }
-        } else if (map->PressurePlatesPressed >= 1) map->PuzzleStatus = true;
-
-        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
-    } else if (map->GetMapID() == 3) {
-        Entity* lever = GetEntityOccurence(entities, 7, 1);
-        if (lever) {
-            Lever* l = dynamic_cast<Lever*>(lever);
-            if (l) {
-                l->ToggleLock(!(map->PressurePlatesPressed >= 1)); // Unlock lever if pressure plate is pressed
-                Particle* clickEffect = ActivateParticle(particles, 3, lever->x, lever->y);
-                if (map->PressurePlatesPressed >= 1)
-                    window->SetDialogueText("You hear a click from the internals of the lever, and its lock has disappeared.");
-            }
-        }
-
-        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
-    } else if (map->GetMapID() == 9) {
-        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
-
-    } else if (map->GetMapID() == 13) {
-        Entity* obj = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
-        if (obj) {
-            Torch* torch = dynamic_cast<Torch*>(obj);
-            if (torch) {
-                torch->glow = map->Puzzles[0].Solved; // Inform the player on whether the main puzzle was solved or not
-                torch->HasFire = map->Puzzles[1].Solved; // Light torch if enabled
-            }
-        }
-
-    } else if (map->GetMapID() == 14 && map->PressurePlatesPressed >= 1) {
-        window->SetDialogueText("The pressure plate clicks, and you hear a shifting of stones somewhere nearby.");
-    
-    } else if (map->GetMapID() == 15) {
-        Entity* solution = GetEntityOccurence(entities, EntityID::EE_Torch, 3, MaxEntities);
-
-        Entity* lever1 = GetEntityOccurence(entities, EntityID::EE_Lever, 1, MaxEntities);
-        Entity* lever2 = GetEntityOccurence(entities, EntityID::EE_Lever, 2, MaxEntities);
-        Entity* lever3 = GetEntityOccurence(entities, EntityID::EE_Lever, 3, MaxEntities);
-        Entity* lever4 = GetEntityOccurence(entities, EntityID::EE_Lever, 4, MaxEntities);
-        if (lever1 && lever2 && lever3 && lever4) {
-            Lever* l1 = dynamic_cast<Lever*>(lever1);
-            Lever* l2 = dynamic_cast<Lever*>(lever2);
-            Lever* l3 = dynamic_cast<Lever*>(lever3);
-            Lever* l4 = dynamic_cast<Lever*>(lever4);
-
-            if (l1 && l2 && l3 && l4) {
-                map->Puzzles[0].entities[0]->HasFire = l2->IsFlipped() || l4->IsFlipped();
-                map->Puzzles[0].entities[1]->HasFire = l1->IsFlipped() && !l3->IsFlipped();
-                map->Puzzles[0].entities[2]->HasFire = !l2->IsFlipped() && !l3->IsFlipped();
-                map->Puzzles[0].entities[3]->HasFire = (l3->IsFlipped() || l2->IsFlipped()) || (!l3->IsFlipped() && !l2->IsFlipped());
-            } else printf("Levers failed to be cast\n");
-        } else printf("Failed to locate all four levers\n");
-
-        Puzzle_CheckSolution(&map->Puzzles[0]);
-        Trigger_Internal_DisplayPuzzleStatus_Torch(solution, map->Puzzles[0].Solved);
-    }
-    */
-
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 
@@ -251,56 +180,28 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
         }
     #endif
 
-    /*
-    if (map->GetMapID() == 11) {    // Pyramid Gateway
-        int DoorRequirements = 0;
+    if (map->GetMapID() == 8) { // Desert Gate
+        Entity* torch1 = GetEntityOccurence(entities, EE_Torch, 1, MaxEntities); // Get torches
+        Entity* torch2 = GetEntityOccurence(entities, EE_Torch, 2, MaxEntities);
+        Entity* torch3 = GetEntityOccurence(entities, EE_Torch, 3, MaxEntities);
+        Entity* torch4 = GetEntityOccurence(entities, EE_Torch, 4, MaxEntities);
+        Entity* torch5 = GetEntityOccurence(entities, EE_Torch, 5, MaxEntities);
 
-        Entity* torch1Obj = GetEntityAtLocation(entities, 9, 4);
-        Entity* torch2Obj = GetEntityAtLocation(entities, 9, 10);
-        Entity* torch3Obj = GetEntityAtLocation(entities, 15, 4);
-        Entity* torch4Obj = GetEntityAtLocation(entities, 15, 10);
-
-        Trigger_Internal_TorchSetup(torch1Obj);
-        Trigger_Internal_TorchSetup(torch2Obj);
-        Trigger_Internal_TorchSetup(torch3Obj);
-        Trigger_Internal_TorchSetup(torch4Obj);
-
-        if (torch1Obj) {
-            torch1Obj->HasFire = world[0][2]->PuzzleStatus;
-            if (torch1Obj->HasFire) DoorRequirements++;
-        }
-        if (torch2Obj) {
-           torch2Obj->HasFire = world[0][0]->PuzzleStatus;
-            if (torch2Obj->HasFire) DoorRequirements++; 
-        }
-        if (torch3Obj) {
-            torch3Obj->HasFire = world[2][2]->PuzzleStatus;
-            if (torch3Obj->HasFire) DoorRequirements++;
-        }
-        if (torch4Obj) {
-            torch4Obj->HasFire = world[2][0]->PuzzleStatus;
-            if (torch4Obj->HasFire) DoorRequirements++;
-        }
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch1, world[1][1]->PuzzleStatus); // Display what puzzles are complete
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch2, world[2][1]->PuzzleStatus);
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch3, world[0][0]->PuzzleStatus);
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch4, world[1][0]->PuzzleStatus);
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch5, world[2][0]->PuzzleStatus);
 
         #ifdef DEBUG_MODE
-            if (DEBUG_SkipGates >= 1)
-                DoorRequirements = 4;
+            if ((torch1->HasFire && torch2->HasFire && torch3->HasFire && torch4->HasFire && torch5->HasFire) || DEBUG_SkipGates >= 2) {
+        #else
+            if (torch1->HasFire && torch2->HasFire && torch3->HasFire && torch4->HasFire && torch5->HasFire) { // Open gate if all puzzles are triggered
         #endif
-
-
-
-        if (DoorRequirements == 4) {    //If all requirements are met, open the door
-            map->FillRectangle(26, 5, 27, 10, TileID::ET_None);
-            map->FillRectangle(27, 6, 40, 9, TileID::ET_None);
-            map->FillRectangle(35, 6, 36, 9, TileID::ET_Trigger3);
-            map->FillRectangle(36, 6, 37, 9, TileID::ET_Trigger2);
+            map->FillRectangle(37, 6, 39, 11, TileID::ET_None);
+            map->FillRectangle(39, 6, 40, 11, TileID::ET_Empty_Puzzle_Piece);
         }
-    } else if (map->GetMapID() == 13) {
-        Entity* crate = GetEntityOccurence(world[4][1]->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
-        if (crate && crate->y == 3) map->FillRectangle(7, 7, 8, 10, TileID::ET_Empty_Puzzle_Piece);
-        else map->FillRectangle(7, 7, 8, 10, TileID::ET_Wall);
     }
-    */
 
     map->HasLoaded = true;
 }
