@@ -15,6 +15,7 @@
 #include "Entities/Subclasses/crate.h"
 #include "Entities/Subclasses/torch.h"
 #include "Entities/Subclasses/lever.h"
+#include "Entities/Subclasses/spirit.h"
 #include "Entities/entity_management.h"
 
 /*

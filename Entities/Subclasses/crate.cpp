@@ -9,7 +9,7 @@ Crate::Crate(int xPos, int yPos) {
 
 void Crate::Incinerate(Particle* particles, Entity* attacker) {
     if (TakeDamage(1, attacker)) {
-        Particle* burnEffect = ActivateParticle(particles, 6, x, y);
+        Particle* burnEffect = ActivateParticle(particles, ParticleID::EP_Incinerate, x, y);
         burnEffect->maxLifetime = 1.0f;
     }
 }

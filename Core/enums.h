@@ -34,8 +34,22 @@ enum EntityID {     // : uint_fast8_t
     EE_Crate = 5,
     EE_Torch = 6,
     EE_Lever = 7,
+    EE_Spirit = 8,
 
     EE_None = 0,
+};
+
+// Used for determining what type of particle is being displayed
+enum ParticleID {
+    EP_Swing = 1,
+    EP_PuzzleSolution = 2,
+    EP_PressurePlateClick = 3,
+    EP_Fire = 4,
+    EP_FireBurst = 5,
+    EP_Incinerate = 6,
+    EP_Spirit = 7,
+
+    EP_None = 0,
 };
 
 // Used for determining what menu is currently being accessed

@@ -137,10 +137,11 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'h':       // Wolf (or Hound)
                 case 't':       // Torch
                 case 'l':       // Lever
+                case 'S':       // Spirit
                     SpawnsEntity = true;
             }
             if (SpawnsEntity) {
-                Entity* entity;
+                Entity* entity = nullptr;
                 if (charID == 'h')
                     entity = new Wolf(x, y);
                 else if (charID == 'c' || charID == 'C')
@@ -149,6 +150,8 @@ Map* GenerateMapFromFile(const char* filePath) {
                     entity = new Torch(x, y);
                 else if (charID == 'l')
                     entity = new Lever(x, y);
+                else if (charID == 'S')
+                    entity = new Spirit(x, y);
 
                 if (entity) {
                     entity->archivable = true;

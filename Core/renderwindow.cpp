@@ -483,31 +483,35 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     base.x = (int) (posX+0.5f)*tileRes + offsetX;
     base.y = (int) (posY+0.5f)*tileRes + offsetY;
 
-    if (id == 1) {              // Swing
+    if (id == ParticleID::EP_Swing) {              // Swing
         SDL_SetRenderDrawColor(canvas, 255, 255, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = tileRes*2.75;
         base.h = base.w;
-    } else if (id == 2) {       // Puzzle Solved Click
+    } else if (id == ParticleID::EP_PuzzleSolution) {       // Puzzle Solved Click
         SDL_SetRenderDrawColor(canvas, 190, 255, 200, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = tileRes*3*sqrt(percentage);
         base.h = base.w;
-    } else if (id == 3) {       // Pressure Plate Click
+    } else if (id == ParticleID::EP_PressurePlateClick) {       // Pressure Plate Click
         SDL_SetRenderDrawColor(canvas, 255, 255, 100, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = tileRes*1.5*percentage;
         base.h = base.w;
-    } else if (id == 4) {       // Fire
+    } else if (id == ParticleID::EP_Fire) {       // Fire
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, 200);
         base.w/=3;
         base.h = base.w;
-    } else if (id == 5) {       // Fire Burst
+    } else if (id == ParticleID::EP_FireBurst) {       // Fire Burst
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, (int) 200*(1.0f-percentage));
         base.w = (int) tileRes*2.75*(sin(PI*percentage)+1.0)/2;
         base.h = base.w;
-    } else if (id == 6) {
+    } else if (id == ParticleID::EP_Incinerate) {
         SDL_SetRenderDrawColor(canvas, 80, 80, 40, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = (int) tileRes*((sin(PI*percentage) + 1.0)/2);
         base.h = base.w;
         base.y -= tileRes*((sin(PI*percentage) + 1.0)/2);
+    } else if (id == ParticleID::EP_Spirit) {
+        SDL_SetRenderDrawColor(canvas, 100, 150, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
+        base.w = (int) tileRes * percentage;
+        base.h = base.w;
     }
 
     base.x-=(base.w-tileRes)/2;
