@@ -16,7 +16,7 @@ class Spirit : public Entity {
         int goalX;
         int goalY;
     private:
-        int emissionAngle = 0;
+        float emissionAngle = 0.0f;
 
     public:
         bool hasReachedGoal();

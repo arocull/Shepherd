@@ -480,12 +480,10 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     SDL_Rect base;
     base.w = tileRes;
     base.h = tileRes;
-    base.x = (int) (posX+0.5f)*tileRes + offsetX;
-    base.y = (int) (posY+0.5f)*tileRes + offsetY;
 
     if (id == ParticleID::EP_Swing) {              // Swing
         SDL_SetRenderDrawColor(canvas, 255, 255, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
-        base.w = tileRes*2.75;
+        base.w = (int) (((float) tileRes*3) * (1 - powf(percentage, 3)));
         base.h = base.w;
     } else if (id == ParticleID::EP_PuzzleSolution) {       // Puzzle Solved Click
         SDL_SetRenderDrawColor(canvas, 190, 255, 200, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
@@ -511,11 +509,11 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     } else if (id == ParticleID::EP_Spirit) {
         SDL_SetRenderDrawColor(canvas, 100, 150, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = (int) tileRes * percentage;
-        base.h = base.w;
+        base.h = base.w * 2;
     }
 
-    base.x-=(base.w-tileRes)/2;
-    base.y-=(base.h-tileRes)/2;
+    base.x = (int) ((posX + 0.5)*tileRes - base.w/2 + offsetX);
+    base.y = (int) ((posY + 0.5)*tileRes - base.h/2 + offsetY);
 
     SDL_RenderFillRect(canvas, &base);
 }

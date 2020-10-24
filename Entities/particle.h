@@ -22,6 +22,7 @@ struct Particle {
 };
 
 // Activates and returns the first available particle with the given properties
+// Note, may return a nullptr if no particles are available--be sure to check this case
 struct Particle* ActivateParticle(Particle* particleArray, int id, int x, int y);
 // Deactivates the selected particle
 void DeactivateParticle(Particle* particle);

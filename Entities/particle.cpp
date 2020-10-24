@@ -36,7 +36,7 @@ void TickParticles(Particle* particleArray, float deltaTime) {
 
             particleArray[i].x += particleArray[i].veloX*deltaTime;
             particleArray[i].y += particleArray[i].veloY*deltaTime;
-            if (particleArray[i].lifetime > particleArray[i].maxLifetime) {
+            if (particleArray[i].lifetime >= particleArray[i].maxLifetime) {
                 if (particleArray[i].loop)
                     particleArray[i].lifetime -= particleArray[i].maxLifetime;
                 else

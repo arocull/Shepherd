@@ -39,6 +39,8 @@ $ make debug-mem-heavy // Attempts to locate all memory leaks
 #include "Entities/Subclasses/shepherd.h"
 #include "Entities/Subclasses/fireball.h"
 #include "Entities/Subclasses/torch.h"
+#include "Entities/Subclasses/lever.h"
+#include "Entities/Subclasses/spirit.h"
 
 #include "Entities/particle.h"
 
@@ -357,6 +359,9 @@ int main(int argc, char **argv) {
                 } else if (a->GetID() == EntityID::EE_Lever) {
                     Lever* lever = dynamic_cast<Lever*>(a);
                     if (lever->stateChanged) LeversChanged = true;
+                } else if (a->GetID() == EntityID::EE_Spirit) {
+                    Spirit* spirit = dynamic_cast<Spirit*>(a);
+                    if (spirit) spirit->Emit(particles);
                 }
             }
             // Clean Entity List
@@ -390,7 +395,7 @@ int main(int argc, char **argv) {
             // If the player completed a puzzle this tick, show a particle
             if (!currentPuzzleStatus && currentLevel->PuzzleStatus) {
                 Particle* a = ActivateParticle(particles, 2, player->x, player->y);
-                a->maxLifetime = 0.75f;
+                if (a) a->maxLifetime = 0.75f;
             }
 
             GameTick--;
