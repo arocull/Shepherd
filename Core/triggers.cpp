@@ -177,6 +177,14 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 
 
     // THE PYRAMID //
+    else if (map->GetMapID() == 17) {
+        Trigger_Internal_DisplayPuzzleStatus_Torch(map->Puzzles->entities[0], map->PuzzleStatus);
+        Trigger_Internal_DisplayPuzzleStatus_Torch(map->Puzzles->entities[1], map->PuzzleStatus);
+
+        if (map->PuzzleStatus) {
+            map->FillRectangle(10, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
+        }
+    }
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 
@@ -277,6 +285,7 @@ void Trigger_SetupPuzzles(Map* map) {
         }
     }
 
+    // DESERT //
     if (map->GetMapID() == 3) { // Set up puzzle on Start3
         p->Enabled = true; // Enable use of puzzle
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable); // The crate is part of this puzzle
@@ -293,61 +302,16 @@ void Trigger_SetupPuzzles(Map* map) {
         p->Enabled = true;
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
         p->PlatesPressed = 1;
-    }
 
-    /*
-    if (map->GetMapID() == 1) {
-        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
-    } if (map->GetMapID() == 3) {
-        p->Enabled = true;
-        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Lever, 1, MaxEntitiesStoreable);
-        p->LeversFlipped = 1;
-
-        if (p->entities[0]) {
-            Lever* l = dynamic_cast<Lever*>(p->entities[0]);
-            if (l) l->ToggleLock(true);
-        }
-
-        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
-    } else if (map->GetMapID() == 7) {
-        p->Enabled = true;
-
-        Entity* torch1 = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
-        Entity* torch2 = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable);
-
-        Trigger_Internal_TorchSetup(torch1, false, true, false, true, false);
-        if (torch2) torch2->HasFire = false;
-        
-        p->entities[0] = torch2;
-    } else if (map->GetMapID() == 9) {
-        p->Enabled = true;
-        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
-        p->PlatesPressed = 1;
-
-        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
-    } else if (map->GetMapID() == 13) {
-        p->Enabled = true;
-        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
-        Trigger_Internal_CrateSetup(p->entities[0], true);
-        p->PlatesPressed = 0; // First crate needs to be incinerated
-
-        Puzzle* p2 = &(map->Puzzles[1]);
-        p2->Enabled = true;
-        p2->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 2, MaxEntitiesStoreable);
-        p2->PlatesPressed = 1; // Second crate must be pushed onto button
-
-        Entity* torch = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
-        Trigger_Internal_TorchSetup(torch, false, true, false, false, false);
-    } else if (map->GetMapID() == 15) {
-        for (int i = 1; i < 6; i++) {
-            Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, i, MaxEntitiesStoreable), false, false, false, false, false);
-        }
+    // PYRAMID //
+    } else if (map->GetMapID() == 17) {
         p->Enabled = true;
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
-        p->entities[1] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable);
-        p->entities[2] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 4, MaxEntitiesStoreable);
-        p->entities[3] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 5, MaxEntitiesStoreable);
+        p->entities[1] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 3, MaxEntitiesStoreable);
+        p->entities[0]->HasFire = false;
+        p->entities[1]->HasFire = false;
         p->FireType = 1;
+
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable), false, true, false, true, false);
     }
-    */
 }
