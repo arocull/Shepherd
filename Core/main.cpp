@@ -101,6 +101,18 @@ int main(int argc, char **argv) {
     world[4][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidHall");
     world[4][0] = GenerateMapFromFile("Map/Maps/DesertTrek/DesertScroll");
 
+    world[5][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid1");
+    world[6][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid2");
+    world[7][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid3");
+
+    world[5][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid4");
+    world[6][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid5");
+    world[7][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid6");
+
+    world[5][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid7");
+    world[6][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid8");
+    world[7][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid9");
+
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
         int numScrolls = 0;
@@ -263,11 +275,11 @@ int main(int argc, char **argv) {
 
             // Check Entities for Fire
             int standingTile = currentLevel->GetTileID(player->x, player->y);
-            if (standingTile == TileID::ET_Magma)
-                player->HasFire = true;
-            else if (standingTile < 0)
+            if (standingTile < 0) {
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
-            else if (standingTile == TileID::ET_Scroll && currentLevel->HasScroll()) {
+            } else if (standingTile == TileID::ET_Fizzler) {
+                Trigger_OnFizzler(&window, &soundService, currentLevel, player);
+            } else if (standingTile == TileID::ET_Scroll && currentLevel->HasScroll()) {
                 Trigger_OnScroll(&window, &soundService, currentLevel, levelEntities); // Do scroll trigger
                 menus->UnlockScroll(currentLevel->GetScrollIndex(), currentLevel->GetScrollName(), currentLevel->GetScroll()); // Unlock scroll in index
             }
@@ -305,7 +317,8 @@ int main(int argc, char **argv) {
                 if (a->HasFire || a->HasFrost)  // Freeze or thaw nearby water
                     currentLevel->FreezeArea(a->x, a->y, 1, a->HasFire);
 
-                if (currentLevel->GetTileID(a->x, a->y) == 8) {
+                int entityTile = currentLevel->GetTileID(a->x, a->y);
+                if (entityTile == TileID::ET_Pressure_Plate) {
                     if (!a->OnPressurePlate) {
                         a->OnPressurePlate = true;
                         Particle* clickEffect = ActivateParticle(particles, 3, a->x, a->y);
@@ -316,6 +329,13 @@ int main(int argc, char **argv) {
                 } else if (a->OnPressurePlate) {
                     a->OnPressurePlate = false;
                     PressurePlatesChanged = true;
+                }
+
+                // If standing on lava, take burn damage, gain fire, lose frost
+                if (entityTile == TileID::ET_Magma && a->GetID() != EntityID::EE_Fireball) {
+                    a->TakeDamage(1, nullptr);
+                    a->HasFire = true;
+                    a->HasFrost = false;
                 }
 
                 if (a->Paused) continue;

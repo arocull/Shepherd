@@ -2,21 +2,23 @@
 
 // Used for determining what tile and collision is drawn and utilized on a given space
 enum TileID {   // : int_fast8_t
-    ET_Wall = 1,
-    ET_Water = 2,
-    ET_Magma = 3,
-    ET_Tree = 4,
-    ET_Rock = 5,
-    ET_Pillar = 6,
-    ET_Empty_Puzzle_Piece = 7,
-    ET_Pressure_Plate = 8,
-    ET_Fake_Wall = 9,
-    ET_Empty_Tile = 10,
-    ET_Door_Vertical = 11,
-    ET_Door_Horizontal = 12,
-    ET_Ice = 13,
-    ET_Vines = 14,
+    ET_Wall = 1,      // Basic wall that blocks player movement
+    ET_Water = 2,     // Basic liquid that the shepherd can move through, but sheep will not, also freezable
+    ET_Magma = 3,     // Liquid that burns anything that touches it
+    ET_Tree = 4,      // Tree, acts as wall but a little more decorative
+    ET_Rock = 5,      // Rock, acts as wall but a little more decorative
+    ET_Pillar = 6,    // Pillar, acts as wall but a little more decorative
+    ET_Empty_Puzzle_Piece = 7, // Grooves in the ground you can slide boxes in--also used for direction
+    ET_Pressure_Plate = 8,     // Pressure plates can be pressed for unique effects, requires programmed triggers
+    ET_Fake_Wall = 9,   // Fake walls look similar to regular walls, but are darker and non-collideable
+    ET_Empty_Tile = 10, // Empty tiles are blank and considered pitfalls--they are not pathable, but fireballs fly over them
+    ET_Door_Vertical = 11,     // Vertically-closed door that can be used for gates
+    ET_Door_Horizontal = 12,   // Horizontally-closed door that can be used for gates
+    ET_Ice = 13,       // Ice is an empty, pathable tile that can be thawed to water using fire
+    ET_Vines = 14,     // Vines, act as a wall but a little more decorative, and use tiling textures
     ET_Scroll = 15,    // Scrolls are unique triggerables, but still need to be rendered
+    ET_Fizzler = 16,   // Unique trigger that fizzles out the player's staff (removes fire and frost)
+    ET_Indicator = 17, // Indicator tile for puzzles, drawn as a sun, but has no functionality
 
     ET_None = 0,       // Empty space
     ET_Trigger1 = -1,  // Triggers

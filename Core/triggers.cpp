@@ -43,6 +43,13 @@ void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map
     window->SetDialogueText(map->GetScroll(), 100);
     map->ScrollDiscovered = true;
 }
+void Trigger_OnFizzler(RenderWindow* window, SoundService* soundService, Map* map,  Entity* shepherd) {
+    if (shepherd && (shepherd->HasFire || shepherd->HasFrost)) {
+        shepherd->HasFire = false;
+        shepherd->HasFrost = false;
+        window->SetDialogueText("The flames of your torch fizzle out into a fine, swirling smoke with a quiet hiss.");
+    }
+}
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     // Starting Level Cinematic
     for (int i = 0; i < MaxEntities; i++) {

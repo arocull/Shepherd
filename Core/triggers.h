@@ -24,6 +24,9 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
 // Triggered whenever the player steps on a scroll (reads scroll off and performs unique actions if necessary)
 void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map,  Entity* entities[]);
 
+// Triggered whenever the player steps on a fizzler (extinguishes fire/frost flames and performs unique actions if necessary)
+void Trigger_OnFizzler(RenderWindow* window, SoundService* soundService, Map* map,  Entity* shepherd);
+
 // Triggered whenever a new game starts--use for opening cinematic when very first area is loaded
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 
