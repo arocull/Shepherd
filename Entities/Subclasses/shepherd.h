@@ -3,6 +3,8 @@
 #include "Core/config.h"
 #include "Core/enums.h"
 
+#include "Audio/sound_service.h"
+
 #include "Entities/entity.h"
 #include "Entities/Subclasses/fireball.h"
 #include "Entities/Subclasses/torch.h"
@@ -27,12 +29,12 @@ class Shepherd : public Entity {
         virtual void Tick() override;
 
         // Causes Shepherd to sling a fireball; based off last direction they moved
-        void SlingFireball(Entity** entities, Particle* particles);
+        void SlingFireball(Entity** entities, Particle* particles, SoundService* soundService);
 
 
         /* Shepherd does an area-of-effect attack that:
         - Freezes or rallies nearby sheep
         - Hurts any nearby wolves
         */
-        void SwingAttack(Entity** entities, Particle* particles);
+        void SwingAttack(Entity** entities, Particle* particles, SoundService* soundService);
 };

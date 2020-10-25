@@ -21,6 +21,7 @@ class Fireball : public Entity {
 
         int speedX;
         int speedY;
+        // Set to true if the fireball was cast by an enemy and should damage the Shepherd
         bool enemy = false;
 
         void Burst(Entity** entities, Particle* particles);

@@ -275,17 +275,10 @@ int main(int argc, char **argv) {
             // Toss Fireball
             if (MoveFireballQueued && sheepLeft >= MaxSheep) {
                 MoveFireballQueued = false;
-
-                if (player->HasFire) {          // Sling Fireball
-                    player->SlingFireball(levelEntities, particles);
-                    soundService.PlaySound("Audio/Resources/FireballSling.wav");
-                } else {        // Rally Sheep / Swing Attack
-                    player->SwingAttack(levelEntities, particles);
-                    Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
-                }
+                player->SwingAttack(levelEntities, particles, &soundService);
+                Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
                 player->ticksIdled = 0;
-            } else
-                MoveFireballQueued = false;
+            } else MoveFireballQueued = false;
 
             ai->SetContext(player, currentLevel, levelEntities, ticks);
 
@@ -329,7 +322,7 @@ int main(int argc, char **argv) {
                 ai->TickAI(a);
                 
 
-                if (a->GetID() == EntityID::EE_Fireball) {      //Fireball, move in a straight line
+                if (a->GetID() == EntityID::EE_Fireball && a->GetHealth() > 0) { //Fireball, move in a straight line
                     Fireball* fireball = dynamic_cast<Fireball*>(a);
 
                     if (fireball) {

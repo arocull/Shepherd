@@ -21,6 +21,7 @@ class Lever : public Entity {
         
         void Flip();
         bool IsFlipped();
+        bool IsLocked();
 
         virtual void Tick() override;
 };

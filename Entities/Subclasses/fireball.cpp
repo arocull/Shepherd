@@ -37,15 +37,21 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
                 } else if (hit->GetID() == EntityID::EE_Crate) {    // Hitting crates with fireballs will incinerate them
                     Crate* crate = dynamic_cast<Crate*>(hit);
                     if (crate && crate->canIncinerate) crate->Incinerate(particles, this);
+
                 } else if (hit->GetID() == EntityID::EE_Lever) {    // Hitting levers with fireballs will flip them
                     Lever* lever = dynamic_cast<Lever*>(hit);
                     if (lever) lever->Flip();
-                } else {
-                    hit->HasFire = HasFire;
-                    hit->HasFrost = HasFrost;  
 
-                    if (!((hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) && !enemy))
+                } else if (hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) {
+                    hit->Paused = true; // Stun shepherd and sheep
+                    if (enemy) { // If the fireball was slung by an enemy, damage them
                         hit->TakeDamage(1, this);
+                    }
+
+                } else { // Otherwise set entity on fire and 
+                    hit->HasFire = HasFire;
+                    hit->HasFrost = HasFrost;
+                    if (!enemy) hit->TakeDamage(1, this);
                 }
             }
         }

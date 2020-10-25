@@ -18,6 +18,9 @@ void Lever::Flip() {
 bool Lever::IsFlipped() {
     return Flipped;
 }
+bool Lever::IsLocked() {
+    return Locked;
+}
 
 
 void Lever::UpdateAnimationData() {
