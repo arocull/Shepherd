@@ -100,6 +100,8 @@ void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* m
     if (map->GetMapID() == 1 && entities[0]->Paused == true) {
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolumeMusic(0.2f, 1.0f);
+    
+    // Pyramid - Teach player how to throw fireballs
     } else if (map->GetMapID() == 17) {
         if (entities[0]->HasFire) window->SetDialogueText("Swing your staff again to toss a fireball.", 0);
         else if (!map->PuzzleStatus) window->SetDialogueText("Fire from torches can be picked up with a swing of your staff.", 0);
@@ -192,6 +194,24 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         if (map->PuzzleStatus) {
             map->FillRectangle(10, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
         }
+    }  else if (map->GetMapID() == 14 || map->GetMapID() == 16 || map->GetMapID() == 22) { // Display puzzle status
+        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), map->PuzzleStatus);
+    } else if (map->GetMapID() == 20) { // Display puzzle status (never deactivate torch)
+        Trigger_Internal_TorchSetup(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), false, true, map->PuzzleStatus, true, false);
+    } else if (map->GetMapID() == 21) {
+        Entity* obj1 = GetEntityAtLocation(entities, 20, 6, MaxEntities);
+        if (obj1 && obj1->OnPressurePlate) {
+            map->FillRectangle(11, 4, 12, 9, TileID::ET_None);
+        } else {
+            map->FillRectangle(11, 4, 12, 9, TileID::ET_Door_Vertical);
+        }
+
+        Entity* obj2 = GetEntityAtLocation(entities, 20, 11, MaxEntities);
+        if (obj2 && obj2->OnPressurePlate) {
+            map->FillRectangle(29, 4, 30, 9, TileID::ET_None);
+        } else {
+            map->FillRectangle(29, 4, 30, 9, TileID::ET_Door_Vertical);
+        }
     }
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
@@ -224,6 +244,35 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
             map->FillRectangle(37, 6, 39, 11, TileID::ET_None);
             map->FillRectangle(39, 6, 40, 11, TileID::ET_Empty_Puzzle_Piece);
         }
+    } else if (map->GetMapID() == 18) { // Pyramid Gates
+        Entity* torch1 = GetEntityOccurence(entities, EE_Torch, 1, MaxEntities); // Get torches
+        Entity* torch2 = GetEntityOccurence(entities, EE_Torch, 2, MaxEntities);
+        Entity* torch3 = GetEntityOccurence(entities, EE_Torch, 3, MaxEntities);
+        Entity* torch4 = GetEntityOccurence(entities, EE_Torch, 4, MaxEntities);
+
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch1, world[5][2]->PuzzleStatus); // Display what puzzles are complete
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch2, world[7][2]->PuzzleStatus);
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch3, world[5][0]->PuzzleStatus);
+        Trigger_Internal_DisplayPuzzleStatus_Torch(torch4, world[7][0]->PuzzleStatus);
+
+        #ifdef DEBUG_MODE
+            if ((torch1->HasFire && torch2->HasFire) || DEBUG_SkipGates >= 3) {
+        #else
+            if (torch1->HasFire && torch2->HasFire) {
+        #endif
+            map->FillRectangle(35, 6, 36, 9, TileID::ET_None);
+        } else {
+            map->FillRectangle(35, 6, 36, 9, TileID::ET_Door_Vertical);
+        }
+        if (torch3->HasFire && torch4->HasFire) {
+            map->FillRectangle(17, 2, 24, 3, TileID::ET_None);
+        } else {
+            map->FillRectangle(17, 2, 24, 3, TileID::ET_Door_Horizontal);
+        }
+    } else if (map->GetMapID() == 22) { // Bottom right corner of pyramid, open wall if all current puzzles are solved
+        bool gatesOpen = world[5][2]->PuzzleStatus && world[7][2]->PuzzleStatus && world[5][0]->PuzzleStatus && world[7][0]->PuzzleStatus;
+        if (gatesOpen) map->FillRectangle(39, 6, 40, 9, TileID::ET_None);
+        else map->FillRectangle(39, 6, 40, 9, TileID::ET_Wall);
     }
 
     map->HasLoaded = true;
@@ -312,7 +361,23 @@ void Trigger_SetupPuzzles(Map* map) {
         p->PlatesPressed = 1;
 
     // PYRAMID //
-    } else if (map->GetMapID() == 17) {
+    } else if (map->GetMapID() == 14) { // Top Left Puzzle Indicator + Crates
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 2, MaxEntitiesStoreable);
+        p->PlatesPressed = 1;
+
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
+        Trigger_Internal_CrateSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable), true);
+        Trigger_Internal_CrateSetup(p->entities[0], false);
+    } else if (map->GetMapID() == 15) { // Top middle torch for carrying fire
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, true, false, true, false);
+    } else if (map->GetMapID() == 16) { // Top Right Puzzle Indicator + Lever
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Lever, 1, MaxEntitiesStoreable);
+        p->LeversFlipped = 1;
+
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
+    } else if (map->GetMapID() == 17) { // Pyramid Entrance
         p->Enabled = true;
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable);
         p->entities[1] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 3, MaxEntitiesStoreable);
@@ -321,5 +386,22 @@ void Trigger_SetupPuzzles(Map* map) {
         p->FireType = 1;
 
         Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable), false, true, false, true, false);
+    } else if (map->GetMapID() == 18) { // Pyramid Gates Area
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable), false, false, false, false, false);
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 3, MaxEntitiesStoreable), false, false, false, false, false);
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 4, MaxEntitiesStoreable), false, false, false, false, false);
+    } else if (map->GetMapID() == 20) { // Bottom Left--Crate incineration puzzle
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
+        p->PlatesPressed = 0;
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, true, false, true, false);
+        Trigger_Internal_CrateSetup(p->entities[0], true);
+    } else if (map->GetMapID() == 22) { // Bottom Right - Pushing multiple crates at once
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
+        p->entities[1] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 2, MaxEntitiesStoreable);
+        p->PlatesPressed = 2;
+        Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
     }
 }
