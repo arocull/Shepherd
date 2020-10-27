@@ -51,6 +51,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_vines = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_vines);
         }
 
+        TEXTURESURFACE_sunTile = SDL_LoadBMP("Textures/SunTile.bmp");
+        if (TEXTURESURFACE_sunTile) {
+            TEXTURE_sunTile = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sunTile);
+        }
+
         TEXTURESURFACE_crate = SDL_LoadBMP("Textures/Crate.bmp");
         if (TEXTURESURFACE_crate) {
             TEXTURE_crate = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_crate);
@@ -168,6 +173,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_pillar);
     SDL_FreeSurface(TEXTURESURFACE_vines);
     SDL_DestroyTexture(TEXTURE_vines);
+    SDL_FreeSurface(TEXTURESURFACE_sunTile);
+    SDL_DestroyTexture(TEXTURE_sunTile);
     SDL_FreeSurface(TEXTURESURFACE_crate);
     SDL_DestroyTexture(TEXTURE_crate);
     SDL_FreeSurface(TEXTURESURFACE_torch);
@@ -272,6 +279,10 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID, int tilingIndex) {
             SDL_SetRenderDrawColor(canvas, 230, 220, 0, 0);
             tile.x += tileRes*.15;
             tile.w *= 0.7;
+            break;
+        case TileID::ET_Indicator:
+            SDL_RenderCopy(canvas, TEXTURE_sunTile, NULL, &tile);
+            defaultDraw = false;
             break;
         default:
             defaultDraw = false;

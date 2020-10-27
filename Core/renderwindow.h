@@ -77,6 +77,9 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_vines;
         SDL_Texture* TEXTURE_vines;
 
+        SDL_Surface* TEXTURESURFACE_sunTile;
+        SDL_Texture* TEXTURE_sunTile;
+
         SDL_Surface* TEXTURESURFACE_crate;
         SDL_Texture* TEXTURE_crate;
 

@@ -140,6 +140,12 @@ int main(int argc, char **argv) {
     // World indexing, current X and Y is the currently loaded level, world X and Y is changed based upon movement and says what level to load
     int worldX = 0;
     int worldY = 2;
+    #ifdef DEBUG_MODE
+        if (DEBUG_SkipGates >= 2) {
+            worldX = 4;
+            worldY = 1;
+        }
+    #endif
     int currentWorldX = worldX;
     int currentWorldY = worldY;
     

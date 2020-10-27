@@ -26,7 +26,10 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         else if (id == 13 && triggerID == 1) {
             window->SetDialogueText("The air is dry, but cool. Your footsteps echo around the walls of the corridor as you march your flock along.", 100);
             soundService->FadeVolumeMusic(0.0f, 1.0f);
-        }
+
+        // Pyramid
+        } else if (id == 17 && triggerID == 1)
+            window->SetDialogueText("Fire from torches can be picked up with a swing of your staff.", 0);
 
         /* Examples
         if (id == 14 && triggerID == 1) {
@@ -91,13 +94,18 @@ void Trigger_GameOver(RenderWindow* window, SoundService* soundService, Map* map
     soundService->FadeVolumeMusic(1.0f, 3.0f);
 }
 void Trigger_StaffSwing(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
+    if (!entities[0]) return; // Return if there is no shepherd
 
     // On starting area, if the player has not done so yet, instruct them on how to move
-    if (map->GetMapID() == 1 && (entities[0] && entities[0]->Paused == true)) {
-        entities[0]->Paused = false;
+    if (map->GetMapID() == 1 && entities[0]->Paused == true) {
         window->SetDialogueText("Use WASD or Arrow Keys to move around.", 0);
         soundService->FadeVolumeMusic(0.2f, 1.0f);
+    } else if (map->GetMapID() == 17) {
+        if (entities[0]->HasFire) window->SetDialogueText("Swing your staff again to toss a fireball.", 0);
+        else if (!map->PuzzleStatus) window->SetDialogueText("Fire from torches can be picked up with a swing of your staff.", 0);
     }
+
+    entities[0]->Paused = false; // Unpause Shepherd whenever staff is swung
 }
 void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     if ((entities[0] && entities[0]->Paused)) return;
