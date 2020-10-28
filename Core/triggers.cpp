@@ -192,7 +192,7 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         Trigger_Internal_DisplayPuzzleStatus_Torch(map->Puzzles->entities[1], map->PuzzleStatus);
 
         if (map->PuzzleStatus) {
-            map->FillRectangle(10, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
+            map->FillRectangle(11, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
         }
     }  else if (map->GetMapID() == 14 || map->GetMapID() == 16 || map->GetMapID() == 22) { // Display puzzle status
         Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), map->PuzzleStatus);
@@ -211,6 +211,18 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
             map->FillRectangle(29, 4, 30, 9, TileID::ET_None);
         } else {
             map->FillRectangle(29, 4, 30, 9, TileID::ET_Door_Vertical);
+        }
+    } else if (map->GetMapID() == 23) {
+        if (map->PressurePlatesPressed == 1 && !map->PuzzleStatus) {
+            Entity* spawnTorch = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
+            Fireball* fireball = new Fireball(spawnTorch->x, spawnTorch->y + 1, 0, -1, 1);
+            fireball->enemy = false;
+            AppendEntity(entities, fireball);
+            window->SetDialogueText("Fireballs can be caught with a deft swing of your staff.\n", 70);
+        }
+        if (map->PuzzleStatus) {
+            map->FillRectangle(9, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
+            Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 2, MaxEntities), true);
         }
     }
 }
@@ -403,5 +415,9 @@ void Trigger_SetupPuzzles(Map* map) {
         p->entities[1] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 2, MaxEntitiesStoreable);
         p->PlatesPressed = 2;
         Trigger_Internal_TorchSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 1, MaxEntitiesStoreable), false, false, false, false, false);
+    } else if (map->GetMapID() == 23) { // Fireball catching training
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable);
+        Trigger_Internal_TorchSetup(p->entities[0], true, true, false, false, false);
     }
 }

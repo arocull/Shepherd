@@ -113,6 +113,10 @@ int main(int argc, char **argv) {
     world[6][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid8");
     world[7][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid9");
 
+    world[8][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
+    world[8][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballCatching");
+    world[8][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidScroll");
+
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
         int numScrolls = 0;
@@ -141,8 +145,11 @@ int main(int argc, char **argv) {
     int worldX = 0;
     int worldY = 2;
     #ifdef DEBUG_MODE
-        if (DEBUG_SkipGates >= 2) {
+        if (DEBUG_SkipGates == 2) {
             worldX = 4;
+            worldY = 1;
+        } else if (DEBUG_SkipGates >= 3) {
+            worldX = 7;
             worldY = 1;
         }
     #endif

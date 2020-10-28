@@ -4,6 +4,8 @@ Fireball::Fireball(int spawnX, int spawnY, int dirX, int dirY, int type) {
     id = EntityID::EE_Fireball;
     x = spawnX;
     y = spawnY;
+    lastX = spawnX;
+    lastY = spawnY;
     speedX = dirX*FireballSpeed;
     speedY = dirY*FireballSpeed;
     
@@ -31,7 +33,7 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
                     Torch* torch = dynamic_cast<Torch*>(hit);
                     if (torch && torch->Extinguishable) {
                         torch->HasFire = HasFire;
-                        torch->HasFrost = HasFrost; 
+                        torch->HasFrost = HasFrost;
                     }
                 // If it hits a crate, incinerate it
                 } else if (hit->GetID() == EntityID::EE_Crate) {    // Hitting crates with fireballs will incinerate them
@@ -44,6 +46,7 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
 
                 } else if (hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) {
                     hit->Paused = true; // Stun shepherd and sheep
+                    if (hit->GetID() == EntityID::EE_Shepherd) hit->animation = 3; // Force Shepherd to kneel for visual cue
                     if (enemy) { // If the fireball was slung by an enemy, damage them
                         hit->TakeDamage(1, this);
                     }

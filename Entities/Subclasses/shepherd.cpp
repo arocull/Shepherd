@@ -40,6 +40,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
     int pausedSheep = 0;
     Entity* fireballPresent = nullptr;
     bool unlitTorchPresent = false;
+    bool litTorchPresent = false;
     bool leverToFlip = false;
 
     // Tally sheep; find out how many there are and what proportion of them is paused
@@ -61,6 +62,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
                 if (obj->GetID() == EntityID::EE_Torch) {
                     Torch* torch = dynamic_cast<Torch*>(obj);
                     if (torch->Extinguishable && !obj->HasFire && !obj->HasFrost) unlitTorchPresent = true;
+                    else if (torch->FireUsable && (obj->HasFire || obj->HasFrost)) litTorchPresent = true;
                 } else if (obj->GetID() == EntityID::EE_Lever) {
                     Lever* lever = dynamic_cast<Lever*>(obj);
                     if (!lever->IsLocked()) leverToFlip = true;
@@ -78,15 +80,42 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
     * Wolves are always damaged during checks before other functionality is performed
     * 
     * 1 - Toss fireball if staff has fire
-    * 2 - If an unlit torch is nearby, transfer the fire to that instead
-    * 3 - If the player is not holding a flame and a fireball is nearby, destroy the first fireball and take its flame
-    * 4 - If the player is standing next to an unlocked lever, flip it
-    * 5 - Otherwise, rally sheep and take torch flames
+    * 2 - If the player is not holding a flame and a fireball is nearby, destroy the first fireball and take its flame
+    * 3 - If a lit torch is nearby and the player does not have fire, take fire from the torch (and spread fire if the player has it now)
+    * 4 - If an unlit torch is nearby and the player has fire, transfer the fire to that instead
+    * 5 - If the player is standing next to an unlocked lever, flip it
+    * 6 - Otherwise, rally sheep
     */
 
     // If the Shepherd has fire or frost and no unlit torches are present, sling a fireball
     if (hasFlame && !unlitTorchPresent) {
         SlingFireball(entities, particles, soundService);
+
+    // If we're not holding any fire and there is a fireball present, catch it
+    } else if (!hasFlame && fireballPresent) {
+        HasFire = fireballPresent->HasFire;
+        HasFrost = fireballPresent->HasFrost;
+        fireballPresent->TakeDamage(1, this); // Fireballs with no health are marked for cleanup
+
+    } else if (!hasFlame && litTorchPresent) {
+        for (int w = x-1; w < x+2; w++) {
+            for (int z = y-1; z < y+2; z++) {
+                Entity* obj = GetEntityAtLocation(entities, w, z);
+                if (obj && obj->GetID() == EntityID::EE_Torch && !obj->HasFire && !obj->HasFrost) {
+                    Torch* t = dynamic_cast<Torch*>(obj);
+                    if (t) {
+                        if (t->FireUsable && ((!HasFire && !HasFrost) || (HasFrost && obj->HasFire))) {
+                            HasFire = obj->HasFire;
+                            HasFrost = obj->HasFrost;
+                            t->Extinguish();
+                        } else if (t->Extinguishable && (HasFire || HasFrost)) {
+                            t->HasFire = HasFire;
+                            t->HasFrost = HasFrost;
+                        }
+                    }
+                }
+            }
+        }
 
     // If there is any nearby torches we can light, light all of them
     } else if (hasFlame && unlitTorchPresent) {
@@ -108,12 +137,6 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
             HasFire = false;
             HasFrost = false;
         }
-
-    // If we're not holding any fire and there is a fireball present, catch it
-    } else if (!hasFlame && fireballPresent) {
-        HasFire = fireballPresent->HasFire;
-        HasFrost = fireballPresent->HasFrost;
-        fireballPresent->TakeDamage(1, this); // Fireballs with no health are marked for cleanup
 
     } else if (leverToFlip) { // Flip levers without interfering with sheep
         for (int w = x-1; w < x+2; w++) {
@@ -138,23 +161,9 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
                 Entity* obj = GetEntityAtLocation(entities, w, z);
-                if (obj) {
-                    if (obj->GetID() == EntityID::EE_Sheep) {  //If sheep, toggle pause
-                        obj->Paused = NewPause;
-                        obj->animation = 1;
-                    } else if (obj->GetID() == EntityID::EE_Torch) {   // Extinguish and use torches
-                        Torch* t = dynamic_cast<Torch*>(obj);
-                        if (t) {
-                            if (t->FireUsable && ((!HasFire && !HasFrost) || (HasFrost && obj->HasFire))) {
-                                HasFire = obj->HasFire;
-                                HasFrost = obj->HasFrost;
-                                t->Extinguish();
-                            } else if (t->Extinguishable && (HasFire || HasFrost)) {
-                                t->HasFire = HasFire;
-                                t->HasFrost = HasFrost;
-                            }
-                        }
-                    }
+                if (obj && obj->GetID() == EntityID::EE_Sheep) { //If sheep, toggle pause
+                    obj->Paused = NewPause;
+                    obj->animation = 1;
                 }
             }
         }

@@ -14,6 +14,7 @@
 
 #include "Entities/particle.h"
 #include "Entities/entity.h"
+#include "Entities/Subclasses/fireball.h"
 #include "Entities/Subclasses/torch.h"
 #include "Entities/Subclasses/crate.h"
 #include "Entities/Subclasses/lever.h"
