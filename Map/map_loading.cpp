@@ -173,7 +173,7 @@ Map* GenerateMapFromFile(const char* filePath) {
 
         char biome = mapFile.get();
         if (!mapFile.eof()) { // If there is a biome, get it
-            map->SetMapBiome(biome);
+            map->SetMapBiome((EnvironmentID) biome); // Cast char to EnvironmentID (for standardization purposes/easier to keep track of)
 
             // After biomes, the only thing left in map data is scroll text, so build a string and set it using that
             mapFile.get();  // Clear out newline

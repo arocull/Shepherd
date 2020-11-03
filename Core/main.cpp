@@ -429,22 +429,7 @@ int main(int argc, char **argv) {
         window.TickDeltaTime(DeltaTime);
 
         // Fill background based off of biome
-        switch (currentLevel->GetMapBiome()) {
-            case 'D':   // Desert
-                window.FillViewportBackground(210, 200, 80);
-                break;
-            case 'P':   // Pyramid
-                window.FillViewportBackground(100, 80, 65);
-                break;
-            case 'M':   // Mountain
-                window.FillViewportBackground(20, 20, 20);
-                break;
-            case 'S':   // Snowy
-                window.FillViewportBackground(200, 210, 220);
-                break;
-            default:    // Default / Forest
-                window.FillViewportBackground(10, 60, 20);
-        }
+        window.FillViewportBackground(currentLevel->GetMapBiome());
 
         // Draw tiles first
         int currentTileID = 0;

@@ -97,20 +97,22 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
         HasFrost = fireballPresent->HasFrost;
         fireballPresent->TakeDamage(1, this); // Fireballs with no health are marked for cleanup
 
+    // If we're not holding fire and there is fire we can pick up
     } else if (!hasFlame && litTorchPresent) {
+        printf("doin' the thing\n");
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
                 Entity* obj = GetEntityAtLocation(entities, w, z);
-                if (obj && obj->GetID() == EntityID::EE_Torch && !obj->HasFire && !obj->HasFrost) {
+                // Check if it's a torch--don't bother further processing though if we already have a flame unless the torch can override our flame
+                if (obj && obj->GetID() == EntityID::EE_Torch && (!hasFlame || (HasFrost && obj->HasFire))) {
                     Torch* t = dynamic_cast<Torch*>(obj);
-                    if (t) {
-                        if (t->FireUsable && ((!HasFire && !HasFrost) || (HasFrost && obj->HasFire))) {
+                    if (t) { // Only grab fire if the fire is useable, the torch has a flame
+                    printf("Considering torch\n");
+                        if (t->FireUsable && (obj->HasFire || obj->HasFrost)) {
                             HasFire = obj->HasFire;
                             HasFrost = obj->HasFrost;
                             t->Extinguish();
-                        } else if (t->Extinguishable && (HasFire || HasFrost)) {
-                            t->HasFire = HasFire;
-                            t->HasFrost = HasFrost;
+                            printf("GRABBING FIRE\n");
                         }
                     }
                 }

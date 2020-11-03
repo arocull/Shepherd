@@ -130,11 +130,13 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
     // THE RAVINE / TUTORIAL //
     if (map->GetMapID() == 2) {
         #ifdef DEBUG_MODE
-            if (map->PressurePlatesPressed == 1 || DEBUG_SkipGates >= 1) {
+            if ((map->PressurePlatesPressed == 1 && !map->PuzzleStatus) || DEBUG_SkipGates >= 1) {
         #else
-            if (map->PressurePlatesPressed == 1) {
+            if (map->PressurePlatesPressed == 1 && !map->PuzzleStatus) {
         #endif
-            map->FillRectangle(37, 1, 38, 14, TileID::ET_None);
+            map->PuzzleStatus = true;
+            map->FillRectangle(37, 5, 38, 10, TileID::ET_None);
+            window->AddScreenShake(0, 0.3f);
             window->SetDialogueText("As the pressure plate clicks, the wall slides away into the shifting sands below.", 100);
         }
     } else if (map->GetMapID() == 3) {
@@ -143,9 +145,11 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         #else
             if (map->PressurePlatesPressed == 1) {
         #endif
-            map->FillRectangle(37, 1, 38, 14, TileID::ET_None);
+            window->AddScreenShake(0, 0.3f);
+            map->FillRectangle(37, 5, 38, 10, TileID::ET_None);
         } else {
-            map->FillRectangle(37, 1, 38, 14, TileID::ET_Door_Vertical);
+            window->AddScreenShake(0, 0.3f);
+            map->FillRectangle(37, 5, 38, 10, TileID::ET_Door_Vertical);
         }
     } else if (map->GetMapID() == 4) {
         #ifdef DEBUG_MODE
@@ -153,7 +157,8 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         #else
             if (map->PressurePlatesPressed == 2) {
         #endif
-            map->FillRectangle(27, 1, 28, 14, TileID::ET_None);
+            window->AddScreenShake(0, 0.3f);
+            map->FillRectangle(27, 6, 28, 9, TileID::ET_None);
             map->Triggers[0] = true;
         } else if (map->PressurePlatesPressed == 1 && !map->Triggers[0]) {
             window->SetDialogueText("Perhaps its time to put the sheep to work. Rest or rally them with spacebar.", 0);
@@ -187,11 +192,12 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 
 
     // THE PYRAMID //
-    else if (map->GetMapID() == 17) {
+    else if (map->GetMapID() == 17) { // Entrance
         Trigger_Internal_DisplayPuzzleStatus_Torch(map->Puzzles->entities[0], map->PuzzleStatus);
         Trigger_Internal_DisplayPuzzleStatus_Torch(map->Puzzles->entities[1], map->PuzzleStatus);
 
-        if (map->PuzzleStatus) {
+        if (map->PuzzleStatus) { // Once puzzle is completed, pull up bridge
+            window->AddScreenShake(0, 0.5f);
             map->FillRectangle(11, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
         }
     }  else if (map->GetMapID() == 14 || map->GetMapID() == 16 || map->GetMapID() == 22) { // Display puzzle status

@@ -33,10 +33,10 @@ void Map::SetMapID(int Identification) {
 int Map::GetMapID() {
     return id;
 }
-void Map::SetMapBiome(char b) {
+void Map::SetMapBiome(EnvironmentID b) {
     biome = b;
 }
-char Map::GetMapBiome() {
+EnvironmentID Map::GetMapBiome() {
     return biome;
 }
 

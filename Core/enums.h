@@ -47,3 +47,14 @@ enum MenuID {
     EM_Scrolls = 2,
     EM_Settings = 3
 };
+
+enum EnvironmentID : char {
+    ENV_Cave = 'C',
+    ENV_Desert = 'D',
+    ENV_Pyramid = 'P',
+    ENV_Mountain = 'M',
+    ENV_Snowy = 'S',
+    ENV_Forest = 'F',
+
+    ENV_None = '\0'
+};

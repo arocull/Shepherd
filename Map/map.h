@@ -21,15 +21,15 @@ class Map {
         int PressurePlatesPressed = 0;  // The number of pressure plates currently weighed down at the current frame
         bool HasLoaded = false;         // Is set to true once a map has been physically loaded
 
-        Puzzle* Puzzles;                // Puzzles that might accessible in levels.
+        struct Puzzle* Puzzles;                // Puzzles that might accessible in levels.
         bool PuzzleStatus = false;      // Has the puzzle on this level been completed?
 
         bool ScrollDiscovered = false;  // Has the scroll on this map been read before?
 
         void SetMapID(int Identification);
         int GetMapID();
-        void SetMapBiome(char b);
-        char GetMapBiome();
+        void SetMapBiome(EnvironmentID b);
+        EnvironmentID GetMapBiome();
 
         void SetScroll(const char* text, const char* name);
         bool HasScroll();
@@ -54,7 +54,7 @@ class Map {
     private:
         int EntitiesStored = 0;
         int id = -1;                // Map ID, can be anything--repeats are fine. This is read by triggers to tell what level is what.
-        char biome = 'F';           // What color should we render the background as?
+        EnvironmentID biome = EnvironmentID::ENV_Forest;           // What color should we render the background as?
 
         bool scrollSet = false;
         char* scroll = NULL;          // Scroll text for this area

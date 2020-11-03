@@ -4,6 +4,8 @@ Sheep::Sheep(int xPos, int yPos) {
     id = EntityID::EE_Sheep;
     x = xPos;
     y = yPos;
+    lastX = xPos;
+    lastY = yPos;
     MaxHealth = 2;
     Health = 2;
 

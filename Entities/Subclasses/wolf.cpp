@@ -8,6 +8,8 @@ Wolf::Wolf(int xPos, int yPos) {
 
     x = xPos;
     y = yPos;
+    lastX = xPos;
+    lastY = yPos;
 
     target = nullptr;
 }
