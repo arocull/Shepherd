@@ -204,21 +204,21 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), map->PuzzleStatus);
     } else if (map->GetMapID() == 20) { // Display puzzle status (never deactivate torch)
         Trigger_Internal_TorchSetup(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), false, true, map->PuzzleStatus, true, false);
-    } else if (map->GetMapID() == 21) {
+    } else if (map->GetMapID() == 21) { // Door puzzle (use both pressure plates to pass)
         Entity* obj1 = GetEntityAtLocation(entities, 20, 6, MaxEntities);
         if (obj1 && obj1->OnPressurePlate) {
-            map->FillRectangle(11, 4, 12, 9, TileID::ET_None);
+            map->FillRectangle(14, 4, 15, 9, TileID::ET_None);
         } else {
-            map->FillRectangle(11, 4, 12, 9, TileID::ET_Door_Vertical);
+            map->FillRectangle(14, 4, 15, 9, TileID::ET_Door_Vertical);
         }
 
         Entity* obj2 = GetEntityAtLocation(entities, 20, 11, MaxEntities);
         if (obj2 && obj2->OnPressurePlate) {
-            map->FillRectangle(29, 4, 30, 9, TileID::ET_None);
+            map->FillRectangle(26, 4, 27, 9, TileID::ET_None);
         } else {
-            map->FillRectangle(29, 4, 30, 9, TileID::ET_Door_Vertical);
+            map->FillRectangle(26, 4, 27, 9, TileID::ET_Door_Vertical);
         }
-    } else if (map->GetMapID() == 23) {
+    } else if (map->GetMapID() == 23) { // Fireball catching puzzle
         if (map->PressurePlatesPressed == 1 && !map->PuzzleStatus) {
             Entity* spawnTorch = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
             Fireball* fireball = new Fireball(spawnTorch->x, spawnTorch->y + 1, 0, -1, 1);
@@ -226,9 +226,11 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
             AppendEntity(entities, fireball);
             window->SetDialogueText("Fireballs can be caught with a deft swing of your staff.\n", 70);
         }
-        if (map->PuzzleStatus) {
+        if (map->PuzzleStatus && !map->Triggers[0]) {
             map->FillRectangle(9, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
             Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 2, MaxEntities), true);
+            window->AddScreenShake(0.0f, 0.5f);
+            map->Triggers[0] = true; // Debounce so screenshake doesn't stack
         }
     }
 }

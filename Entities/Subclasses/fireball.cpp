@@ -47,6 +47,7 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
                 } else if (hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) {
                     hit->Paused = true; // Stun shepherd and sheep
                     if (hit->GetID() == EntityID::EE_Shepherd) hit->animation = 3; // Force Shepherd to kneel for visual cue
+                    else if (hit->GetID() == EntityID::EE_Sheep) hit->animation = 1;
                     if (enemy) { // If the fireball was slung by an enemy, damage them
                         hit->TakeDamage(1, this);
                     }
