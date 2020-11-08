@@ -232,6 +232,12 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
             window->AddScreenShake(0.0f, 0.5f);
             map->Triggers[0] = true; // Debounce so screenshake doesn't stack
         }
+    } else if (map->GetMapID() == 24) { // Fireball catching + destruction puzzle
+        if (map->PuzzleStatus && !map->Triggers[0]) {
+            map->Triggers[0] = true;
+            window->AddScreenShake(0.0f, 0.2f);
+            map->FillRectangle(39, 1, 40, 4, TileID::ET_Fizzler);
+        } 
     }
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
@@ -298,6 +304,16 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
     map->HasLoaded = true;
 }
 
+
+void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
+    int triggerID = map->GetEventID();
+
+    if (map->GetMapID() == 24 && !map->PuzzleStatus) {
+        Entity* torch = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
+        AppendEntity(entities, new Fireball(torch->x - 1, torch->y, -2, 0, 1));
+        map->SetEventTimer(40, 0); // 40 Ticks (5 seconds) before next fireball spawn
+    }
+}
 
 
 
@@ -427,5 +443,13 @@ void Trigger_SetupPuzzles(Map* map) {
         p->Enabled = true;
         p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Torch, 2, MaxEntitiesStoreable);
         Trigger_Internal_TorchSetup(p->entities[0], true, true, false, false, false);
+    } else if (map->GetMapID() == 24) {
+        map->SetEventTimer(12, 0); // Show fireball quickly so player understands what's going on
+        p->Enabled = true;
+        p->entities[0] = GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 1, MaxEntitiesStoreable);
+        p->PlatesPressed = 0;
+        // Both crates need to be burnable
+        Trigger_Internal_CrateSetup(p->entities[0], true);
+        Trigger_Internal_CrateSetup(GetEntityOccurence(map->StoredEntities, EntityID::EE_Crate, 2, MaxEntitiesStoreable), true);
     }
 }

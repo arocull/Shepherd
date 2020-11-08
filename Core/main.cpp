@@ -244,6 +244,11 @@ int main(int argc, char **argv) {
                 Trigger_Idled(&window, &soundService, currentLevel, levelEntities);
             }
 
+            // Do map event tick ahead of player movement (so player does not end up ontop of walls)
+            if (currentLevel->TickEventTimer()) {
+                Trigger_LevelEvent(&window, &soundService, currentLevel, levelEntities);
+            }
+
             if (!player->Paused) {      //If they player is not paused, let them move if input is given
                 player->animation = 0;
 

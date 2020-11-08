@@ -38,6 +38,11 @@ class Map {
         void SetScrollIndex(int newScrollIndex);
         int GetScrollIndex();
 
+        int GetEventTimer();
+        int GetEventID();
+        bool TickEventTimer();
+        void SetEventTimer(int time, int id = 0);
+
         void SetTile(int x, int y, int newID);
         int GetTileID(int x, int y);
         int GetTileIDConstrained(int x, int y);
@@ -56,8 +61,11 @@ class Map {
         int id = -1;                // Map ID, can be anything--repeats are fine. This is read by triggers to tell what level is what.
         EnvironmentID biome = EnvironmentID::ENV_Forest;           // What color should we render the background as?
 
-        bool scrollSet = false;
+        bool scrollSet = false;       // Has a scroll been set for this map?
         char* scroll = NULL;          // Scroll text for this area
         char* scrollName = NULL;      // Scroll name for this area
         int scrollIndex = -1;         // Index of the scroll in the collectibles list
+
+        int eventTimer = -1;          // Counts down to a timed trigger event
+        int eventID = 0;              // Use this to keep track of different timed events within the same level
 };

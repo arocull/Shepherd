@@ -48,6 +48,8 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 // Note: Only triggered when the level is manually navigated to by the player
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]);
 
+// Triggered when the current level's event timer reaches zero
+void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 
 
 // Checks to see if all crates within a level are ontop of pressure plates (might not be useable for more unique crate puzzles)

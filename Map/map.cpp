@@ -69,6 +69,28 @@ int Map::GetScrollIndex() {
 }
 
 
+int Map::GetEventTimer() {
+    return eventTimer;
+}
+int Map::GetEventID() {
+    return eventID;
+}
+bool Map::TickEventTimer() { // Ticks the event timer down, returns true if timer reached zero this tick
+    if (eventTimer > 0) {
+        eventTimer--;
+        if (eventTimer == 0) {
+            eventTimer = -1; // Disable event timer for next time
+            return true; // Return true since event occursed
+        }
+    }
+    return false; // Otherwise return false
+}
+void Map::SetEventTimer(int time, int id) {
+    eventTimer = time;
+    eventID = id;
+}
+
+
 // Sets the tile properties of the tile at X, Y based off the given ID
 void Map::SetTile(int x, int y, int newID) {
     SetTileID(&tiles[x][y], newID);
