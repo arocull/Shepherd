@@ -36,7 +36,8 @@ enum EntityID {     // : uint_fast8_t
     EE_Crate = 5,
     EE_Torch = 6,
     EE_Lever = 7,
-    EE_PyramidGolem = 8,
+
+    EE_PyramidGolem = 101, // Pyramid Golem Boss
 
     EE_None = 0,
 };
@@ -49,6 +50,8 @@ enum MenuID {
     EM_Settings = 3
 };
 
+
+// Used for determining what background is used for the map
 enum EnvironmentID : char {
     ENV_Cave = 'C',
     ENV_Desert = 'D',
@@ -58,4 +61,14 @@ enum EnvironmentID : char {
     ENV_Forest = 'F',
 
     ENV_None = '\0'
+};
+
+
+enum ParticleID {
+    EP_Swing = 1,
+    EP_PuzzleSolved = 2,
+    EP_PressurePlateClick = 3,
+    EP_Fire = 4,
+    EP_FireBurst = 5,
+    EP_Smoke = 6,
 };

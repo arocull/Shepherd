@@ -111,6 +111,9 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_shepherd;
         SDL_Texture* TEXTURE_shepherd;
 
+        SDL_Surface* TEXTURESURFACE_boss_pyramidgolem;
+        SDL_Texture* TEXTURE_boss_pyramidgolem;
+
         SDL_Surface* TEXTURESURFACE_alphabet;
         SDL_Texture* TEXTURE_alphabet;
 

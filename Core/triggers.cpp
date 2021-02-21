@@ -31,10 +31,10 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         } else if (id == 17 && triggerID == 1) {
             window->SetDialogueText("Fire from torches can be picked up with a swing of your staff.", 0);
         // Pyramid Boss
-        } else if (id == 27 && triggerID == 1) { // Warning
+        } else if (id == 29 && triggerID == 1) { // Warning
             window->SetDialogueText("It's quiet and warm in this room, but you feel chilled and uneasy...", 75);
             soundService->FadeOutMusic(0.5f);
-        } else if (id == 27 && triggerID == 2) { // Trap player
+        } else if (id == 29 && triggerID == 2) { // Trap player
             window->AddScreenShake(0, 1.0f);
             window->SetDialogueText("", 0);
             map->SetEventTimer(10, 0);
@@ -329,7 +329,7 @@ void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* m
         Entity* torch = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
         AppendEntity(entities, new Fireball(torch->x - 1, torch->y, -1, 0, 1));
         map->SetEventTimer(20, 0); // 20 Ticks (2.5 seconds) before next fireball spawn
-    } else if (map->GetMapID() == 27) {
+    } else if (map->GetMapID() == 29) {
         if (triggerID == 0) {
             window->SetDialogueText("...Panic?", 0);
             map->SetEventTimer(15, 1);

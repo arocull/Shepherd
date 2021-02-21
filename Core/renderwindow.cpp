@@ -86,6 +86,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_shepherd = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_shepherd);
         }
 
+        TEXTURESURFACE_boss_pyramidgolem = SDL_LoadBMP("Textures/PyramidGolem.bmp");
+        if (TEXTURESURFACE_boss_pyramidgolem) {
+            TEXTURE_boss_pyramidgolem = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_boss_pyramidgolem);
+        }
+
         TEXTURESURFACE_alphabet = SDL_LoadBMP("Textures/Alphabet.bmp");
         if (TEXTURESURFACE_alphabet) {
             TEXTURE_alphabet = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_alphabet);
@@ -203,6 +208,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_wolf);
     SDL_FreeSurface(TEXTURESURFACE_shepherd);
     SDL_DestroyTexture(TEXTURE_shepherd);
+    SDL_FreeSurface(TEXTURESURFACE_boss_pyramidgolem);
+    SDL_DestroyTexture(TEXTURE_boss_pyramidgolem);
     SDL_FreeSurface(TEXTURESURFACE_alphabet);
     SDL_DestroyTexture(TEXTURE_alphabet);
 
@@ -520,6 +527,20 @@ void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, 
             src.y = 32;
             SDL_RenderCopyEx(canvas, TEXTURE_lever, &src, &tile, angle, NULL, flipStyle);
         }
+
+    
+    // BOSSES //
+    } else if (id == EntityID::EE_PyramidGolem) {
+        SDL_Rect src;
+        src.h = 128;
+        src.w = 128;
+        src.x = 0;
+        src.y = 0;
+
+        tile.w *= 4;
+        tile.h *= 4;
+
+        SDL_RenderCopyEx(canvas, TEXTURE_boss_pyramidgolem, &src, &tile, angle, NULL, flipStyle);
     }
 }
 void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage) {
@@ -529,27 +550,27 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
     base.x = (int) (posX+0.5f)*tileRes + offsetX;
     base.y = (int) (posY+0.5f)*tileRes + offsetY;
 
-    if (id == 1) {              // Swing
+    if (id == ParticleID::EP_Swing) {              // Swing
         SDL_SetRenderDrawColor(canvas, 255, 255, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = tileRes*2.75;
         base.h = base.w;
-    } else if (id == 2) {       // Puzzle Solved Click
+    } else if (id == ParticleID::EP_PuzzleSolved) {       // Puzzle Solved Click
         SDL_SetRenderDrawColor(canvas, 190, 255, 200, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = tileRes*3*sqrt(percentage);
         base.h = base.w;
-    } else if (id == 3) {       // Pressure Plate Click
+    } else if (id == ParticleID::EP_PressurePlateClick) {       // Pressure Plate Click
         SDL_SetRenderDrawColor(canvas, 255, 255, 100, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = tileRes*1.5*percentage;
         base.h = base.w;
-    } else if (id == 4) {       // Fire
+    } else if (id == ParticleID::EP_Fire) {       // Fire
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, 200);
         base.w/=3;
         base.h = base.w;
-    } else if (id == 5) {       // Fire Burst
+    } else if (id == ParticleID::EP_FireBurst) {       // Fire Burst
         SDL_SetRenderDrawColor(canvas, 220 + (int) (sin(time/2) * 30), 80 + (int) (sin(time/3) * 20), 20, (int) 200*(1.0f-percentage));
         base.w = (int) tileRes*2.75*(sin(PI*percentage)+1.0)/2;
         base.h = base.w;
-    } else if (id == 6) {
+    } else if (id == ParticleID::EP_Smoke) {       // Incineration Smoke
         SDL_SetRenderDrawColor(canvas, 80, 80, 40, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = (int) tileRes*((sin(PI*percentage) + 1.0)/2);
         base.h = base.w;
