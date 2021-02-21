@@ -5,7 +5,7 @@ CCFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main -lSDL2_mixer `sdl2-config --cflag
 LDFLAGS=-g -O2 `sdl2-config --libs` -lSDL2main -lSDL2_mixer `sdl2-config --cflags` -L/usr/lib #-Wl,--verbose, -lSDL2_ttf
 TARGET=main
 
-MODULES   := Core Core/UI Core/Input Entities Entities/Subclasses Entities/AI Map Audio
+MODULES   := Core Core/UI Core/Input Entities Entities/Subclasses Entities/Subclasses/Boss Entities/AI Map Audio
 SRC_DIR   := $(addprefix ./,$(MODULES)) .
 BUILD_DIR := $(addprefix build/,$(MODULES))
 

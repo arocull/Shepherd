@@ -1,4 +1,4 @@
-#define WorldWidth 9
+#define WorldWidth 11
 #define WorldHeight 3
 #define MapWidth 40
 #define MapHeight 15
@@ -63,4 +63,4 @@
 // Set to true if you want to disable playing audio via SoundService
 #define DEBUG_AudioDisabled false
 // Automatically open X gates from the start of the game (for faster testing)
-#define DEBUG_SkipGates 3
+#define DEBUG_SkipGates 4

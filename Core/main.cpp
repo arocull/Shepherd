@@ -97,8 +97,8 @@ int main(int argc, char **argv) {
     world[2][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert6");
     world[3][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert7");
 
-    world[4][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Empty");
-    world[4][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidHall");
+    world[4][2] = GenerateMapFromFile("Map/Maps/Empty");
+    world[4][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidHall1");
     world[4][0] = GenerateMapFromFile("Map/Maps/DesertTrek/DesertScroll");
 
     world[5][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid1");
@@ -116,6 +116,15 @@ int main(int argc, char **argv) {
     world[8][2] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs2");
     world[8][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballCatching");
     world[8][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidScroll");
+
+    // THIS AREA IS BOUND TO CHANGE
+    world[9][2] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidHall2");
+    world[9][1] = GenerateMapFromFile("Map/Maps/Empty");
+    world[9][0] = GenerateMapFromFile("Map/Maps/Empty");
+
+    world[10][2] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidBoss");
+    world[10][1] = GenerateMapFromFile("Map/Maps/Empty");
+    world[10][0] = GenerateMapFromFile("Map/Maps/Empty");
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
@@ -148,9 +157,12 @@ int main(int argc, char **argv) {
         if (DEBUG_SkipGates == 2) {
             worldX = 4;
             worldY = 1;
-        } else if (DEBUG_SkipGates >= 3) {
+        } else if (DEBUG_SkipGates == 3) {
             worldX = 7;
             worldY = 1;
+        } else if (DEBUG_SkipGates >= 4) {
+            worldX = 9;
+            worldY = 2;
         }
     #endif
     int currentWorldX = worldX;

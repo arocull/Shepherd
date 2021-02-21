@@ -18,6 +18,7 @@
 #include "Entities/Subclasses/torch.h"
 #include "Entities/Subclasses/crate.h"
 #include "Entities/Subclasses/lever.h"
+#include "Entities/Subclasses/Boss/pyramidgolem.h"
 
 // Triggered whenever the player steps on a trigger tile
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);

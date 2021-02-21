@@ -99,7 +99,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
 
     // If we're not holding fire and there is fire we can pick up
     } else if (!hasFlame && litTorchPresent) {
-        printf("doin' the thing\n");
+        //printf("doin' the thing\n");
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
                 Entity* obj = GetEntityAtLocation(entities, w, z);
@@ -107,12 +107,12 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
                 if (obj && obj->GetID() == EntityID::EE_Torch && (!hasFlame || (HasFrost && obj->HasFire))) {
                     Torch* t = dynamic_cast<Torch*>(obj);
                     if (t) { // Only grab fire if the fire is useable, the torch has a flame
-                    printf("Considering torch\n");
+                    //printf("Considering torch\n");
                         if (t->FireUsable && (obj->HasFire || obj->HasFrost)) {
                             HasFire = obj->HasFire;
                             HasFrost = obj->HasFrost;
                             t->Extinguish();
-                            printf("GRABBING FIRE\n");
+                            //printf("GRABBING FIRE\n");
                         }
                     }
                 }
