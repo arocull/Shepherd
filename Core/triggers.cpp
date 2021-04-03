@@ -45,8 +45,8 @@ void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, 
         /* Examples
         if (id == 14 && triggerID == 1) {
             soundService->SetVolumeMusic(0.75f);
-            soundService->PlayMusic("Audio/Resources/IntoTheCastle.wav", 1);
-            soundService->QueueMusic(23.0f, "Audio/Resources/CastleHalls.wav");
+            soundService->PlayMusic("Assets/Audio/IntoTheCastle.wav", 1);
+            soundService->QueueMusic(23.0f, "Assets/Audio/CastleHalls.wav");
             window->ToggleStatusBar(true);
         }*/
     }
@@ -80,10 +80,10 @@ void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* ma
 
     #ifdef DEBUG_MODE
         if (DEBUG_SkipGates < 2) {
-            soundService->PlayMusic("Audio/Resources/AmbientWind.wav");
+            soundService->PlayMusic("Assets/Audio/AmbientWind.wav");
         }
     #else
-        soundService->PlayMusic("Audio/Resources/AmbientWind.wav");
+        soundService->PlayMusic("Assets/Audio/AmbientWind.wav");
     #endif
 }
 void Trigger_GameOver(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
@@ -106,7 +106,7 @@ void Trigger_GameOver(RenderWindow* window, SoundService* soundService, Map* map
     window->SetDialogueText("\nLet the tears flow.", 0);
 
     soundService->StopAllSounds();
-    soundService->PlayMusic("Audio/Resources/AmbientWind.wav");
+    soundService->PlayMusic("Assets/Audio/AmbientWind.wav");
     soundService->SetVolumeMusic(0);
     soundService->FadeVolumeMusic(1.0f, 3.0f);
 }
@@ -140,7 +140,7 @@ void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, E
         default: producedThought = false; // No default case
     }
 
-    if (producedThought) soundService->PlaySound("Audio/Resources/Think.wav");
+    if (producedThought) soundService->PlaySound("Assets/Audio/Think.wav");
 }
 void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
 
@@ -216,6 +216,7 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
         if (map->PuzzleStatus) { // Once puzzle is completed, pull up bridge
             window->AddScreenShake(0, 0.5f);
             map->FillRectangle(11, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
+            window->SetDialogueText("As the earth shakes, a bridge rises from the depths, agitating the dust of ages.", 100);
         }
     }  else if (map->GetMapID() == 14 || map->GetMapID() == 16 || map->GetMapID() == 22) { // Display puzzle status
         Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), map->PuzzleStatus);

@@ -19,79 +19,79 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
 
         SetDialogueText("", 0);
 
-        TEXTURESURFACE_PROGRAM_loadscreen = SDL_LoadBMP("Textures/Loading.bmp");
+        TEXTURESURFACE_PROGRAM_loadscreen = SDL_LoadBMP("Assets/Textures/Loading.bmp");
         if (TEXTURESURFACE_PROGRAM_loadscreen) {
             TEXTURE_PROGRAM_loadscreen = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_PROGRAM_loadscreen);
             LoadScreen();
         }
 
-        TEXTURESURFACE_PROGRAM_icon = SDL_LoadBMP("Textures/Icon.bmp");
+        TEXTURESURFACE_PROGRAM_icon = SDL_LoadBMP("Assets/Textures/Icon.bmp");
         if (TEXTURESURFACE_PROGRAM_icon)
             SDL_SetWindowIcon(window, TEXTURESURFACE_PROGRAM_icon);
 
 
 
-        TEXTURESURFACE_tree = SDL_LoadBMP("Textures/Tree.bmp");
+        TEXTURESURFACE_tree = SDL_LoadBMP("Assets/Textures/Tree.bmp");
         if (TEXTURESURFACE_tree) {
             TEXTURE_tree = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_tree);
         }
 
-        TEXTURESURFACE_rock = SDL_LoadBMP("Textures/Rock.bmp");
+        TEXTURESURFACE_rock = SDL_LoadBMP("Assets/Textures/Rock.bmp");
         if (TEXTURESURFACE_rock) {
             TEXTURE_rock = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_rock);
         }
 
-        TEXTURESURFACE_pillar = SDL_LoadBMP("Textures/Pillar.bmp");
+        TEXTURESURFACE_pillar = SDL_LoadBMP("Assets/Textures/Pillar.bmp");
         if (TEXTURESURFACE_pillar) {
             TEXTURE_pillar = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_pillar);
         }
 
-        TEXTURESURFACE_vines = SDL_LoadBMP("Textures/Vines.bmp");
+        TEXTURESURFACE_vines = SDL_LoadBMP("Assets/Textures/Vines.bmp");
         if (TEXTURESURFACE_vines) {
             TEXTURE_vines = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_vines);
         }
 
-        TEXTURESURFACE_sunTile = SDL_LoadBMP("Textures/SunTile.bmp");
+        TEXTURESURFACE_sunTile = SDL_LoadBMP("Assets/Textures/SunTile.bmp");
         if (TEXTURESURFACE_sunTile) {
             TEXTURE_sunTile = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sunTile);
         }
 
-        TEXTURESURFACE_crate = SDL_LoadBMP("Textures/Crate.bmp");
+        TEXTURESURFACE_crate = SDL_LoadBMP("Assets/Textures/Crate.bmp");
         if (TEXTURESURFACE_crate) {
             TEXTURE_crate = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_crate);
         }
 
-        TEXTURESURFACE_torch = SDL_LoadBMP("Textures/Torch.bmp");
+        TEXTURESURFACE_torch = SDL_LoadBMP("Assets/Textures/Torch.bmp");
         if (TEXTURESURFACE_torch) {
             TEXTURE_torch = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_torch);
         }
 
-        TEXTURESURFACE_lever = SDL_LoadBMP("Textures/Lever.bmp");
+        TEXTURESURFACE_lever = SDL_LoadBMP("Assets/Textures/Lever.bmp");
         if (TEXTURESURFACE_lever) {
             TEXTURE_lever = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_lever);
         }
 
-        TEXTURESURFACE_sheep = SDL_LoadBMP("Textures/Sheep.bmp");
+        TEXTURESURFACE_sheep = SDL_LoadBMP("Assets/Textures/Sheep.bmp");
         if (TEXTURESURFACE_sheep) {
             TEXTURE_sheep = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sheep);
         }
 
-        TEXTURESURFACE_wolf = SDL_LoadBMP("Textures/Wolf.bmp");
+        TEXTURESURFACE_wolf = SDL_LoadBMP("Assets/Textures/Wolf.bmp");
         if (TEXTURESURFACE_wolf) {
             TEXTURE_wolf = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_wolf);
         }
 
-        TEXTURESURFACE_shepherd = SDL_LoadBMP("Textures/Shepherd.bmp");
+        TEXTURESURFACE_shepherd = SDL_LoadBMP("Assets/Textures/Shepherd.bmp");
         if (TEXTURESURFACE_shepherd) {
             TEXTURE_shepherd = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_shepherd);
         }
 
-        TEXTURESURFACE_boss_pyramidgolem = SDL_LoadBMP("Textures/PyramidGolem.bmp");
+        TEXTURESURFACE_boss_pyramidgolem = SDL_LoadBMP("Assets/Textures/PyramidGolem.bmp");
         if (TEXTURESURFACE_boss_pyramidgolem) {
             TEXTURE_boss_pyramidgolem = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_boss_pyramidgolem);
         }
 
-        TEXTURESURFACE_alphabet = SDL_LoadBMP("Textures/Alphabet.bmp");
+        TEXTURESURFACE_alphabet = SDL_LoadBMP("Assets/Textures/Alphabet.bmp");
         if (TEXTURESURFACE_alphabet) {
             TEXTURE_alphabet = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_alphabet);
         }

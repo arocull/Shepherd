@@ -96,7 +96,7 @@ void Controller::KeyDown(SDL_Keycode key, InputAction* action) {
                         break;
                 }
 
-                sounds->PlaySound("Audio/Resources/Click1.wav");
+                sounds->PlaySound("Assets/Audio/Click1.wav");
             }
         } else {
             if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar is pressed
@@ -108,7 +108,7 @@ void Controller::KeyDown(SDL_Keycode key, InputAction* action) {
                     case 4: action->close = true; break;
                 }
 
-                sounds->PlaySound("Audio/Resources/Click1.wav");
+                sounds->PlaySound("Assets/Audio/Click1.wav");
             }
         }
 

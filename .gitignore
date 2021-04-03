@@ -1,2 +1,5 @@
 build/
+build
+save/
+save
 *.xcf

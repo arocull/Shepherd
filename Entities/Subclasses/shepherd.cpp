@@ -30,7 +30,7 @@ void Shepherd::SlingFireball(Entity** entities, Particle* particles, SoundServic
     Fireball* fireball = new Fireball(x, y, faceX, faceY, 0);
     fireball->enemy = false;
     AppendEntity(entities, fireball);
-    soundService->PlaySound("Audio/Resources/FireballSling.wav");
+    soundService->PlaySound("Assets/Audio/FireballSling.wav");
 }
 void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService* soundService) {
     animation = 2;
