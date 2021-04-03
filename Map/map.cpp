@@ -33,10 +33,10 @@ void Map::SetMapID(int Identification) {
 int Map::GetMapID() {
     return id;
 }
-void Map::SetMapBiome(char b) {
+void Map::SetMapBiome(EnvironmentID b) {
     biome = b;
 }
-char Map::GetMapBiome() {
+EnvironmentID Map::GetMapBiome() {
     return biome;
 }
 
@@ -66,6 +66,28 @@ void Map::SetScrollIndex(int newScrollIndex) {
 // Returns the numeric index of the scroll
 int Map::GetScrollIndex() {
     return scrollIndex;
+}
+
+
+int Map::GetEventTimer() {
+    return eventTimer;
+}
+int Map::GetEventID() {
+    return eventID;
+}
+bool Map::TickEventTimer() { // Ticks the event timer down, returns true if timer reached zero this tick
+    if (eventTimer > 0) {
+        eventTimer--;
+        if (eventTimer == 0) {
+            eventTimer = -1; // Disable event timer for next time
+            return true; // Return true since event occursed
+        }
+    }
+    return false; // Otherwise return false
+}
+void Map::SetEventTimer(int time, int id) {
+    eventTimer = time;
+    eventID = id;
 }
 
 

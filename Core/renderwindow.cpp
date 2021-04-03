@@ -51,6 +51,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
             TEXTURE_vines = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_vines);
         }
 
+        TEXTURESURFACE_sunTile = SDL_LoadBMP("Textures/SunTile.bmp");
+        if (TEXTURESURFACE_sunTile) {
+            TEXTURE_sunTile = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_sunTile);
+        }
+
         TEXTURESURFACE_crate = SDL_LoadBMP("Textures/Crate.bmp");
         if (TEXTURESURFACE_crate) {
             TEXTURE_crate = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_crate);
@@ -79,6 +84,11 @@ RenderWindow::RenderWindow(int viewportX, int viewportY, const char* windowName)
         TEXTURESURFACE_shepherd = SDL_LoadBMP("Textures/Shepherd.bmp");
         if (TEXTURESURFACE_shepherd) {
             TEXTURE_shepherd = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_shepherd);
+        }
+
+        TEXTURESURFACE_boss_pyramidgolem = SDL_LoadBMP("Textures/PyramidGolem.bmp");
+        if (TEXTURESURFACE_boss_pyramidgolem) {
+            TEXTURE_boss_pyramidgolem = SDL_CreateTextureFromSurface(canvas, TEXTURESURFACE_boss_pyramidgolem);
         }
 
         TEXTURESURFACE_alphabet = SDL_LoadBMP("Textures/Alphabet.bmp");
@@ -124,14 +134,30 @@ void RenderWindow::UpdateSize() {
     dialogueBoxLineHeight = dialogueBoxY/DialogueBoxLines - dialogueBoxY*DialogueBoxLineSpacing;
 
     tileRes = fmin(x/MapWidth, (y - dialogueBoxY - statusBarY)/MapHeight);
-    offsetX = (x - MapWidth*tileRes)/2;
-    offsetY = (y - MapHeight*tileRes - dialogueBoxY - statusBarY)/2 + statusBarY;
+    offsetXBase = (x - MapWidth*tileRes)/2;
+    offsetYBase = (y - MapHeight*tileRes - dialogueBoxY - statusBarY)/2 + statusBarY;
     innerWidth = tileRes*MapWidth;
     innerHeight = tileRes*MapHeight;
+    offsetX = offsetXBase;
+    offsetY = offsetYBase;
 }
 void RenderWindow::TickDeltaTime(float DeltaTime) {
     time+=DeltaTime;
     tickAlpha += DeltaTime * TickRate;
+
+    // Impact effect is intense, but drops off fast
+    if (screenShakeX < 0) screenShakeX = 0;
+    else if (screenShakeX > 0) {
+        screenShakeX -= DeltaTime;
+        offsetX = offsetXBase + (int) (sinf(time * 10 * PI) * 10 * (powf(5, screenShakeX) - 1)); // 10^0 - 1 = 1 - 1 = 0, should be seamless at zero
+    }
+
+    // Rumble effect is more mild, but can persist
+    if (screenShakeY < 0) screenShakeY = 0;
+    else if (screenShakeY > 0) {
+        if (!continuousRumble) screenShakeY -= DeltaTime; // Continuous Rumble in case of cutscenes
+        offsetY = offsetYBase + (int) (sinf(time * 3 * PI) * screenShakeY * 22); // Appears much more mild
+    }
 }
 void RenderWindow::LogTick() {
     ticks++;
@@ -168,6 +194,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_pillar);
     SDL_FreeSurface(TEXTURESURFACE_vines);
     SDL_DestroyTexture(TEXTURE_vines);
+    SDL_FreeSurface(TEXTURESURFACE_sunTile);
+    SDL_DestroyTexture(TEXTURE_sunTile);
     SDL_FreeSurface(TEXTURESURFACE_crate);
     SDL_DestroyTexture(TEXTURE_crate);
     SDL_FreeSurface(TEXTURESURFACE_torch);
@@ -180,6 +208,8 @@ void RenderWindow::Close() {
     SDL_DestroyTexture(TEXTURE_wolf);
     SDL_FreeSurface(TEXTURESURFACE_shepherd);
     SDL_DestroyTexture(TEXTURE_shepherd);
+    SDL_FreeSurface(TEXTURESURFACE_boss_pyramidgolem);
+    SDL_DestroyTexture(TEXTURE_boss_pyramidgolem);
     SDL_FreeSurface(TEXTURESURFACE_alphabet);
     SDL_DestroyTexture(TEXTURE_alphabet);
 
@@ -189,14 +219,33 @@ void RenderWindow::Close() {
 
 
 
-void RenderWindow::FillViewportBackground(int r, int g, int b) {
+void RenderWindow::FillViewportBackground(EnvironmentID environment) {
     SDL_Rect box;
     box.x = offsetX;
     box.y = offsetY;
     box.w = tileRes*MapWidth;
     box.h = tileRes*MapHeight;
 
-    SDL_SetRenderDrawColor(canvas, r, g, b, 0);
+    switch (environment) {
+        case EnvironmentID::ENV_Cave:   // Cave / Ravine
+            SDL_SetRenderDrawColor(canvas, 120, 100, 80, 0);
+            break;
+        case EnvironmentID::ENV_Desert:   // Desert
+            SDL_SetRenderDrawColor(canvas, 210, 200, 80, 0);
+            break;
+        case EnvironmentID::ENV_Pyramid:   // Pyramid
+            SDL_SetRenderDrawColor(canvas, 100, 80, 65, 0);
+            break;
+        case EnvironmentID::ENV_Mountain:   // Mountain
+            SDL_SetRenderDrawColor(canvas, 20, 20, 20, 0);
+            break;
+        case EnvironmentID::ENV_Snowy:   // Snowy
+            SDL_SetRenderDrawColor(canvas, 200, 210, 220, 0);
+            break;
+        case EnvironmentID::ENV_Forest:
+        default:    // Default / Forest
+            SDL_SetRenderDrawColor(canvas, 10, 60, 20, 0);
+    }
     SDL_RenderFillRect(canvas, &box);
     return;
 }
@@ -272,6 +321,10 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID, int tilingIndex) {
             SDL_SetRenderDrawColor(canvas, 230, 220, 0, 0);
             tile.x += tileRes*.15;
             tile.w *= 0.7;
+            break;
+        case TileID::ET_Indicator:
+            SDL_RenderCopy(canvas, TEXTURE_sunTile, NULL, &tile);
+            defaultDraw = false;
             break;
         default:
             defaultDraw = false;
@@ -474,6 +527,22 @@ void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, 
             src.y = 32;
             SDL_RenderCopyEx(canvas, TEXTURE_lever, &src, &tile, angle, NULL, flipStyle);
         }
+
+    
+    // BOSSES //
+    } else if (id == EntityID::EE_PyramidGolem) {
+        SDL_Rect src;
+        src.h = 128;
+        src.w = 128;
+        src.x = 0;
+        src.y = 0;
+
+        tile.w *= 4;
+        tile.h *= 4;
+        tile.x -= tile.w / 2;
+        tile.y -= tile.h / 2;
+
+        SDL_RenderCopyEx(canvas, TEXTURE_boss_pyramidgolem, &src, &tile, angle, NULL, flipStyle);
     }
 }
 void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage) {
@@ -646,6 +715,16 @@ void RenderWindow::DrawDialogueBox(char* text) {
 }
 
 
+// Adds screen shake, impact is the more intense horizontal shaking, while rumble is slight vertical movement
+// * Impact is good for projectiles and collapses to add chaos and intensity
+// * Rumble is good for light puzzle feedback to grab the player's attention when a door opens or path appears (makes effect more satisfying)
+void RenderWindow::AddScreenShake(float impact, float rumble) {
+    screenShakeX += impact;
+    screenShakeY += rumble;
+}
+void RenderWindow::ToggleContinuousRumble(bool enabled) {
+    continuousRumble = enabled;
+}
 
 // Draws the status bar, informing player of their health and whether or not all the puzzles in the current level have been completed or not
 void RenderWindow::DrawStatusBar(int HP, bool PuzzleCompleted) {

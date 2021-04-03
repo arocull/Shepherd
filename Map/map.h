@@ -21,15 +21,15 @@ class Map {
         int PressurePlatesPressed = 0;  // The number of pressure plates currently weighed down at the current frame
         bool HasLoaded = false;         // Is set to true once a map has been physically loaded
 
-        Puzzle* Puzzles;                // Puzzles that might accessible in levels.
+        struct Puzzle* Puzzles;                // Puzzles that might accessible in levels.
         bool PuzzleStatus = false;      // Has the puzzle on this level been completed?
 
         bool ScrollDiscovered = false;  // Has the scroll on this map been read before?
 
         void SetMapID(int Identification);
         int GetMapID();
-        void SetMapBiome(char b);
-        char GetMapBiome();
+        void SetMapBiome(EnvironmentID b);
+        EnvironmentID GetMapBiome();
 
         void SetScroll(const char* text, const char* name);
         bool HasScroll();
@@ -37,6 +37,11 @@ class Map {
         char* GetScrollName();
         void SetScrollIndex(int newScrollIndex);
         int GetScrollIndex();
+
+        int GetEventTimer();
+        int GetEventID();
+        bool TickEventTimer();
+        void SetEventTimer(int time, int id = 0);
 
         void SetTile(int x, int y, int newID);
         int GetTileID(int x, int y);
@@ -54,10 +59,13 @@ class Map {
     private:
         int EntitiesStored = 0;
         int id = -1;                // Map ID, can be anything--repeats are fine. This is read by triggers to tell what level is what.
-        char biome = 'F';           // What color should we render the background as?
+        EnvironmentID biome = EnvironmentID::ENV_Forest;           // What color should we render the background as?
 
-        bool scrollSet = false;
+        bool scrollSet = false;       // Has a scroll been set for this map?
         char* scroll = NULL;          // Scroll text for this area
         char* scrollName = NULL;      // Scroll name for this area
         int scrollIndex = -1;         // Index of the scroll in the collectibles list
+
+        int eventTimer = -1;          // Counts down to a timed trigger event
+        int eventID = 0;              // Use this to keep track of different timed events within the same level
 };

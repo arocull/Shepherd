@@ -84,34 +84,49 @@ int main(int argc, char **argv) {
 
     // Load world from files
     Map* world[WorldWidth][WorldHeight];
-    world[0][2] = GenerateMapFromFile("Map/Maps/Desert/Desert1");
-    world[0][1] = GenerateMapFromFile("Map/Maps/Desert/Desert2");
-    world[0][0] = GenerateMapFromFile("Map/Maps/Desert/Desert3");
+    world[0][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start1");
+    world[1][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start2");
+    world[2][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start3");
+    world[3][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start4");
 
-    world[1][2] = GenerateMapFromFile("Map/Maps/Desert/Desert4");
-    world[1][1] = GenerateMapFromFile("Map/Maps/Desert/Desert5");
-    world[1][0] = GenerateMapFromFile("Map/Maps/Desert/Desert6");
+    world[0][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert1");
+    world[1][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert2");
+    world[2][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert3");
+    world[3][1] = GenerateMapFromFile("Map/Maps/DesertTrek/GateArea");
 
-    world[2][2] = GenerateMapFromFile("Map/Maps/Desert/Desert7");
-    world[2][1] = GenerateMapFromFile("Map/Maps/Desert/Desert8");
-    world[2][0] = GenerateMapFromFile("Map/Maps/Desert/Desert9");
+    world[0][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert4");
+    world[1][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert5");
+    world[2][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert6");
+    world[3][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert7");
 
-    world[3][2] = GenerateMapFromFile("Map/Maps/Desert/Desert10");
-    world[3][1] = GenerateMapFromFile("Map/Maps/Desert/Desert11");
-    world[3][0] = GenerateMapFromFile("Map/Maps/Desert/Desert12");
+    world[4][2] = GenerateMapFromFile("Map/Maps/Empty");
+    world[4][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidHall1");
+    world[4][0] = GenerateMapFromFile("Map/Maps/DesertTrek/DesertScroll");
 
-    world[4][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid13");
-    world[4][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid14");
-    world[4][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid15");
+    world[5][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid1");
+    world[6][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid2");
+    world[7][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid3");
 
-    world[5][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid16");
-    world[5][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid17");
-    world[5][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid18");
+    world[5][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid4");
+    world[6][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid5");
+    world[7][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid6");
 
-    world[6][2] = GenerateMapFromFile("Map/Maps/Desert/Pyramid19");
-    world[6][1] = GenerateMapFromFile("Map/Maps/Desert/Pyramid20");
-    world[6][0] = GenerateMapFromFile("Map/Maps/Desert/Pyramid21");
+    world[5][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid7");
+    world[6][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid8");
+    world[7][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid9");
 
+    world[8][2] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs2");
+    world[8][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs1");
+    world[8][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidScroll");
+
+    // THIS AREA IS BOUND TO CHANGE
+    world[9][2] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs3");
+    world[9][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs4");
+    world[9][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs5");
+
+    world[10][2] = GenerateMapFromFile("Map/Maps/Empty");
+    world[10][1] = GenerateMapFromFile("Map/Maps/Empty");
+    world[10][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidBoss");
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
@@ -138,8 +153,20 @@ int main(int argc, char **argv) {
     }
 
     // World indexing, current X and Y is the currently loaded level, world X and Y is changed based upon movement and says what level to load
-    int worldX = 1;
-    int worldY = 1;
+    int worldX = 0;
+    int worldY = 2;
+    #ifdef DEBUG_MODE
+        if (DEBUG_SkipGates == 2) {
+            worldX = 4;
+            worldY = 1;
+        } else if (DEBUG_SkipGates == 3) {
+            worldX = 7;
+            worldY = 1;
+        } else if (DEBUG_SkipGates >= 4) {
+            worldX = 9;
+            worldY = 0;
+        }
+    #endif
     int currentWorldX = worldX;
     int currentWorldY = worldY;
     
@@ -231,6 +258,11 @@ int main(int argc, char **argv) {
                 Trigger_Idled(&window, &soundService, currentLevel, levelEntities);
             }
 
+            // Do map event tick ahead of player movement (so player does not end up ontop of walls)
+            if (currentLevel->TickEventTimer()) {
+                Trigger_LevelEvent(&window, &soundService, currentLevel, levelEntities);
+            }
+
             if (!player->Paused) {      //If they player is not paused, let them move if input is given
                 player->animation = 0;
 
@@ -275,11 +307,11 @@ int main(int argc, char **argv) {
 
             // Check Entities for Fire
             int standingTile = currentLevel->GetTileID(player->x, player->y);
-            if (standingTile == TileID::ET_Magma)
-                player->HasFire = true;
-            else if (standingTile < 0)
+            if (standingTile < 0) {
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
-            else if (standingTile == TileID::ET_Scroll && currentLevel->HasScroll()) {
+            } else if (standingTile == TileID::ET_Fizzler) {
+                Trigger_OnFizzler(&window, &soundService, currentLevel, player);
+            } else if (standingTile == TileID::ET_Scroll && currentLevel->HasScroll()) {
                 Trigger_OnScroll(&window, &soundService, currentLevel, levelEntities); // Do scroll trigger
                 menus->UnlockScroll(currentLevel->GetScrollIndex(), currentLevel->GetScrollName(), currentLevel->GetScroll()); // Unlock scroll in index
             }
@@ -287,17 +319,10 @@ int main(int argc, char **argv) {
             // Toss Fireball
             if (MoveFireballQueued && sheepLeft >= MaxSheep) {
                 MoveFireballQueued = false;
-
-                if (player->HasFire) {          // Sling Fireball
-                    player->SlingFireball(levelEntities, particles);
-                    soundService.PlaySound("Audio/Resources/FireballSling.wav");
-                } else {        // Rally Sheep / Swing Attack
-                    player->SwingAttack(levelEntities, particles);
-                    Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
-                }
+                player->SwingAttack(levelEntities, particles, &soundService);
+                Trigger_StaffSwing(&window, &soundService, currentLevel, levelEntities);
                 player->ticksIdled = 0;
-            } else
-                MoveFireballQueued = false;
+            } else MoveFireballQueued = false;
 
             ai->SetContext(player, currentLevel, levelEntities, ticks);
 
@@ -324,7 +349,8 @@ int main(int argc, char **argv) {
                 if (a->HasFire || a->HasFrost)  // Freeze or thaw nearby water
                     currentLevel->FreezeArea(a->x, a->y, 1, a->HasFire);
 
-                if (currentLevel->GetTileID(a->x, a->y) == 8) {
+                int entityTile = currentLevel->GetTileID(a->x, a->y);
+                if (entityTile == TileID::ET_Pressure_Plate) {
                     if (!a->OnPressurePlate) {
                         a->OnPressurePlate = true;
                         Particle* clickEffect = ActivateParticle(particles, 3, a->x, a->y);
@@ -337,11 +363,18 @@ int main(int argc, char **argv) {
                     PressurePlatesChanged = true;
                 }
 
+                // If standing on lava, take burn damage, gain fire, lose frost
+                if (entityTile == TileID::ET_Magma && a->GetID() != EntityID::EE_Fireball) {
+                    a->TakeDamage(1, nullptr);
+                    a->HasFire = true;
+                    a->HasFrost = false;
+                }
+
                 if (a->Paused) continue;
                 ai->TickAI(a);
                 
 
-                if (a->GetID() == EntityID::EE_Fireball) {      //Fireball, move in a straight line
+                if (a->GetID() == EntityID::EE_Fireball && a->GetHealth() > 0) { //Fireball, move in a straight line
                     Fireball* fireball = dynamic_cast<Fireball*>(a);
 
                     if (fireball) {
@@ -382,7 +415,12 @@ int main(int argc, char **argv) {
                     Puzzle_CheckSolution(&currentLevel->Puzzles[i]);
                     if (currentLevel->Puzzles[i].Solved) {
                         puzzlesCompleted++;
-                        if (!wasSolved) doTriggerPuzzleInput = true;
+                        if (wasSolved != currentLevel->Puzzles[i].Solved) {
+                            doTriggerPuzzleInput = true;
+                            #ifdef DEBUG_MODE
+                            printf("Puzzle solved!\n");
+                            #endif
+                        }
                     }
                 }
             }
@@ -413,22 +451,7 @@ int main(int argc, char **argv) {
         window.TickDeltaTime(DeltaTime);
 
         // Fill background based off of biome
-        switch (currentLevel->GetMapBiome()) {
-            case 'D':   // Desert
-                window.FillViewportBackground(210, 200, 80);
-                break;
-            case 'P':   // Pyramid
-                window.FillViewportBackground(100, 80, 65);
-                break;
-            case 'M':   // Mountain
-                window.FillViewportBackground(20, 20, 20);
-                break;
-            case 'S':   // Snowy
-                window.FillViewportBackground(200, 210, 220);
-                break;
-            default:    // Default / Forest
-                window.FillViewportBackground(10, 60, 20);
-        }
+        window.FillViewportBackground(currentLevel->GetMapBiome());
 
         // Draw tiles first
         int currentTileID = 0;

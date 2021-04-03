@@ -38,6 +38,16 @@ class RenderWindow {
         int offsetX;
         //Y Offset of viewport inside the window
         int offsetY;
+        // X Offset that is unaffected by screenshake
+        int offsetXBase;
+        // Y Offset this is unaffected by screenshake
+        int offsetYBase;
+
+        // Horizontal Screenshake Component (used for impact effects)
+        float screenShakeX = 0.0f;
+        // Vertical Screenshake Component (used for rumble)
+        float screenShakeY = 0.0f;
+        bool continuousRumble = false;
 
         bool fullscreen = false;
         int windowedX;
@@ -49,6 +59,9 @@ class RenderWindow {
         int ticks = 0;
         // Value between 0 and 1, current time progression through tick (used for interpolation)
         float tickAlpha = 0.0f;
+
+        // What level environment are we in? Used for environment-based textures
+        EnvironmentID environment;
 
 
         //Y Size of the dialogue box
@@ -77,6 +90,9 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_vines;
         SDL_Texture* TEXTURE_vines;
 
+        SDL_Surface* TEXTURESURFACE_sunTile;
+        SDL_Texture* TEXTURE_sunTile;
+
         SDL_Surface* TEXTURESURFACE_crate;
         SDL_Texture* TEXTURE_crate;
 
@@ -95,11 +111,14 @@ class RenderWindow {
         SDL_Surface* TEXTURESURFACE_shepherd;
         SDL_Texture* TEXTURE_shepherd;
 
+        SDL_Surface* TEXTURESURFACE_boss_pyramidgolem;
+        SDL_Texture* TEXTURE_boss_pyramidgolem;
+
         SDL_Surface* TEXTURESURFACE_alphabet;
         SDL_Texture* TEXTURE_alphabet;
 
     public:
-        void FillViewportBackground(int r, int g, int b);
+        void FillViewportBackground(EnvironmentID environment);
         void DrawTile(int tileX, int tileY, int tileID, int tilingIndex);
         void DrawEntity(int posX, int posY, int lastX, int lastY, int id, bool flip, int animation, int metadata);
         void DrawParticle(float posX, float posY, int id, float percentage);
@@ -107,6 +126,9 @@ class RenderWindow {
         void SetDialogueText(const char* newText, int ticks = 50);
         char* GetDialogueText();
         void DrawDialogueBox(char* text = nullptr);
+
+        void AddScreenShake(float impact, float rumble);
+        void ToggleContinuousRumble(bool enabled);
 
         void DrawStatusBar(int HP, bool PuzzleCompleted);
         void ToggleStatusBar(bool toggle);

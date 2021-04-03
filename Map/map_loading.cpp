@@ -118,12 +118,15 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'i': tileID = TileID::ET_Ice; break;  //Ice
                 case 'v': tileID = TileID::ET_Vines; break;  // Vines
                 case 's': tileID = TileID::ET_Scroll; break; // Scroll, a unique triggerable
+                case 'I': tileID = TileID::ET_Indicator; break; // Indicator
+                
 
                 // Map Triggers
                 case '1': tileID = TileID::ET_Trigger1; break;   //Trigger 1
                 case '2': tileID = TileID::ET_Trigger2; break;   //Trigger 2
                 case '3': tileID = TileID::ET_Trigger3; break;   //Trigger 3
                 case '4': tileID = TileID::ET_Trigger4; break;   //Trigger 4 - Note: no debounce
+                case 'f': tileID = TileID::ET_Fizzler; break;    //Fizzler - Extinguishes staff flames
 
                 // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
                 case 'c':       // Crate (with Empty Puzzle Piece tile beneath)
@@ -173,7 +176,7 @@ Map* GenerateMapFromFile(const char* filePath) {
 
         char biome = mapFile.get();
         if (!mapFile.eof()) { // If there is a biome, get it
-            map->SetMapBiome(biome);
+            map->SetMapBiome((EnvironmentID) biome); // Cast char to EnvironmentID (for standardization purposes/easier to keep track of)
 
             // After biomes, the only thing left in map data is scroll text, so build a string and set it using that
             mapFile.get();  // Clear out newline

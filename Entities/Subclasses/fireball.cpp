@@ -4,6 +4,8 @@ Fireball::Fireball(int spawnX, int spawnY, int dirX, int dirY, int type) {
     id = EntityID::EE_Fireball;
     x = spawnX;
     y = spawnY;
+    lastX = spawnX;
+    lastY = spawnY;
     speedX = dirX*FireballSpeed;
     speedY = dirY*FireballSpeed;
     
@@ -31,21 +33,29 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
                     Torch* torch = dynamic_cast<Torch*>(hit);
                     if (torch && torch->Extinguishable) {
                         torch->HasFire = HasFire;
-                        torch->HasFrost = HasFrost; 
+                        torch->HasFrost = HasFrost;
                     }
                 // If it hits a crate, incinerate it
                 } else if (hit->GetID() == EntityID::EE_Crate) {    // Hitting crates with fireballs will incinerate them
                     Crate* crate = dynamic_cast<Crate*>(hit);
                     if (crate && crate->canIncinerate) crate->Incinerate(particles, this);
+
                 } else if (hit->GetID() == EntityID::EE_Lever) {    // Hitting levers with fireballs will flip them
                     Lever* lever = dynamic_cast<Lever*>(hit);
                     if (lever) lever->Flip();
-                } else {
-                    hit->HasFire = HasFire;
-                    hit->HasFrost = HasFrost;  
 
-                    if (!((hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) && !enemy))
+                } else if (hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) {
+                    hit->Paused = true; // Stun shepherd and sheep
+                    if (hit->GetID() == EntityID::EE_Shepherd) hit->animation = 3; // Force Shepherd to kneel for visual cue
+                    else if (hit->GetID() == EntityID::EE_Sheep) hit->animation = 1;
+                    if (enemy) { // If the fireball was slung by an enemy, damage them
                         hit->TakeDamage(1, this);
+                    }
+
+                } else { // Otherwise set entity on fire and 
+                    hit->HasFire = HasFire;
+                    hit->HasFrost = HasFrost;
+                    if (!enemy) hit->TakeDamage(1, this);
                 }
             }
         }

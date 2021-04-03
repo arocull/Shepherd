@@ -14,15 +14,20 @@
 
 #include "Entities/particle.h"
 #include "Entities/entity.h"
+#include "Entities/Subclasses/fireball.h"
 #include "Entities/Subclasses/torch.h"
 #include "Entities/Subclasses/crate.h"
 #include "Entities/Subclasses/lever.h"
+#include "Entities/Subclasses/Boss/pyramidgolem.h"
 
 // Triggered whenever the player steps on a trigger tile
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
 
 // Triggered whenever the player steps on a scroll (reads scroll off and performs unique actions if necessary)
 void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map,  Entity* entities[]);
+
+// Triggered whenever the player steps on a fizzler (extinguishes fire/frost flames and performs unique actions if necessary)
+void Trigger_OnFizzler(RenderWindow* window, SoundService* soundService, Map* map,  Entity* shepherd);
 
 // Triggered whenever a new game starts--use for opening cinematic when very first area is loaded
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
@@ -44,6 +49,8 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 // Note: Only triggered when the level is manually navigated to by the player
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]);
 
+// Triggered when the current level's event timer reaches zero
+void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 
 
 // Checks to see if all crates within a level are ontop of pressure plates (might not be useable for more unique crate puzzles)
