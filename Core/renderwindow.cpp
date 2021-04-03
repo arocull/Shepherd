@@ -539,6 +539,8 @@ void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, 
 
         tile.w *= 4;
         tile.h *= 4;
+        tile.x -= tile.w / 2;
+        tile.y -= tile.h / 2;
 
         SDL_RenderCopyEx(canvas, TEXTURE_boss_pyramidgolem, &src, &tile, angle, NULL, flipStyle);
     }

@@ -328,14 +328,15 @@ void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* m
     if (map->GetMapID() == 24 && !map->PuzzleStatus) {
         Entity* torch = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
         AppendEntity(entities, new Fireball(torch->x - 1, torch->y, -1, 0, 1));
-        map->SetEventTimer(20, 0); // 20 Ticks (2.5 seconds) before next fireball spawn
+        map->SetEventTimer(24, 0); // 20 Ticks (2.5 seconds) before next fireball spawn
     } else if (map->GetMapID() == 29) {
         if (triggerID == 0) {
             window->SetDialogueText("...Panic?", 0);
-            map->SetEventTimer(15, 1);
+            map->SetEventTimer(24, 1);
         } else if (triggerID == 1) {
             window->SetDialogueText("Panic!", 30);
             window->AddScreenShake(1.0f, 0);
+            map->FillRectangle(2, 1, 38, 4, TileID::ET_None);
             Entity* boss = new PyramidGolem(20,2);
             AppendEntity(entities, boss);
         }
