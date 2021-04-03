@@ -76,13 +76,3 @@ enum EnvironmentID : char {
 
     ENV_None = '\0'
 };
-
-
-enum ParticleID {
-    EP_Swing = 1,
-    EP_PuzzleSolved = 2,
-    EP_PressurePlateClick = 3,
-    EP_Fire = 4,
-    EP_FireBurst = 5,
-    EP_Smoke = 6,
-};

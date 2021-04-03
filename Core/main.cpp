@@ -84,49 +84,49 @@ int main(int argc, char **argv) {
 
     // Load world from files
     Map* world[WorldWidth][WorldHeight];
-    world[0][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start1");
-    world[1][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start2");
-    world[2][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start3");
-    world[3][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Start4");
+    world[0][2] = GenerateMapFromFile("Map/Maps/Ravine/Start1");
+    world[1][2] = GenerateMapFromFile("Map/Maps/Ravine/Start2");
+    world[2][2] = GenerateMapFromFile("Map/Maps/Ravine/Start3");
+    world[3][2] = GenerateMapFromFile("Map/Maps/Ravine/Start4");
 
-    world[0][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert1");
-    world[1][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert2");
-    world[2][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert3");
-    world[3][1] = GenerateMapFromFile("Map/Maps/DesertTrek/GateArea");
+    world[0][1] = GenerateMapFromFile("Map/Maps/Desert/Desert1");
+    world[1][1] = GenerateMapFromFile("Map/Maps/Desert/Desert2");
+    world[2][1] = GenerateMapFromFile("Map/Maps/Desert/Desert3");
+    world[3][1] = GenerateMapFromFile("Map/Maps/Desert/GateArea");
 
-    world[0][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert4");
-    world[1][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert5");
-    world[2][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert6");
-    world[3][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Desert7");
+    world[0][0] = GenerateMapFromFile("Map/Maps/Desert/Desert4");
+    world[1][0] = GenerateMapFromFile("Map/Maps/Desert/Desert5");
+    world[2][0] = GenerateMapFromFile("Map/Maps/Desert/Desert6");
+    world[3][0] = GenerateMapFromFile("Map/Maps/Desert/Desert7");
 
     world[4][2] = GenerateMapFromFile("Map/Maps/Empty");
-    world[4][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidHall1");
-    world[4][0] = GenerateMapFromFile("Map/Maps/DesertTrek/DesertScroll");
+    world[4][1] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidHall1");
+    world[4][0] = GenerateMapFromFile("Map/Maps/Pyramid/DesertScroll");
 
-    world[5][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid1");
-    world[6][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid2");
-    world[7][2] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid3");
+    world[5][2] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid1");
+    world[6][2] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid2");
+    world[7][2] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid3");
 
-    world[5][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid4");
-    world[6][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid5");
-    world[7][1] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid6");
+    world[5][1] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid4");
+    world[6][1] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid5");
+    world[7][1] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid6");
 
-    world[5][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid7");
-    world[6][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid8");
-    world[7][0] = GenerateMapFromFile("Map/Maps/DesertTrek/Pyramid9");
+    world[5][0] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid7");
+    world[6][0] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid8");
+    world[7][0] = GenerateMapFromFile("Map/Maps/Pyramid/Pyramid9");
 
-    world[8][2] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs2");
-    world[8][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs1");
-    world[8][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidScroll");
+    world[8][2] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidFireballs2");
+    world[8][1] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidFireballs1");
+    world[8][0] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidScroll");
 
     // THIS AREA IS BOUND TO CHANGE
-    world[9][2] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs3");
-    world[9][1] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs4");
-    world[9][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidFireballs5");
+    world[9][2] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidFireballs3");
+    world[9][1] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidFireballs4");
+    world[9][0] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidFireballs5");
 
     world[10][2] = GenerateMapFromFile("Map/Maps/Empty");
     world[10][1] = GenerateMapFromFile("Map/Maps/Empty");
-    world[10][0] = GenerateMapFromFile("Map/Maps/DesertTrek/PyramidBoss");
+    world[10][0] = GenerateMapFromFile("Map/Maps/Pyramid/PyramidBoss");
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
