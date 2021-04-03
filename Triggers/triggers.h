@@ -20,6 +20,13 @@
 #include "Entities/Subclasses/lever.h"
 #include "Entities/Subclasses/Boss/pyramidgolem.h"
 
+#include "Triggers/scripts_ontile.h"
+
+// Initializes trigger scripts
+void Trigger_Init(int maxMapID);
+// Free any memory allocated by trigger scripts
+void Trigger_Free();
+
 // Triggered whenever the player steps on a trigger tile
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
 

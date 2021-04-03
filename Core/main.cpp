@@ -50,11 +50,7 @@ $ make debug-mem-heavy // Attempts to locate all memory leaks
 #include "Entities/AI/ai_manager.h"
 #include "Map/map_loading.h"
 
-#include "Core/triggers.h"
-
-
-
-
+#include "Triggers/triggers.h"
 
 
 
@@ -130,18 +126,21 @@ int main(int argc, char **argv) {
 
     // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
     {
-        int numScrolls = 0;
+        int numScrolls = 0; // Total number of scrolls, for scroll data setup
+        int maxMapID = 0; // Max map ID, for trigger scripts setup
         for (int x = 0; x < WorldWidth; x++) {
             for (int y = 0; y < WorldHeight; y++) {
                 Trigger_SetupPuzzles(world[x][y]);
                 if (world[x][y]->HasScroll()) numScrolls++;
+                if (world[x][y]->GetMapID() > maxMapID) { maxMapID = world[x][y]->GetMapID(); }
             }
         }
 
-        menus->InitScrolls(numScrolls);
+        Trigger_Init(maxMapID); // Initialize trigger scripts
+        menus->InitScrolls(numScrolls); // Initialize scroll list
         int currentScroll = 0;
 
-        // TODO: Obscure undiscovered scrolls until found
+        // Fill in scroll data
         for (int x = 0; x < WorldWidth && currentScroll < numScrolls; x++) {
             for (int y = 0; y < WorldHeight && currentScroll < numScrolls; y++) {
                 if (world[x][y]->HasScroll()) {
@@ -503,6 +502,9 @@ int main(int argc, char **argv) {
     // Close window and deallocate memory
     window.Close();
     soundService.CloseSoundService();
+
+    // Disable triggers
+    Trigger_Free();
 
     // Free menus
     menus->Free();

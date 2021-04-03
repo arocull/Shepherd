@@ -1,54 +1,22 @@
-#include "Core/triggers.h"
+#include "Triggers/triggers.h"
+
+
+void Trigger_Init(int maxMapID) {
+    Script::Init_OnTile(maxMapID);
+}
+void Trigger_Free() {
+    Script::Free_OnTile();
+}
+
 
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID) {
-    int id = map->GetMapID();
-
     triggerID = max(1,min(triggerID, 4));
-
     
     if (triggerID == 4 || !map->Triggers[triggerID - 1]) {
         if (triggerID <= 3)
             map->Triggers[triggerID - 1] = true;
         
-        // Starting Area
-        if (id == 1 && triggerID == 1)
-            window->SetDialogueText("Remember to have all your sheep gathered nearby before you leave.", 0);
-        else if (id == 5 && triggerID == 1)
-            window->SetDialogueText("You peer over the pitfall into the ravine. You don't remember falling in.", 100);
-        else if (id == 6 && triggerID == 1)
-            window->SetDialogueText("The lever is covered in the sandy dust of ages. Perhaps a good swing of your staff will brush it off...", 0);
-        else if (id == 8 && triggerID == 1)
-            window->SetDialogueText("You sigh with relief as you climb out of the sandstone ravine. The sheep may survive after all.", 100);
-        else if (id == 8 && triggerID == 2)
-            window->SetDialogueText("A large pyramid looms overhead. The gate is covered in strange glyphs.", 100);
-        else if (id == 8 && triggerID == 3)
-            window->SetDialogueText("The torches are identified with unique glyphs. Stone moulding runs into the sand below them, disappearing from view.", 120);
-        else if (id == 13 && triggerID == 1) {
-            window->SetDialogueText("The air is dry, but cool. Your footsteps echo around the walls of the corridor as you march your flock along.", 100);
-            soundService->FadeVolumeMusic(0.0f, 1.0f);
-
-        // Pyramid
-        } else if (id == 17 && triggerID == 1) {
-            window->SetDialogueText("Fire from torches can be picked up with a swing of your staff.", 0);
-        // Pyramid Boss
-        } else if (id == 29 && triggerID == 1) { // Warning
-            window->SetDialogueText("It's quiet and warm in this room, but you feel chilled and uneasy...", 75);
-            soundService->FadeOutMusic(0.5f);
-        } else if (id == 29 && triggerID == 2) { // Trap player
-            window->AddScreenShake(0, 1.0f);
-            window->SetDialogueText("", 0);
-            map->SetEventTimer(10, 0);
-            map->FillRectangle(0, 11, 1, 14, TileID::ET_Door_Vertical);
-            map->FillRectangle(39, 11, 40, 14, TileID::ET_Door_Vertical);
-        }
-
-        /* Examples
-        if (id == 14 && triggerID == 1) {
-            soundService->SetVolumeMusic(0.75f);
-            soundService->PlayMusic("Assets/Audio/IntoTheCastle.wav", 1);
-            soundService->QueueMusic(23.0f, "Assets/Audio/CastleHalls.wav");
-            window->ToggleStatusBar(true);
-        }*/
+        (Script::list_OnTile[map->GetMapID()])(window, soundService, map, entities, triggerID);
     }
 }
 void Trigger_OnScroll(RenderWindow* window, SoundService* soundService, Map* map,  Entity* entities[]) {
