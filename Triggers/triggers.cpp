@@ -3,9 +3,11 @@
 
 void Trigger_Init(int maxMapID) {
     Script::Init_OnTile(maxMapID);
+    Script::Init_PuzzleInput(maxMapID);
 }
 void Trigger_Free() {
     Script::Free_OnTile();
+    Script::Free_PuzzleInput();
 }
 
 
@@ -110,121 +112,8 @@ void Trigger_Idled(RenderWindow* window, SoundService* soundService, Map* map, E
 
     if (producedThought) soundService->PlaySound("Assets/Audio/Think.wav");
 }
-void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Particle* particles, Map* map, Entity* entities[]) {
-
-    // THE RAVINE / TUTORIAL //
-    if (map->GetMapID() == 2) {
-        #ifdef DEBUG_MODE
-            if ((map->PressurePlatesPressed == 1 && !map->PuzzleStatus) || DEBUG_SkipGates >= 1) {
-        #else
-            if (map->PressurePlatesPressed == 1 && !map->PuzzleStatus) {
-        #endif
-            map->PuzzleStatus = true;
-            map->FillRectangle(37, 5, 38, 10, TileID::ET_None);
-            window->AddScreenShake(0, 0.3f);
-            window->SetDialogueText("As the pressure plate clicks, the wall slides away into the shifting sands below.", 100);
-        }
-    } else if (map->GetMapID() == 3) {
-        #ifdef DEBUG_MODE
-            if (map->PressurePlatesPressed == 1 || DEBUG_SkipGates >= 1) {
-        #else
-            if (map->PressurePlatesPressed == 1) {
-        #endif
-            window->AddScreenShake(0, 0.3f);
-            map->FillRectangle(37, 5, 38, 10, TileID::ET_None);
-        } else {
-            window->AddScreenShake(0, 0.3f);
-            map->FillRectangle(37, 5, 38, 10, TileID::ET_Door_Vertical);
-        }
-    } else if (map->GetMapID() == 4) {
-        #ifdef DEBUG_MODE
-            if (map->PressurePlatesPressed == 2 || DEBUG_SkipGates >= 1) {
-        #else
-            if (map->PressurePlatesPressed == 2) {
-        #endif
-            window->AddScreenShake(0, 0.3f);
-            map->FillRectangle(27, 6, 28, 9, TileID::ET_None);
-            map->Triggers[0] = true;
-        } else if (map->PressurePlatesPressed == 1 && !map->Triggers[0]) {
-            window->SetDialogueText("Perhaps its time to put the sheep to work. Rest or rally them with spacebar.", 0);
-        }
-
-    // THE DESERT //
-    } else if (map->GetMapID() == 6) { // Flip lever to complete puzzle
-        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
-    } else if (map->GetMapID() == 7) { // Step on 3 pressure plates to complete puzzle
-        if (map->PressurePlatesPressed == 3) {
-            Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), true);
-            map->PuzzleStatus = true;
-        }
-    } else if (map->GetMapID() == 9) { // Hold pressure plate down to lower wall, then push box, retrieve sheep 
-        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
-        
-        Entity* obj = GetEntityAtLocation(entities, 25, 7, MaxEntities); // Get entity on pressure plate (if there is one)
-        if (obj && obj->OnPressurePlate) { // If an entity is standing on the pressure plate, lower the wall
-            map->FillRectangle(20, 6, 21, 9, TileID::ET_Empty_Puzzle_Piece);
-        } else { // Otherwise raise it
-            map->FillRectangle(20, 6, 21, 9, TileID::ET_Wall);
-        }
-    } else if (map->GetMapID() == 10) { // Step on 6 pressure plates to complete puzzle
-        if (map->PressurePlatesPressed == 6) {
-            Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), true);
-            map->PuzzleStatus = true;
-        }
-    } else if (map->GetMapID() == 11) { // Slide crate to complete puzzle
-        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities), map->PuzzleStatus);
-    }
-
-
-    // THE PYRAMID //
-    else if (map->GetMapID() == 17) { // Entrance
-        Trigger_Internal_DisplayPuzzleStatus_Torch(map->Puzzles->entities[0], map->PuzzleStatus);
-        Trigger_Internal_DisplayPuzzleStatus_Torch(map->Puzzles->entities[1], map->PuzzleStatus);
-
-        if (map->PuzzleStatus) { // Once puzzle is completed, pull up bridge
-            window->AddScreenShake(0, 0.5f);
-            map->FillRectangle(11, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
-            window->SetDialogueText("As the earth shakes, a bridge rises from the depths, agitating the dust of ages.", 100);
-        }
-    }  else if (map->GetMapID() == 14 || map->GetMapID() == 16 || map->GetMapID() == 22) { // Display puzzle status
-        Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), map->PuzzleStatus);
-    } else if (map->GetMapID() == 20) { // Display puzzle status (never deactivate torch)
-        Trigger_Internal_TorchSetup(GetEntityOccurence(entities, EE_Torch, 1, MaxEntities), false, true, map->PuzzleStatus, true, false);
-    } else if (map->GetMapID() == 21) { // Door puzzle (use both pressure plates to pass)
-        Entity* obj1 = GetEntityAtLocation(entities, 20, 6, MaxEntities);
-        if (obj1 && obj1->OnPressurePlate) {
-            map->FillRectangle(14, 4, 15, 9, TileID::ET_None);
-        } else {
-            map->FillRectangle(14, 4, 15, 9, TileID::ET_Door_Vertical);
-        }
-
-        Entity* obj2 = GetEntityAtLocation(entities, 20, 11, MaxEntities);
-        if (obj2 && obj2->OnPressurePlate) {
-            map->FillRectangle(26, 4, 27, 9, TileID::ET_None);
-        } else {
-            map->FillRectangle(26, 4, 27, 9, TileID::ET_Door_Vertical);
-        }
-    } else if (map->GetMapID() == 23) { // Fireball catching puzzle
-        if (map->PressurePlatesPressed == 1 && !map->PuzzleStatus) {
-            Entity* spawnTorch = GetEntityOccurence(entities, EntityID::EE_Torch, 1, MaxEntities);
-            Fireball* fireball = new Fireball(spawnTorch->x, spawnTorch->y + 1, 0, -1, 1);
-            fireball->enemy = false;
-            AppendEntity(entities, fireball);
-            window->SetDialogueText("Fireballs can be caught with a deft swing of your staff.\n", 70);
-        }
-        if (map->PuzzleStatus && !map->Triggers[0]) {
-            map->FillRectangle(9, 6, 31, 9, TileID::ET_Empty_Puzzle_Piece);
-            Trigger_Internal_DisplayPuzzleStatus_Torch(GetEntityOccurence(entities, EntityID::EE_Torch, 2, MaxEntities), true);
-            window->AddScreenShake(0.0f, 0.5f);
-            map->Triggers[0] = true; // Debounce so screenshake doesn't stack
-        }
-    } else if (map->GetMapID() == 24) { // Fireball catching + destruction puzzle
-        if (map->PuzzleStatus && !map->Triggers[0]) {
-            map->Triggers[0] = true;
-            window->AddScreenShake(0.0f, 0.2f);
-            map->FillRectangle(39, 1, 40, 4, TileID::ET_Fizzler);
-        } 
-    }
+void Trigger_PuzzleInput(RenderWindow* window, SoundService* soundService, Particle* particles, Map* map, Entity* entities[]) {
+    (Script::list_PuzzleInput[map->GetMapID()])(window, soundService, particles, map, entities);
 }
 void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]) {
 
@@ -311,57 +200,6 @@ void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* m
         }
     }
 }
-
-
-
-bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfEntities) {
-    for (int i = 0; i < NumberOfEntities; i++) {
-        if (entities[i] && entities[i]->GetID() == 5 && map->GetTileID(entities[i]->x, entities[i]->y) != 8)
-            return false;
-    }
-
-    return true;
-}
-Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable, bool useable, bool glow, bool hasFire, bool hasFrost) {
-    if (!torch) return nullptr;
-
-    Torch* t = dynamic_cast<Torch*>(torch);
-    if (t) {
-        t->Extinguishable = extinguishable;
-        t->FireUsable = useable;
-        t->glow = glow;
-        t->HasFire = hasFire;
-        t->HasFrost = hasFrost;
-    }
-
-    return t;
-}
-Crate* Trigger_Internal_CrateSetup(Entity* crate, bool canIncinerate) {
-    if (!crate) return nullptr;
-
-    Crate* c = dynamic_cast<Crate*>(crate);
-    if (c) {
-        c->canIncinerate = canIncinerate;
-    }
-
-    return c;
-}
-void Trigger_Internal_DisplayPuzzleStatus_Torch(Entity* torch, bool puzzleStatus) {
-    if (torch) {
-        Torch* t = dynamic_cast<Torch*>(torch);
-        if (t) {
-            t->Extinguishable = false;
-            t->FireUsable = false;
-            t->HasFire = puzzleStatus;
-            t->glow = puzzleStatus;
-            t->UpdateAnimationData();
-        }
-    }
-}
-
-
-
-
 
 
 void Trigger_SetupPuzzles(Map* map) {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "config.h"
+#include "Core/config.h"
 
-#include "mathutil.h"
+#include "Core/mathutil.h"
 
 #include "Core/renderwindow.h"
 #include "Audio/sound_service.h"
@@ -20,7 +20,9 @@
 #include "Entities/Subclasses/lever.h"
 #include "Entities/Subclasses/Boss/pyramidgolem.h"
 
+#include "Triggers/trigger_util.h"
 #include "Triggers/scripts_ontile.h"
+#include "Triggers/scripts_puzzleinput.h"
 
 // Initializes trigger scripts
 void Trigger_Init(int maxMapID);
@@ -59,18 +61,6 @@ void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* 
 // Triggered when the current level's event timer reaches zero
 void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);
 
-
-// Checks to see if all crates within a level are ontop of pressure plates (might not be useable for more unique crate puzzles)
-bool Trigger_Internal_CheckAllCrates(Entity* entities[], Map* map, int NumberOfEntities = MaxEntities);
-
-// Shortcut for configuring torches, locks torches by default
-Torch* Trigger_Internal_TorchSetup(Entity* torch, bool extinguishable = false, bool useable = false, bool glow = false, bool hasFire = true, bool hasFrost = false);
-
-// Shortcut for configuring crates, makes them incineratable by default
-Crate* Trigger_Internal_CrateSetup(Entity* crate, bool canIncinerate = true);
-
-// Makes the given torch uninteractable, while also setting fire and glow to the puzzle status
-void Trigger_Internal_DisplayPuzzleStatus_Torch(Entity* torch, bool puzzleStatus);
 
 
 // Performs initial puzzle set up for the given map

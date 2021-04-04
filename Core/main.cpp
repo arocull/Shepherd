@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 
     world[4][2] = GenerateMapFromFile("Assets/Maps/Empty");
     world[4][1] = GenerateMapFromFile("Assets/Maps/Pyramid/PyramidHall1");
-    world[4][0] = GenerateMapFromFile("Assets/Maps/Pyramid/DesertScroll");
+    world[4][0] = GenerateMapFromFile("Assets/Maps/Desert/DesertScroll");
 
     world[5][2] = GenerateMapFromFile("Assets/Maps/Pyramid/Pyramid1");
     world[6][2] = GenerateMapFromFile("Assets/Maps/Pyramid/Pyramid2");
