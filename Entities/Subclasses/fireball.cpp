@@ -52,10 +52,10 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
                         hit->TakeDamage(1, this);
                     }
 
-                } else { // Otherwise set entity on fire and 
+                } else { // Otherwise set entity on fire and take damage
                     hit->HasFire = HasFire;
                     hit->HasFrost = HasFrost;
-                    if (!enemy) hit->TakeDamage(1, this);
+                    hit->TakeDamage(1, this); // if (!enemy)
                 }
             }
         }

@@ -391,6 +391,17 @@ int main(int argc, char **argv) {
                 } else if (a->GetID() == EntityID::EE_Lever) {
                     Lever* lever = dynamic_cast<Lever*>(a);
                     if (lever->stateChanged) LeversChanged = true;
+                } else if (a->GetID() == EntityID::EE_PyramidGolem) {
+                    PyramidGolem* boss = dynamic_cast<PyramidGolem*>(a);
+                    Movement_ShiftEntity(currentLevel, levelEntities, boss, boss->GetGoalX(), boss->GetGoalY(), true);
+                    boss->Flipped = false;
+
+                    if (boss->DoFireballToss()) {
+                        Fireball* fireball = new Fireball(boss->x, boss->y+1, 0, -1, 0);
+                        fireball->enemy = true;
+                        AppendEntity(levelEntities, fireball);
+                        printf("Doing fireball toss\n");
+                    }
                 } else if (a->GetID() == EntityID::EE_Spirit) {
                     Spirit* spirit = dynamic_cast<Spirit*>(a);
                     if (spirit) spirit->Emit(particles);

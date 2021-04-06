@@ -195,7 +195,8 @@ void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* m
             window->SetDialogueText("Panic!", 30);
             window->AddScreenShake(1.0f, 0);
             map->FillRectangle(2, 1, 38, 4, TileID::ET_None);
-            Entity* boss = new PyramidGolem(20,2);
+            PyramidGolem* boss = new PyramidGolem(20,2);
+            boss->SetTarget(GetEntityOccurence(entities, EntityID::EE_Shepherd, 1, MaxEntities));
             AppendEntity(entities, boss);
         }
     }
