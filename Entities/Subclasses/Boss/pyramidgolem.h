@@ -3,9 +3,11 @@
 #include <cstdio>
 
 #include "Core/config.h"
-#include "Entities/entity.h"
 #include "Core/enums.h"
 #include "Core/mathutil.h"
+#include "Entities/entity.h"
+#include "Map/map.h"
+#include "Entities/movement.h"
 
 class PyramidGolem : public Entity {
     public:
@@ -23,6 +25,9 @@ class PyramidGolem : public Entity {
         int goalMoveX = 0;
         int goalMoveY = 0;
 
+        bool enteredStun = false;
+        bool exitedStun = true;
+
     public:
         virtual void Unload() override;
         virtual void Tick() override;
@@ -36,6 +41,12 @@ class PyramidGolem : public Entity {
 
         bool InStun();
         void TickStun();
+        
+        bool ShouldBridge();
+        bool ShouldSmash();
+        void BuildBridge(Map* map);
+        void Smash(Map* map, Entity** entities);
+        void ThrowEntity(Entity* hit, Entity** entities, Map* map);
 
         void SetTarget(Entity* newTarget);
         Entity* GetTarget();

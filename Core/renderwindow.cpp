@@ -579,6 +579,12 @@ void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage
         SDL_SetRenderDrawColor(canvas, 100, 150, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
         base.w = (int) tileRes * percentage;
         base.h = base.w * 2;
+    } else if (id == ParticleID::EP_GolemSmash) {
+        SDL_SetRenderDrawColor(canvas, 255, 255, 255, (int) SDL_ALPHA_OPAQUE*(1.0f-percentage));
+        if (percentage > 0.63) percentage = powf(percentage, 3); // Expand outward
+        else percentage = 0.5 - powf(percentage, 3); // Shrink
+        base.w = (int) (((float) tileRes*(MapWidth/2)) * percentage);
+        base.h = base.w;
     }
 
     base.x = (int) ((posX + 0.5)*tileRes - base.w/2 + offsetX);

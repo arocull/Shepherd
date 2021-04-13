@@ -16,6 +16,10 @@ void Sheep::Unload() {
     Path_FreePath(currentPath);
     currentPath = nullptr;
 }
+void Sheep::Pause() {
+    Entity::Pause();
+    animation = 1;
+}
 
 bool Sheep::TakeDamage(int dmgAmount, Entity* attacker) {
     if (Armored) {

@@ -69,9 +69,8 @@ void Fireball::BurstLever(Lever* lever) {
     }
 };
 void Fireball::BurstFriendly(Entity* hit) {
-    hit->Paused = true; // Stun shepherd and sheep
-    if (hit->GetID() == EntityID::EE_Shepherd) hit->animation = 3; // Force Shepherd to kneel for visual cue
-    else if (hit->GetID() == EntityID::EE_Sheep) hit->animation = 1;
+    hit->Pause(); // Stun shepherd and sheep
+
     if (enemy) { // If the fireball was slung by an enemy, damage them
         hit->TakeDamage(1, this);
     }

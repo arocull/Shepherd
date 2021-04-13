@@ -52,6 +52,7 @@ enum ParticleID {
     EP_FireBurst = 5,
     EP_Incinerate = 6,
     EP_Spirit = 7,
+    EP_GolemSmash = 8,
 
     EP_None = 0,
 };

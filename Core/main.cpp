@@ -369,7 +369,11 @@ int main(int argc, char **argv) {
                     a->HasFrost = false;
                 }
 
-                if (a->Paused) continue;
+                if (a->Paused) {
+                    a->lastX = a->x;
+                    a->lastY = a->y;
+                    continue;
+                }
                 ai->TickAI(a);
                 
 
@@ -400,7 +404,27 @@ int main(int argc, char **argv) {
                         Fireball* fireball = new Fireball(boss->x, boss->y+1, 0, -1, 0);
                         fireball->enemy = true;
                         AppendEntity(levelEntities, fireball);
-                        printf("Doing fireball toss\n");
+                        window.AddScreenShake(0.4f, 0);
+                        soundService.PlaySound("Assets/Audio/FireballSling.wav");
+                    }
+
+                    if (boss->ShouldBridge()) {
+                        boss->BuildBridge(currentLevel);
+                        window.AddScreenShake(0, 0.7f); // Boss was hit, give satisfaction
+                    }
+
+                    if (boss->ShouldSmash() || boss->GetHealth() <= 0) {
+                        boss->Smash(currentLevel, levelEntities);
+                        window.AddScreenShake(0.9f, 0); // Boss slammed ground
+                        Particle* smash = ActivateParticle(particles, ParticleID::EP_GolemSmash, boss->x, boss->y);
+                        smash->maxLifetime = 0.7f;
+                    }
+
+                    // Open doors
+                    if (boss->GetHealth() <= 0) {
+                        window.SetDialogueText("A sigh of relief...", 0);
+                        currentLevel->FillRectangle(0, 11, 1, 14, TileID::ET_Fizzler);
+                        currentLevel->FillRectangle(39, 11, 40, 14, TileID::ET_Fizzler);
                     }
                 } else if (a->GetID() == EntityID::EE_Spirit) {
                     Spirit* spirit = dynamic_cast<Spirit*>(a);

@@ -21,6 +21,10 @@ void Shepherd::Tick() {
     else
         animationMetadata = 0;
 }
+void Shepherd::Pause() {
+    Entity::Pause();
+    animation = 3;
+}
 
 
 void Shepherd::SlingFireball(Entity** entities, Particle* particles, SoundService* soundService) {
@@ -57,6 +61,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
                         if (!fireballPresent) fireballPresent = obj;
                         break;
                     case EntityID::EE_Wolf:
+                    case EntityID::EE_PyramidGolem:
                         obj->TakeDamage(1, this);
                 }
                 if (obj->GetID() == EntityID::EE_Torch) {

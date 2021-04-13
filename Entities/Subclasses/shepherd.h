@@ -27,6 +27,7 @@ class Shepherd : public Entity {
         int ticksIdled = 0;
 
         virtual void Tick() override;
+        virtual void Pause() override;
 
         // Causes Shepherd to sling a fireball; based off last direction they moved
         void SlingFireball(Entity** entities, Particle* particles, SoundService* soundService);

@@ -14,6 +14,7 @@ class Sheep : public Entity {
 
     public:
         virtual void Unload() override;
+        virtual void Pause() override;
 
         // Called when the entity takes damage; returns true if killed
         // -   If the sheep is armored, it deals 3 damage to the attacker and loses its armor

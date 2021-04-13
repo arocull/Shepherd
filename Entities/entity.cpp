@@ -26,6 +26,9 @@ void Entity::Unload() {
 void Entity::Tick() {
 
 }
+void Entity::Pause() {
+    Paused = true;
+}
 bool Entity::TakeDamage(int dmgAmount, Entity* attacker) {
     Health-=dmgAmount;
 

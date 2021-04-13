@@ -23,6 +23,8 @@ class Entity {
         virtual void Unload();
         // Call this function every tick (handles internal entity functions)
         virtual void Tick();
+        // Call this function to pause an entity and set it to its proper animation
+        virtual void Pause();
 
         // Called when the entity takes damage; returns true if killed
         virtual bool TakeDamage(int dmgAmount, Entity* attacker);
