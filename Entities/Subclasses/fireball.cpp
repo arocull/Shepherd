@@ -26,36 +26,24 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
         for (int iY = -1; iY < 2; iY++) {
 
             Entity* hit = GetEntityAtLocation(entities, x + iX, y + iY);
-            if (hit && !hit->HasFire) {
-
-                // If it hits a torch, attempt to ignite it
-                if (hit->GetID() == EntityID::EE_Torch) {
-                    Torch* torch = dynamic_cast<Torch*>(hit);
-                    if (torch && torch->Extinguishable) {
-                        torch->HasFire = HasFire;
-                        torch->HasFrost = HasFrost;
-                    }
-                // If it hits a crate, incinerate it
-                } else if (hit->GetID() == EntityID::EE_Crate) {    // Hitting crates with fireballs will incinerate them
-                    Crate* crate = dynamic_cast<Crate*>(hit);
-                    if (crate && crate->canIncinerate) crate->Incinerate(particles, this);
-
-                } else if (hit->GetID() == EntityID::EE_Lever) {    // Hitting levers with fireballs will flip them
-                    Lever* lever = dynamic_cast<Lever*>(hit);
-                    if (lever) lever->Flip();
-
-                } else if (hit->GetID() == EntityID::EE_Shepherd || hit->GetID() == EntityID::EE_Sheep) {
-                    hit->Paused = true; // Stun shepherd and sheep
-                    if (hit->GetID() == EntityID::EE_Shepherd) hit->animation = 3; // Force Shepherd to kneel for visual cue
-                    else if (hit->GetID() == EntityID::EE_Sheep) hit->animation = 1;
-                    if (enemy) { // If the fireball was slung by an enemy, damage them
-                        hit->TakeDamage(1, this);
-                    }
-
-                } else { // Otherwise set entity on fire and take damage
-                    hit->HasFire = HasFire;
-                    hit->HasFrost = HasFrost;
-                    hit->TakeDamage(1, this); // if (!enemy)
+            if (hit) {
+                switch (hit->GetID()) {
+                    case EntityID::EE_Torch:
+                        BurstTorch(dynamic_cast<Torch*>(hit));
+                        break;
+                    case EntityID::EE_Crate:
+                        BurstCrate(dynamic_cast<Crate*>(hit), particles);
+                        break;
+                    case EntityID::EE_Lever:
+                        BurstLever(dynamic_cast<Lever*>(hit));
+                        break;
+                    case EntityID::EE_Shepherd:
+                    case EntityID::EE_Sheep:
+                        BurstFriendly(hit);
+                        break;
+                    default:
+                        BurstEnemy(hit);
+                        break;
                 }
             }
         }
@@ -63,3 +51,33 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
 
     return RemoveEntity(entities, this);
 }
+
+void Fireball::BurstTorch(Torch* torch) {
+    if (torch && torch->Extinguishable) {
+        torch->HasFire = HasFire;
+        torch->HasFrost = HasFrost;
+    }
+};
+void Fireball::BurstCrate(Crate* crate, Particle* particles) {
+    if (crate && crate->canIncinerate) {
+        crate->Incinerate(particles, this);
+    }
+};
+void Fireball::BurstLever(Lever* lever) {
+    if (lever) {
+        lever->Flip();
+    }
+};
+void Fireball::BurstFriendly(Entity* hit) {
+    hit->Paused = true; // Stun shepherd and sheep
+    if (hit->GetID() == EntityID::EE_Shepherd) hit->animation = 3; // Force Shepherd to kneel for visual cue
+    else if (hit->GetID() == EntityID::EE_Sheep) hit->animation = 1;
+    if (enemy) { // If the fireball was slung by an enemy, damage them
+        hit->TakeDamage(1, this);
+    }
+};
+void Fireball::BurstEnemy(Entity* hit) {
+    hit->HasFire = HasFire;
+    hit->HasFrost = HasFrost;
+    hit->TakeDamage(1, this); // if (!enemy)
+};

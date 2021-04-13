@@ -30,6 +30,7 @@ class PyramidGolem : public Entity {
         int GetGoalX();
         int GetGoalY();
         bool DoFireballToss();
+        void UpdateFireVisual();
 
         virtual bool TakeDamage(int dmgAmount, Entity* attacker) override;
 

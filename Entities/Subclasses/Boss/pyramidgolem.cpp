@@ -61,8 +61,12 @@ bool PyramidGolem::DoFireballToss() {
     if (tossFireball) {
         tossFireball = false;
         fireballTimer = 0;
+        HasFire = false;
     }
     return tossValue;
+}
+void PyramidGolem::UpdateFireVisual() {
+    HasFire = fireballTimer >= 9;
 }
 
 
@@ -70,6 +74,7 @@ bool PyramidGolem::TakeDamage(int dmgAmount, Entity* attacker) {
     printf("Hit\n");
     if (attacker && attacker->GetID() == EntityID::EE_Fireball) {
         bool died = Entity::TakeDamage(dmgAmount, attacker);
+        UpdateFireVisual();
 
         stun += 15;
         y--; // Get knocked back 1
@@ -79,6 +84,7 @@ bool PyramidGolem::TakeDamage(int dmgAmount, Entity* attacker) {
 
         return died;
     }
+
     return false;
 }
 

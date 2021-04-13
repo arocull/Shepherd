@@ -25,4 +25,11 @@ class Fireball : public Entity {
         bool enemy = false;
 
         void Burst(Entity** entities, Particle* particles);
+    
+    private:
+        void BurstTorch(Torch* torch);
+        void BurstCrate(Crate* crate, Particle* particles);
+        void BurstLever(Lever* lever);
+        void BurstFriendly(Entity* hit);
+        void BurstEnemy(Entity* hit);
 };
