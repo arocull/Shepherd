@@ -24,14 +24,41 @@ void Torch::UpdateAnimationData() {
         animationMetadata = 0;
     
     if (glow)
-        animation = 1;
+        animation = AnimationID::ANIM_Walk;
     else
-        animation = 0;
+        animation = AnimationID::ANIM_Idle;
 }
 
 void Torch::Extinguish(bool Override) {
     if (Extinguishable || Override) {
         HasFire = false;
         HasFrost = false;
+        ResetAnimationTimers();
+    }
+}
+
+void Torch::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
+    animationTimerTicks++;
+
+    SDL_Rect src;
+    src.h = 32;
+    src.w = 32;
+    src.x = 0;
+    src.y = 0;
+
+    if (animation == AnimationID::ANIM_Walk) {  // Glowing Base Texture
+        src.x = 32;
+    }
+    
+    // Draw base texture
+    SDL_RenderCopyEx(canvas, texture, &src, tile, 0, NULL, GetFlipStyle());
+
+    // Overlay fire
+    if (HasFire || HasFrost) {
+        src.x = (animationTimerTicks % 2) * 32;
+        if (HasFrost) src.y = 64;
+        else src.y = 32;
+
+        SDL_RenderCopyEx(canvas, texture, &src, tile, 0, NULL, GetFlipStyle());
     }
 }

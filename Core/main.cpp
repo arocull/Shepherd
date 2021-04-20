@@ -263,7 +263,7 @@ int main(int argc, char **argv) {
             }
 
             if (!player->Paused) {      //If they player is not paused, let them move if input is given
-                player->animation = 0;
+                player->animation = AnimationID::ANIM_Idle;
 
                 player->lastX = player->x;
                 player->lastY = player->y;

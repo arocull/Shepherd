@@ -2,6 +2,7 @@
 
 #include "Core/config.h"
 #include "Core/enums.h"
+#include "SDL2/SDL.h"
 
 // Entity - Any mobile object with individual properties.
 class Entity {
@@ -28,6 +29,16 @@ class Entity {
 
         // Called when the entity takes damage; returns true if killed
         virtual bool TakeDamage(int dmgAmount, Entity* attacker);
+
+
+        // RENDERING //
+        
+        // Gets flip style of entity for rendering
+        SDL_RendererFlip GetFlipStyle();
+        // Resets entity animation timers
+        void ResetAnimationTimers();
+        // Draws the entity
+        virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta);
 
 
         // Horizontal position of Entity
@@ -58,9 +69,13 @@ class Entity {
         bool OnPressurePlate = false;
 
         // Current animation playing--0 is always idle, animations are defined per-object inside the RenderWindow class
-        int animation = 0;
+        AnimationID animation = AnimationID::ANIM_Idle;
         // Animation Metadata; entity-specific data for the renderer to interpret when drawing entities or animations
         int animationMetadata = 0;
+        // Animation timer in game ticks
+        unsigned int animationTimerTicks = 0;
+        // Animation timer in real seconds
+        float animationTimerTime = 0.0f;
 
         // If true, entity can be saved to or removed from levels upon entering and leaving
         bool archivable = false;

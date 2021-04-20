@@ -37,14 +37,7 @@ void Trigger_OnFizzler(RenderWindow* window, SoundService* soundService, Map* ma
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     // Starting Level Cinematic
     for (int i = 0; i < MaxEntities; i++) {
-        Entity* ent = entities[i];
-        if (ent) {
-            ent->Paused = true;
-            if (ent->GetID() == EntityID::EE_Sheep)
-                ent->animation = 1;
-            else if (ent->GetID() == EntityID::EE_Shepherd)
-                ent->animation = 3;
-        }
+        if (entities[i]) entities[i]->Pause();
     }
     window->SetDialogueText("\nHit spacebar to rally your sheep.", 0);
 
@@ -61,16 +54,11 @@ void Trigger_GameOver(RenderWindow* window, SoundService* soundService, Map* map
     for (int i = 0; i < MaxEntities; i++) {
         Entity* ent = entities[i];
         if (ent) {
-            ent->Paused = true;
+            ent->Pause();
             ent->lastX = ent->x;
             ent->lastY = ent->y;
             ent->shovedX = 0;
             ent->shovedY = 0;
-            switch (ent->GetID()) {
-                case EntityID::EE_Sheep: ent->animation = 1; break;
-                case EntityID::EE_Wolf: ent->animation = 2; break;
-                case EntityID::EE_Shepherd: ent->animation = 3; break;
-            }
         }
     }
     window->SetDialogueText("\nLet the tears flow.", 0);

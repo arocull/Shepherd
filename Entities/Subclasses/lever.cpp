@@ -30,9 +30,9 @@ void Lever::UpdateAnimationData() {
         animationMetadata = 0;
     
     if (Flipped)
-        animation = 1;
+        animation = AnimationID::ANIM_Walk;
     else
-        animation = 0;
+        animation = AnimationID::ANIM_Idle;
 }
 
 void Lever::Tick() {

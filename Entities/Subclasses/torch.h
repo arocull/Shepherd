@@ -10,6 +10,8 @@ class Torch : public Entity {
 
         virtual void Tick() override;
 
+        virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) override;
+
         // Do we want the torch to have a glowing effect (gives 'activated' sort of feel)?
         bool glow = false;
 

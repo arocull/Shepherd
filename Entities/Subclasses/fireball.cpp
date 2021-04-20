@@ -11,10 +11,10 @@ Fireball::Fireball(int spawnX, int spawnY, int dirX, int dirY, int type) {
     
     if (type > 1) {
         HasFrost = true;
-        animation = 1;
+        animation = AnimationID::ANIM_Walk;
     } else {
         HasFire = true;
-        animation = 0;
+        animation = AnimationID::ANIM_Idle;
     }
 }
 
