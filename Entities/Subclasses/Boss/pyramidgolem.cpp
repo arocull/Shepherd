@@ -172,3 +172,22 @@ void PyramidGolem::SetTarget(Entity* newTarget) {
 Entity* PyramidGolem::GetTarget() {
     return target;
 }
+
+
+void PyramidGolem::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
+    animationTimerTime += delta;
+
+    double angle = 0.0;
+    SDL_Rect src;
+    src.h = 128;
+    src.w = 128;
+    src.x = 0;
+    src.y = 0;
+
+    tile->w *= 4;
+    tile->h *= 4;
+    tile->x -= tile->w / 2;
+    tile->y -= tile->h / 2;
+
+    SDL_RenderCopyEx(canvas, texture, &src, tile, angle, NULL, SDL_FLIP_NONE);
+}

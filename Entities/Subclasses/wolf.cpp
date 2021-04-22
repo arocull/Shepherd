@@ -60,3 +60,27 @@ bool Wolf::IsHunting() {
 Entity* Wolf::GetTarget() {
     return target;
 }
+
+
+void Wolf::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
+    SDL_Rect src;
+    src.h = 32;
+    src.w = 32;
+    src.y = 0;
+
+    switch (animation) {
+        case AnimationID::ANIM_Walk:
+            src.x = 64 + ((animationTimerTicks / 2) % 2) * 32;
+            break;
+        case AnimationID::ANIM_Attack: // Attack / Howl
+            src.x = 128;
+            break;
+        case AnimationID::ANIM_Paused: // Sleep
+            src.x = 160 + ((animationTimerTicks / 6) % 2) * 32;
+            break;
+        default:
+            src.x = ((animationTimerTicks / 4) % 2) * 32;
+    }
+
+    SDL_RenderCopyEx(canvas, texture, &src, tile, 0, NULL, GetFlipStyle());
+}

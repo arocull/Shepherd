@@ -157,7 +157,8 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
             for (int z = y-1; z < y+2; z++) {
                 Entity* obj = GetEntityAtLocation(entities, w, z);
                 if (obj && obj->GetID() == EntityID::EE_Sheep) { //If sheep, toggle pause
-                    obj->Pause();
+                    if (NewPause) obj->Pause();
+                    else obj->Paused = false;
                 }
             }
         }
@@ -165,8 +166,6 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
 }
 
 void Shepherd::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
-    animationTimerTicks++;
-
     SDL_Rect src;
     src.h = 32;
     src.w = 32;
@@ -174,7 +173,8 @@ void Shepherd::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, 
     src.y = 0;
 
     double angle = 0.0;
-    int step = (animationTimerTicks / TickRate) % 2;
+    int stepSlow = (animationTimerTicks / 2) % 2;
+    int stepFast = animationTimerTicks % 2;
 
     // Attack and pause sprites are wider than default sprites
     switch (animation) {
@@ -191,8 +191,8 @@ void Shepherd::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, 
     switch (animation) {
         case AnimationID::ANIM_Walk:
             src.w = 12;
-            src.x = 20 + step * 12; // Alternate between frames 3 and 4
-            angle = (((double) step) - 0.5) * 15;
+            src.x = 20 + stepSlow * 12; // Alternate between frames 3 and 4
+            angle = (((double) stepFast) - 0.5) * 15;
             break;
         case AnimationID::ANIM_Attack:
             src.w = 23;
@@ -205,7 +205,7 @@ void Shepherd::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, 
         case AnimationID::ANIM_Idle:
         default:
             src.w = 10;
-            src.x = step * 10; // Alternate between frames 0 and 1
+            src.x = stepSlow * 10; // Alternate between frames 0 and 1
     }
 
     SDL_RenderCopyEx(canvas, texture, &src, tile, angle, NULL, GetFlipStyle());

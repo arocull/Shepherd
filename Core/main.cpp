@@ -227,6 +227,8 @@ int main(int argc, char **argv) {
             continue;
         }
 
+        bool tickedThisFrame = false; // True if there was a computation tick this frame (for animations)
+
         // Game Logic
         #ifdef DEBUG_MODE
             if (controller->accelerate)
@@ -241,6 +243,7 @@ int main(int argc, char **argv) {
         else if (GameTick >= 1) {
             ticks++;
             window.LogTick();
+            tickedThisFrame = true;
 
             // Tally sheep
             int sheepLeft = 0;
@@ -508,7 +511,7 @@ int main(int argc, char **argv) {
         // Draw all entities aside from Shepherd
         for (Entity* obj : levelEntities) {
             if (obj && obj->GetID() != EntityID::EE_Shepherd)
-                window.DrawEntity(obj->x, obj->y, obj->lastX, obj->lastY, obj->GetID(), obj->Flipped, obj->animation, obj->animationMetadata);
+                window.DrawEntity(obj, tickedThisFrame, DeltaTime);
         }
 
 
@@ -523,7 +526,7 @@ int main(int argc, char **argv) {
         SDL_SetRenderDrawBlendMode(window.canvas, blend);
 
         // Draw shepherd last
-        window.DrawEntity(player->x, player->y, player->lastX, player->lastY, player->GetID(), player->Flipped, player->animation, player->animationMetadata);
+        window.DrawEntity(player, tickedThisFrame, DeltaTime);
 
         // Draw GUI
         window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);

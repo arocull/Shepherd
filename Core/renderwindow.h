@@ -11,6 +11,7 @@
 #include "mathutil.h"
 
 #include "Core/enums.h"
+#include "Entities/entity.h"
 
 // Render Window - An individual window that renders things.
 class RenderWindow {
@@ -120,7 +121,7 @@ class RenderWindow {
     public:
         void FillViewportBackground(EnvironmentID environment);
         void DrawTile(int tileX, int tileY, int tileID, int tilingIndex);
-        void DrawEntity(int posX, int posY, int lastX, int lastY, int id, bool flip, int animation, int metadata);
+        void DrawEntity(Entity* entity, bool tickedThisFrame, float delta);
         void DrawParticle(float posX, float posY, int id, float percentage);
         
         void SetDialogueText(const char* newText, int ticks = 50);

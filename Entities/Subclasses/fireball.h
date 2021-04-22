@@ -25,6 +25,8 @@ class Fireball : public Entity {
         bool enemy = false;
 
         void Burst(Entity** entities, Particle* particles);
+
+        virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) override;
     
     private:
         void BurstTorch(Torch* torch);

@@ -50,4 +50,7 @@ class PyramidGolem : public Entity {
 
         void SetTarget(Entity* newTarget);
         Entity* GetTarget();
+
+
+        virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) override;
 };

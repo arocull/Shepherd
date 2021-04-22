@@ -70,8 +70,6 @@ class Entity {
 
         // Current animation playing--0 is always idle, animations are defined per-object inside the RenderWindow class
         AnimationID animation = AnimationID::ANIM_Idle;
-        // Animation Metadata; entity-specific data for the renderer to interpret when drawing entities or animations
-        int animationMetadata = 0;
         // Animation timer in game ticks
         unsigned int animationTimerTicks = 0;
         // Animation timer in real seconds
