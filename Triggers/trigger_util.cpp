@@ -40,7 +40,6 @@ void Trigger_Internal_DisplayPuzzleStatus_Torch(Entity* torch, bool puzzleStatus
             t->FireUsable = false;
             t->HasFire = puzzleStatus;
             t->glow = puzzleStatus;
-            t->UpdateAnimationData();
         }
     }
 }

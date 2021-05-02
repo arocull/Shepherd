@@ -374,7 +374,12 @@ void RenderWindow::DrawTile(int tileX, int tileY, int tileID, int tilingIndex) {
         }
     }
 }
-void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, bool flip, int anim, int meta) {
+void RenderWindow::DrawEntity(Entity* entity, bool tickedThisFrame, float delta) {
+    int lastX = entity->lastX;
+    int lastY = entity->lastY;
+    int posX = entity->x;
+    int posY = entity->y;
+    
     SDL_Rect tile;
     tile.w = tileRes;
     tile.h = tileRes;
@@ -384,166 +389,25 @@ void RenderWindow::DrawEntity(int posX, int posY, int lastX, int lastY, int id, 
     if (lastY != posY) tile.y = lerp(lastY * tileRes, posY * tileRes, tickAlpha) + offsetY;
     else tile.y = posY * tileRes + offsetY;
 
-    SDL_RendererFlip flipStyle = SDL_FLIP_NONE;
-    if (flip)
-        flipStyle = SDL_FLIP_HORIZONTAL;
+    SDL_Texture* texturePtr = nullptr;
 
-    double angle = 0.0;
-    if (id == EntityID::EE_Shepherd) {          // Shepherd
-        int step = ticks/TickRate % 2;
+    // TODO: Convert this to a Map
+    switch (entity->GetID()) {
+        case EntityID::EE_Shepherd: texturePtr = TEXTURE_shepherd; break;
+        case EntityID::EE_Sheep: texturePtr = TEXTURE_sheep; break;
+        case EntityID::EE_Wolf: texturePtr = TEXTURE_wolf; break;
+        case EntityID::EE_Crate: texturePtr = TEXTURE_crate; break;
+        case EntityID::EE_Torch: texturePtr = TEXTURE_torch; break;
+        case EntityID::EE_Lever: texturePtr = TEXTURE_lever; break;
 
-        switch (anim) {
-            case 2:
-            case 3:
-                tile.x += tile.w/6;
-                tile.w *= (float) 2 / (float) 3;
-                break;
-            default:
-                tile.x += tile.w/3;
-                tile.w /= 3;
-        }
+        case EntityID::EE_PyramidGolem: texturePtr = TEXTURE_boss_pyramidgolem; break;
 
-        SDL_Rect src;
-        src.h = 32;
-        src.y = 0;
-
-        if (anim == 1) { // Walk
-            src.w = 12;
-            src.x = 20;
-            if (step == 1)
-                src.x = 32;
-            step = ticks % 2;
-            angle = (((double) step) - 0.5)*15;
-        } else if (anim == 2) { // Sling
-            src.w = 23;
-            src.x = 44;
-        } else if (anim == 3) { // Bow
-            src.w = 24;
-            src.x = 67;
-        } else { // Idle
-            src.w = 10;
-            if (step == 1)
-                src.x = 10;
-            else
-                src.x = 0;
-        }
-        
-
-        SDL_RenderCopyEx(canvas, TEXTURE_shepherd, &src, &tile, angle, NULL, flipStyle);
-
-        // Overlay fire effects
-        if (meta > 0) {
-            src.y+=32*meta;
-            SDL_RenderCopyEx(canvas, TEXTURE_shepherd, &src, &tile, angle, NULL, flipStyle);
-        }
-    } else if (id == EntityID::EE_Sheep) {  // Sheep
-        SDL_Rect src;
-        src.w = 32;
-        src.h = 32;
-        src.x = 0;
-        src.y = 0;
-
-        if (anim == 1)      // Pause / Rest
-            src.x = 64;
-        else {              // Idle / Move
-            src.x = (ticks/2 % 2) * 32;
-
-            int step = ticks/2 % 4;
-            if (step == 2)
-                angle = -3.0;
-            else if (step == 1 || step == 3)
-                angle = 0.0;
-            else
-                angle = 3.0;
-        }
-
-        // Draw basic sheep
-        SDL_RenderCopyEx(canvas, TEXTURE_sheep, &src, &tile, angle, NULL, flipStyle);
-
-        // Overlay blood
-        if (meta <= 1) {
-            src.y+=32;
-            SDL_RenderCopyEx(canvas, TEXTURE_sheep, &src, &tile, angle, NULL, flipStyle);
-        }
-    } else if (id == EntityID::EE_Fireball) {   // Fireball
-        int sha = (int) 20 * (sin(time*20) + 1);
-        SDL_SetRenderDrawColor(canvas, 210 + sha, 100 + sha, 0, 0);
-
-        tile.x += tile.w*.25;
-        tile.y += tile.h*.25;
-        tile.w *= .5;
-        tile.h *= .5;
-
-        SDL_RenderFillRect(canvas, &tile);
-    } else if (id == EntityID::EE_Wolf) {   // Wolf
-        SDL_Rect src;
-        src.h = 32;
-        src.w = 32;
-        src.y = 0;
-
-        if (anim == 1)      // Run
-            src.x = 64 + (ticks/2 % 2) * 32;
-        else if (anim == 2) // Howl
-            src.x = 128;
-        else if (anim == 3) // Sleep
-            src.x = 160 + (ticks/6 % 2) * 32;
-        else                // Idle
-            src.x = (ticks/4 % 2) * 32;
-
-        SDL_RenderCopyEx(canvas, TEXTURE_wolf, &src, &tile, angle, NULL, flipStyle);
-    } else if (id == EntityID::EE_Crate) {   // Crate
-        SDL_RenderCopy(canvas, TEXTURE_crate, NULL, &tile);
-    } else if (id == EntityID::EE_Torch) {   // Torch
-        SDL_Rect src;
-        src.h = 32;
-        src.w = 32;
-        src.x = 0;
-        src.y = 0;
-
-        if (anim == 1)  // Glowing Base Texture
-            src.x = 32;
-        
-        SDL_RenderCopyEx(canvas, TEXTURE_torch, &src, &tile, angle, NULL, flipStyle);
-
-        if (meta > 0) { // Fire Animation
-            src.x = (ticks % 2)*32;
-            src.y = meta*32;
-
-            SDL_RenderCopyEx(canvas, TEXTURE_torch, &src, &tile, angle, NULL, flipStyle);
-        }
-    } else if (id == EntityID::EE_Lever) {   // Lever
-        SDL_Rect src;
-        src.h = 32;
-        src.w = 32;
-        src.x = 0;
-        src.y = 0;
-
-        if (anim == 1)  // Flipped Animation
-            src.x = 32;
-        
-        SDL_RenderCopyEx(canvas, TEXTURE_lever, &src, &tile, angle, NULL, flipStyle);
-
-        if (meta > 0) { // Layer Lock
-            src.y = 32;
-            SDL_RenderCopyEx(canvas, TEXTURE_lever, &src, &tile, angle, NULL, flipStyle);
-        }
-
-    
-    // BOSSES //
-    } else if (id == EntityID::EE_PyramidGolem) {
-        SDL_Rect src;
-        src.h = 128;
-        src.w = 128;
-        src.x = 0;
-        src.y = 0;
-
-        tile.w *= 4;
-        tile.h *= 4;
-        tile.x -= tile.w / 2;
-        tile.y -= tile.h / 2;
-
-        SDL_RenderCopyEx(canvas, TEXTURE_boss_pyramidgolem, &src, &tile, angle, NULL, flipStyle);
+        default: // Other entities do not have a texture
+            break;
     }
+
+    if (tickedThisFrame) entity->animationTimerTicks++;
+    entity->Draw(canvas, texturePtr, &tile, delta);
 }
 void RenderWindow::DrawParticle(float posX, float posY, int id, float percentage) {
     SDL_Rect base;

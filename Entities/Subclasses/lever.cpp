@@ -23,24 +23,31 @@ bool Lever::IsLocked() {
 }
 
 
-void Lever::UpdateAnimationData() {
-    if (Locked)
-        animationMetadata = 1;
-    else
-        animationMetadata = 0;
-    
-    if (Flipped)
-        animation = 1;
-    else
-        animation = 0;
-}
-
 void Lever::Tick() {
-    UpdateAnimationData();
     if (lastState != Flipped) {
         stateChanged = true;
     } else {
         stateChanged = false;
     }
     lastState = Flipped;
+}
+
+
+void Lever::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
+    SDL_Rect src;
+    src.h = 32;
+    src.w = 32;
+    src.x = 0; // Default to unflipped texture
+    src.y = 0;
+
+    if (Flipped) {  // Flipped texture
+        src.x = 32;
+    }
+    
+    SDL_RenderCopyEx(canvas, texture, &src, tile, 0, NULL, SDL_FLIP_NONE);
+
+    if (Locked) { // Layer Lock ontop of lever
+        src.y = 32;
+        SDL_RenderCopyEx(canvas, texture, &src, tile, 0, NULL, SDL_FLIP_NONE);
+    }
 }

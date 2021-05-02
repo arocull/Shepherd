@@ -11,10 +11,10 @@ Fireball::Fireball(int spawnX, int spawnY, int dirX, int dirY, int type) {
     
     if (type > 1) {
         HasFrost = true;
-        animation = 1;
+        animation = AnimationID::ANIM_Walk;
     } else {
         HasFire = true;
-        animation = 0;
+        animation = AnimationID::ANIM_Idle;
     }
 }
 
@@ -80,3 +80,18 @@ void Fireball::BurstEnemy(Entity* hit) {
     hit->HasFrost = HasFrost;
     hit->TakeDamage(1, this); // if (!enemy)
 };
+
+
+void Fireball::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
+    animationTimerTime += delta;
+
+    int sha = (int) 20 * (sin(animationTimerTime * 20) + 1);
+    SDL_SetRenderDrawColor(canvas, 210 + sha, 100 + sha, 0, 0);
+
+    tile->x += tile->w*.25;
+    tile->y += tile->h*.25;
+    tile->w *= .5;
+    tile->h *= .5;
+
+    SDL_RenderFillRect(canvas, tile);
+}

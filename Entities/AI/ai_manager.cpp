@@ -87,7 +87,7 @@ void AIManager::TickAI(Entity* entity) {
 }
 void AIManager::TickSheep(Sheep* sheep) {
     if (!((tick % 2) == 0 || distGrid(sheep->x, sheep->y, shepherd->x, shepherd->y) > 5)) return;
-    sheep->animation = 0;
+    sheep->animation = AnimationID::ANIM_Idle;
     
     int dirX = 0;
     int dirY = 0;
@@ -109,7 +109,7 @@ void AIManager::TickWolf(Wolf* wolf) {
     
     if (!wolf->IsHunting()) { // If the wolf is not in hunt mode, select a target and begin the hunt
         if (enemyGoal) wolf->InitiateHunt(enemyGoal);
-        else wolf->animation = 0; // Idle stance if no target
+        else wolf->animation = AnimationID::ANIM_Idle; // Idle stance if no target
 
         return;
     }
@@ -132,5 +132,5 @@ void AIManager::TickWolf(Wolf* wolf) {
     GetNextMovement(wolf->x, wolf->y, wolf->currentPath, &dirX, &dirY);
 
     Movement_ShiftEntity(level, entities, wolf, dirX, -dirY);
-    wolf->animation = 1; // Run animation
+    wolf->animation = AnimationID::ANIM_Walk; // Run animation
 }

@@ -77,3 +77,11 @@ enum EnvironmentID : char {
 
     ENV_None = '\0'
 };
+
+// Used for determining what animation frames to use when drawing Entities
+enum AnimationID {
+    ANIM_Idle = 0,
+    ANIM_Walk = 1,
+    ANIM_Attack = 2,
+    ANIM_Paused = 3
+};

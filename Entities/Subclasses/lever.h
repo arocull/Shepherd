@@ -12,8 +12,6 @@ class Lever : public Entity {
         bool Locked = false;
         bool lastState = false;
 
-        void UpdateAnimationData();
-
     public:
         void ToggleLock(bool lock);
 
@@ -24,4 +22,5 @@ class Lever : public Entity {
         bool IsLocked();
 
         virtual void Tick() override;
+        virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) override;
 };
