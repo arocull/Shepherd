@@ -17,7 +17,9 @@
 #include "Triggers/trigger_util.h"
 
 namespace Script {
-    extern void (**list_PuzzleInput)(RenderWindow* window, SoundService* soundService, Particle* particles, Map* map, Entity* entities[]);
+    typedef void PuzzleInputFunc (RenderWindow* a, SoundService* b, Particle* c, Map* d, Entity* e[]);
+
+    extern PuzzleInputFunc** list_PuzzleInput;
 
     void Init_PuzzleInput(int largestMapID);
     void Free_PuzzleInput();

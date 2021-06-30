@@ -1,19 +1,18 @@
 #include "Triggers/scripts_puzzleinput.h"
 
-void (**Script::list_PuzzleInput)(RenderWindow* window, SoundService* soundService, Particle* particles, Map* map, Entity* entities[]);
+Script::PuzzleInputFunc** Script::list_PuzzleInput;
 
 void Script::Init_PuzzleInput(int largestMapID) {
     largestMapID++; // Add one to total, we want to be inclusive
 
-    list_PuzzleInput = (void (**)(RenderWindow* a, SoundService* b, Particle* c, Map* d, Entity* e[]))
-        malloc(largestMapID * sizeof(void (*)(RenderWindow* a, SoundService* b, Particle* c, Map* d, Entity* e[])));
+    list_PuzzleInput = (Script::PuzzleInputFunc**) malloc(largestMapID * sizeof(Script::PuzzleInputFunc*));
     
     // Default all maps to do nothing
     for (int i = 0; i < largestMapID; i++) {
         list_PuzzleInput[i] = &Script::PuzzleInput_None;
     }
 
-    // Assign map-specific functions
+    // Assign map-specific functions, add functions here using corresponding level ID
     list_PuzzleInput[2] = &Script::PuzzleInput_Map2;
     list_PuzzleInput[3] = &Script::PuzzleInput_Map3;
     list_PuzzleInput[4] = &Script::PuzzleInput_Map4;

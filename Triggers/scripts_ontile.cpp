@@ -1,12 +1,11 @@
 #include "Triggers/scripts_ontile.h"
 
-void (**Script::list_OnTile)(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
+Script::OnTileFunc** Script::list_OnTile;
 
 void Script::Init_OnTile(int largestMapID) {
     largestMapID++; // Add one to total, we want to be inclusive
 
-    list_OnTile = (void (**)(RenderWindow* a, SoundService* b, Map* c, Entity* d[], int e))
-        malloc(largestMapID * sizeof(void (*)(RenderWindow* a, SoundService* b, Map* c, Entity* d[], int e)));
+    list_OnTile = (Script::OnTileFunc**) malloc(largestMapID * sizeof(Script::OnTileFunc*));
     
     // Default all maps to do nothing
     for (int i = 0; i < largestMapID; i++) {

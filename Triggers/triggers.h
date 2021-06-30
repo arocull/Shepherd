@@ -24,12 +24,12 @@
 #include "Triggers/scripts_ontile.h"
 #include "Triggers/scripts_puzzleinput.h"
 
-// Initializes trigger scripts
+// (Trigger) Init - Initializes script function pointer arrays
 void Trigger_Init(int maxMapID);
-// Free any memory allocated by trigger scripts
+// (Trigger) Free - Deallocates script function pointer arrays
 void Trigger_Free();
 
-// Triggered whenever the player steps on a trigger tile
+// (Trigger) On Tile - Triggered whenever the player steps on a trigger tile
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
 
 // Triggered whenever the player steps on a scroll (reads scroll off and performs unique actions if necessary)
@@ -63,5 +63,5 @@ void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* m
 
 
 
-// Performs initial puzzle set up for the given map
+// (Trigger) Setup Puzzles - Performs initial puzzle set up for the given map
 void Trigger_SetupPuzzles(Map* map);

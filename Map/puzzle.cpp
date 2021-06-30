@@ -56,7 +56,12 @@ void Puzzle_CheckSolution(struct Puzzle* puzzle) {
         }
     }
 
-    puzzle->Solved = (torches == torchesLit && pressurePlatesDown == puzzle->PlatesPressed && leversFlipped == puzzle->LeversFlipped && wolves <= 0);
+    puzzle->Solved = (
+        torches == torchesLit &&
+        pressurePlatesDown == puzzle->PlatesPressed &&
+        leversFlipped == puzzle->LeversFlipped &&
+        wolves <= 0
+    );
     if (puzzle->Solved)
         puzzle->SolvedOnce = true;
 }

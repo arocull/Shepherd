@@ -9,8 +9,10 @@
 #include "Entities/entity_management.h"
 
 namespace Script {
+    typedef void OnTileFunc (RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
+
     // Array of function pointers for OnTile trigger scripts
-    extern void (**list_OnTile)(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID);
+    extern OnTileFunc** list_OnTile;
 
     void Init_OnTile(int largestMapID);
     void Free_OnTile();

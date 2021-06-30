@@ -1,6 +1,5 @@
 #include "Triggers/triggers.h"
 
-
 void Trigger_Init(int maxMapID) {
     Script::Init_OnTile(maxMapID);
     Script::Init_PuzzleInput(maxMapID);
@@ -190,7 +189,7 @@ void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* m
     }
 }
 
-
+// (Trigger) Setup Puzzles - Initializes a puzzle for the given map
 void Trigger_SetupPuzzles(Map* map) {
     Puzzle* p = &(map->Puzzles[0]);
 
