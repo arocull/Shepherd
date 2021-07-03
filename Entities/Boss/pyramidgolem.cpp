@@ -1,4 +1,4 @@
-#include "pyramidgolem.h"
+#include "Entities/Boss/pyramidgolem.h"
 
 PyramidGolem::PyramidGolem(int xPos, int yPos) {
     id = EntityID::EE_PyramidGolem;

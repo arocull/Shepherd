@@ -18,7 +18,7 @@
 #include "Entities/Subclasses/torch.h"
 #include "Entities/Subclasses/crate.h"
 #include "Entities/Subclasses/lever.h"
-#include "Entities/Subclasses/Boss/pyramidgolem.h"
+#include "Entities/Boss/pyramidgolem.h"
 
 #include "Triggers/trigger_util.h"
 #include "Triggers/scripts_ontile.h"
