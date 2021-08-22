@@ -5,28 +5,31 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "g++ build active file",
-            "command": "/usr/bin/g++",
+            "label": "make",
+            "command": "/usr/bin/make",
             "args": [
-                "${file}",
-                "-lSDL2",
-                "-lSDL2main",
-                //"-lSDL2_ttf",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "-C",
+                "${workspaceFolder}"
             ],
             "options": {
                 "cwd": "/usr/bin"
             },
-            "problemMatcher": [
-                "$gcc"
-            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "run",
+            "command": "./build/Core/main",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
         }
     ]
 }
-
-//gcc main.c -lSDL2 -lSDL2main -o sdl-test
