@@ -2,29 +2,29 @@
 
 // Used for determining what tile and collision is drawn and utilized on a given space
 enum TileID {   // : int_fast8_t
-    ET_Wall = 1,      // Basic wall that blocks player movement
-    ET_Water = 2,     // Basic liquid that the shepherd can move through, but sheep will not, also freezable
-    ET_Magma = 3,     // Liquid that burns anything that touches it
-    ET_Tree = 4,      // Tree, acts as wall but a little more decorative
-    ET_Rock = 5,      // Rock, acts as wall but a little more decorative
-    ET_Pillar = 6,    // Pillar, acts as wall but a little more decorative
-    ET_Empty_Puzzle_Piece = 7, // Grooves in the ground you can slide boxes in--also used for direction
-    ET_Pressure_Plate = 8,     // Pressure plates can be pressed for unique effects, requires programmed triggers
-    ET_Fake_Wall = 9,   // Fake walls look similar to regular walls, but are darker and non-collideable
-    ET_Empty_Tile = 10, // Empty tiles are blank and considered pitfalls--they are not pathable, but fireballs fly over them
-    ET_Door_Vertical = 11,     // Vertically-closed door that can be used for gates
-    ET_Door_Horizontal = 12,   // Horizontally-closed door that can be used for gates
-    ET_Ice = 13,       // Ice is an empty, pathable tile that can be thawed to water using fire
-    ET_Vines = 14,     // Vines, act as a wall but a little more decorative, and use tiling textures
-    ET_Scroll = 15,    // Scrolls are unique triggerables, but still need to be rendered
-    ET_Fizzler = 16,   // Unique trigger that fizzles out the player's staff (removes fire and frost)
-    ET_Indicator = 17, // Indicator tile for puzzles, drawn as a sun, but has no functionality
+    ET_Wall = 'W',      // Basic wall that blocks player movement
+    ET_Water = 'w',     // Basic liquid that the shepherd can move through, but sheep will not, also freezable
+    ET_Magma = 'L',     // Liquid that burns anything that touches it
+    ET_Tree = 'T',      // Tree, acts as wall but a little more decorative
+    ET_Rock = 'R',      // Rock, acts as wall but a little more decorative
+    ET_Pillar = 'P',    // Pillar, acts as wall but a little more decorative
+    ET_Empty_Puzzle_Piece = 'e', // Grooves in the ground you can slide boxes in--also used for direction
+    ET_Pressure_Plate = 'p',     // Pressure plates can be pressed for unique effects, requires programmed triggers
+    ET_Fake_Wall = 'F',   // Fake walls look similar to regular walls, but are darker and non-collideable
+    ET_Empty_Tile = 'E', // Empty tiles are blank and considered pitfalls--they are not pathable, but fireballs fly over them
+    ET_Door_Vertical = 'D',     // Vertically-closed door that can be used for gates
+    ET_Door_Horizontal = 'd',   // Horizontally-closed door that can be used for gates
+    ET_Ice = 'i',       // Ice is an empty, pathable tile that can be thawed to water using fire
+    ET_Vines = 'v',     // Vines, act as a wall but a little more decorative, and use tiling textures
+    ET_Scroll = 's',    // Scrolls are unique triggerables, but still need to be rendered
+    ET_Indicator = 'I', // Indicator tile for puzzles, drawn as a sun, but has no functionality
 
-    ET_None = 0,       // Empty space
-    ET_Trigger1 = -1,  // Triggers
-    ET_Trigger2 = -2,
-    ET_Trigger3 = -3,
-    ET_Trigger4 = -4,  // Trigger 4 has no debounce, it is called repeatedly as long as player is ontop of it
+    ET_None = '_',     // Empty space
+    ET_Trigger1 = '1', // Triggers
+    ET_Trigger2 = '2',
+    ET_Trigger3 = '3',
+    ET_Trigger4 = '4',  // Trigger 4 has no debounce, it is called repeatedly as long as player is ontop of it
+    ET_Fizzler = 'f',   // Unique trigger that fizzles out the player's staff (removes fire and frost)
 };
 
 // Used for determining what an entity is--used in casting and trigger/interaction functionality

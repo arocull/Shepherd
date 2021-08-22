@@ -90,7 +90,7 @@ Map* GenerateMapFromFile(const char* filePath) {
     for (int y = 0; y < MapHeight && !mapFile.eof(); y++) {
         for (int x = 0; x < MapWidth && !mapFile.eof(); x++) {
             int charID;
-            int tileID = 0;
+            int tileID = TileID::ET_None;
 
             charID = mapFile.get(); //Get next character in line
 
@@ -103,31 +103,6 @@ Map* GenerateMapFromFile(const char* filePath) {
 
             // Check character and set tile ID accordingly; defaults to 0 if none of these are present
             switch (charID) {
-                case 'W': tileID = TileID::ET_Wall; break;    //Wall
-                case 'w': tileID = TileID::ET_Water; break;    //Water
-                case 'L': tileID = TileID::ET_Magma; break;    //Lava
-                case 'T': tileID = TileID::ET_Tree; break;    //Tree
-                case 'R': tileID = TileID::ET_Rock; break;    //Rock
-                case 'P': tileID = TileID::ET_Pillar; break;    //Pillar
-                case 'e': tileID = TileID::ET_Empty_Puzzle_Piece; break;    //Empty Puzzle Piece
-                case 'p': tileID = TileID::ET_Pressure_Plate; break;    //Pressure Plate
-                case 'F': tileID = TileID::ET_Fake_Wall; break;    //Fake Wall
-                case 'E': tileID = TileID::ET_Empty_Tile; break;   //Empty Tile (black)
-                case 'D': tileID = TileID::ET_Door_Vertical; break;  //Door (Closed Vertical)
-                case 'd': tileID = TileID::ET_Door_Horizontal; break;  //Door (Closed Horizontal)
-                case 'i': tileID = TileID::ET_Ice; break;  //Ice
-                case 'v': tileID = TileID::ET_Vines; break;  // Vines
-                case 's': tileID = TileID::ET_Scroll; break; // Scroll, a unique triggerable
-                case 'I': tileID = TileID::ET_Indicator; break; // Indicator
-                
-
-                // Map Triggers
-                case '1': tileID = TileID::ET_Trigger1; break;   //Trigger 1
-                case '2': tileID = TileID::ET_Trigger2; break;   //Trigger 2
-                case '3': tileID = TileID::ET_Trigger3; break;   //Trigger 3
-                case '4': tileID = TileID::ET_Trigger4; break;   //Trigger 4 - Note: no debounce
-                case 'f': tileID = TileID::ET_Fizzler; break;    //Fizzler - Extinguishes staff flames
-
                 // Entity Spawns - Any character IDs that are not used for tiles are marked as entity-spawning and redirected
                 case 'c':       // Crate (with Empty Puzzle Piece tile beneath)
                     tileID = TileID::ET_Empty_Puzzle_Piece;
@@ -142,6 +117,11 @@ Map* GenerateMapFromFile(const char* filePath) {
                 case 'l':       // Lever
                 case 'S':       // Spirit
                     SpawnsEntity = true;
+                    break;
+
+                default:
+                    tileID = charID;
+                    break;
             }
             if (SpawnsEntity) {
                 Entity* entity = nullptr;

@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
-#include "config.h"
+#include "Core/config.h"
+#include "Core/strutils.h"
 
 #include "Map/tile.h"
 #include "Entities/entity.h"
@@ -55,6 +57,8 @@ class Map {
         void FillRectangle(int startX, int startY, int endX, int endY, int id);
         void FreezeArea(int centerX, int centerY, int radius, bool thaw);
         void Free();
+
+        std::string Ascii();
 
     private:
         int EntitiesStored = 0;

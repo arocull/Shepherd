@@ -190,3 +190,31 @@ void Map::Free() {
     
     free(StoredEntities);
 }
+
+
+std::string Map::Ascii() {
+    std::string text; // Character limit
+
+    // Tiles
+    for (int x = 0; x < MapWidth; x++) {
+        for (int y = 0; y < MapWidth; y++) {
+            strAppendChar(text, GetTileID(x, y));
+        }
+        strAppendChar(text, '\n');
+    }
+
+    // Map ID and Biome
+    std::string mapIDString = std::to_string(GetMapID());
+    text.append(mapIDString);
+    strAppendChar(text, GetMapBiome());
+
+    // Scroll
+    strAppendChar(text, '\n');
+    text.append(GetScrollName());
+    strAppendChar(text, '\n');
+    text.append(GetScroll());
+
+    // TODO: Append entities
+
+    return text;
+}
