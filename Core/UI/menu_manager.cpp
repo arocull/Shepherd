@@ -42,8 +42,8 @@ void MenuManager::InitScrolls(int totalScrolls) {
 }
 // Adds a scroll into the scroll library
 void MenuManager::UnlockScroll(int scrollIndex, char* name, char* desc) {
-    scrollsMenu->optionNames[scrollIndex] = name;
-    scrollsMenu->optionDesc[scrollIndex] = desc;
+    scrollsMenu->optionNames[scrollIndex] = strdup(name);
+    scrollsMenu->optionDesc[scrollIndex] = strdup(desc);
 }
 
 

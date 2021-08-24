@@ -11,6 +11,8 @@ CFLAGS= -g -O2 `sdl2-config --libs` -lSDL2main -lSDL2_mixer `sdl2-config --cflag
 
 # Build files should go in this directory
 ODIR = build
+# Save files should go in this directory
+SDIR = save
 
 # For modules, list any and all subfolders that need to be compiled
 MODULES := Audio Map Triggers Entities Entities/AI Entities/Subclasses Entities/Boss Core Core/Input Core/UI
@@ -47,9 +49,11 @@ build: $(OBJ)
 	$(CC) $^ $(CFLAGS) -o build/Core/main
 
 checkdirs: $(BUILD_DIR) # Create necessary directories
+	@mkdir -p $(SDIR)
 
 clean: # Delete build directory
 	rm -rf $(ODIR)
+	rm -rf $(SDIR)
 
 run: # Run code
 	./build/Core/main

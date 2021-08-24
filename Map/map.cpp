@@ -191,13 +191,13 @@ void Map::Free() {
     free(StoredEntities);
 }
 
-
-std::string Map::Ascii() {
-    std::string text; // Character limit
+// Converts map to Ascii text that can be saved and loaded at a future time. Does NOT include Entity data.
+std::string* Map::Ascii() {
+    std::string* text = new std::string(); // Character limit
 
     // Tiles
-    for (int x = 0; x < MapWidth; x++) {
-        for (int y = 0; y < MapWidth; y++) {
+    for (int y = 0; y < MapHeight; y++) {
+        for (int x = 0; x < MapWidth; x++) {
             strAppendChar(text, GetTileID(x, y));
         }
         strAppendChar(text, '\n');
@@ -205,16 +205,19 @@ std::string Map::Ascii() {
 
     // Map ID and Biome
     std::string mapIDString = std::to_string(GetMapID());
-    text.append(mapIDString);
+    text->append(mapIDString);
     strAppendChar(text, GetMapBiome());
 
     // Scroll
-    strAppendChar(text, '\n');
-    text.append(GetScrollName());
-    strAppendChar(text, '\n');
-    text.append(GetScroll());
-
-    // TODO: Append entities
+    if (HasScroll()) { // If map has a scroll, get scroll data and append to file
+        strAppendChar(text, '\n');
+        text->append(GetScrollName());
+        strAppendChar(text, '\n');
+        text->append(GetScroll());
+    } else { // Otherwise, put blanks
+        strAppendChar(text, '\n');
+        strAppendChar(text, '\n');
+    }
 
     return text;
 }

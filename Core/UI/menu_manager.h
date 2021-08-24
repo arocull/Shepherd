@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 #include "Core/enums.h"
 #include "Core/UI/menu.h"
 

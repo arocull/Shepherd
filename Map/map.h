@@ -58,7 +58,7 @@ class Map {
         void FreezeArea(int centerX, int centerY, int radius, bool thaw);
         void Free();
 
-        std::string Ascii();
+        std::string* Ascii();
 
     private:
         int EntitiesStored = 0;

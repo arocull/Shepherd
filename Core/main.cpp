@@ -48,10 +48,11 @@ $ make debug-mem-heavy // Attempts to locate all memory leaks
 #include "Entities/movement.h"
 #include "Entities/AI/path_manager.h"
 #include "Entities/AI/ai_manager.h"
-#include "Map/map_loading.h"
 
 #include "Triggers/triggers.h"
 
+#include "Map/map_loading.h"
+#include "Map/save.h"
 
 
 int main(int argc, char **argv) {
@@ -559,6 +560,7 @@ int main(int argc, char **argv) {
 
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
+            SaveLoad::SaveMap(world[x][y], x, y);
             world[x][y]->Free();
             delete world[x][y];
         }
