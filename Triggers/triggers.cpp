@@ -11,7 +11,8 @@ void Trigger_Free() {
 
 
 void Trigger_OnTile(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[], int triggerID) {
-    triggerID = max(1,min(triggerID, 4));
+    triggerID = triggerID - TileID::ET_Trigger1 + 1; // Convert char to numeric between 1 and 4
+    triggerID = max(1,min(triggerID, 4)); // Clamp
     
     if (triggerID == 4 || !map->Triggers[triggerID - 1]) {
         if (triggerID <= 3)

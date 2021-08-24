@@ -41,6 +41,7 @@ class Entity {
         virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta);
 
 
+        // DATA
         // Horizontal position of Entity
         int x;
         // Vertical position of Entity

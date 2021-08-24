@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
 
             // Check Entities for Fire
             int standingTile = currentLevel->GetTileID(player->x, player->y);
-            if (standingTile < 0) {
+            if (standingTile >= TileID::ET_Trigger1 && standingTile <= TileID::ET_Trigger4) {
                 Trigger_OnTile(&window, &soundService, currentLevel, levelEntities, abs(standingTile));
             } else if (standingTile == TileID::ET_Fizzler) {
                 Trigger_OnFizzler(&window, &soundService, currentLevel, player);

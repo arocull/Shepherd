@@ -13,32 +13,36 @@ struct Tile* MakeTile(int x, int y, int id) {
 // Sets tile's ID and properties based off of the given ID
 void SetTileID(struct Tile* tile, int newID) {
     tile->id = newID;
+
+    // Default all settings to none
+    tile->liquid = false;
+    tile->solid = false;
+    tile->pitfall = false;
+    tile->slidable = false;
+
     switch (newID) {
-        case TileID::ET_Empty_Tile:    //Empty Tile
-            tile->liquid = false;
-            tile->solid = false;
+        case TileID::ET_Empty_Tile:    // Empty Tile
             tile->pitfall = true;
             break;
         case TileID::ET_Wall:     //Wall
         case TileID::ET_Tree:     //Tree
         case TileID::ET_Rock:     //Rock
-        case TileID::ET_Pillar:     //Pillar
+        case TileID::ET_Pillar:   //Pillar
         case TileID::ET_Door_Vertical:    //Door (Closed Vertical)
-        case TileID::ET_Door_Horizontal:    //Door (Closed Horizontal)
-            tile->liquid = false;
+        case TileID::ET_Door_Horizontal:  //Door (Closed Horizontal)
             tile->solid = true;
-            tile->pitfall = false;
             break;
         case TileID::ET_Water:     //Water
         case TileID::ET_Magma:     //Magma
             tile->liquid = true;
-            tile->solid = false;
-            tile->pitfall = false;
+            tile->slidable = true; // Boxes can be pushed into fluids
             break;
-        default:
-            tile->solid = false;
-            tile->liquid = false;
-            tile->pitfall = false;
+        case TileID::ET_Empty_Puzzle_Piece:
+        case TileID::ET_Pressure_Plate:
+            tile->slidable = true;
+            break;
+        default: // Default to nothing
+            break;
     }
 }
 

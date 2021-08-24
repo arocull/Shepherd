@@ -1,4 +1,5 @@
 // Movement //
+// TODO: Refactor and merge functions, maybe a movement info struct?
 
 #include "Entities/movement.h"
 
@@ -72,7 +73,7 @@ bool Movement_CheckCollisionOnTiles(Map* world, Entity* entities[MaxEntities], i
         x >= MapWidth ||
         y < 0 ||
         y >= MapHeight ||
-        (world->GetTileID(x, y) != tileID && world->GetTileID(x, y) != 8) ||
+        (world->GetTileID(x, y) != tileID && world->GetTileID(x, y) != TileID::ET_Pressure_Plate) ||
         (GetEntityAtLocation(entities, x, y) && GetEntityAtLocation(entities, x, y)->Solid)
     );
 }
@@ -82,7 +83,7 @@ bool Movement_CheckCollisionOnTilesWithPush(Map* world, Entity* entities[MaxEnti
         x >= MapWidth ||
         y < 0 ||
         y >= MapHeight ||
-        (world->GetTileID(x, y) != tileID && world->GetTileID(x, y) != 8)
+        (world->GetTileID(x, y) != tileID && world->GetTileID(x, y) != TileID::ET_Pressure_Plate) // Make sure this is the tile we're looking for, or a pressure plate
     )) {
         bool pushed = true; // Default to true, true if no entity or entity was moved off of tile
 
@@ -178,25 +179,28 @@ bool Movement_ShiftEntityOnTiles(Map* world, Entity* entities[MaxEntities], Enti
     else if (dx > 0)
         obj->Flipped = false;
 
-    if (doPush) {
-        if (distY > distX) {
+    if (doPush) { // If we can push entities...
+        if (distY > distX) { // If we're moving more vertically than horizontally, prioritize vertical movement first
+            // For every vertical step, make sure the tile is pathable, push entities out of the way, and then move there
             for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x, obj->y+yChange, dx, dy, tileID); stepY++)
                 obj->y+=yChange;
+            // Same as above, but for horizontal steps
             for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x+xChange, obj->y, dx, dy, tileID); stepX++)
                 obj->x+=xChange;
-        } else {
+        } else { // Otherwise, prioritize horizontal movement rather than vertical
+            // Same as above
             for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x+xChange, obj->y, dx, dy, tileID); stepX++)
                 obj->x+=xChange;
             for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x, obj->y+yChange, dx, dy, tileID); stepY++)
                 obj->y+=yChange;
         }
-    } else {
-        if (distY > distX) {
+    } else { // If we can't push entities, just move forward
+        if (distY > distX) { // Prioritize Y movement first
             for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTiles(world, entities, obj->x, obj->y+yChange, tileID); stepY++)
                 obj->y+=yChange;
             for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTiles(world, entities, obj->x+xChange, obj->y, tileID); stepX++)
                 obj->x+=xChange;
-        } else {
+        } else { // Prioritize X movement first
             for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTiles(world, entities, obj->x+xChange, obj->y, tileID); stepX++)
                 obj->x+=xChange;
             for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTiles(world, entities, obj->x, obj->y+yChange, tileID); stepY++)
@@ -204,7 +208,7 @@ bool Movement_ShiftEntityOnTiles(Map* world, Entity* entities[MaxEntities], Enti
         }
     }
 
-    return (obj->x == desiredX && obj->y == desiredY);
+    return (obj->x == desiredX && obj->y == desiredY); // Return true if we ended up at the desired location, false otherwise
 }
 
 

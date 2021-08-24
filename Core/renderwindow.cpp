@@ -250,7 +250,7 @@ void RenderWindow::FillViewportBackground(EnvironmentID environment) {
     return;
 }
 void RenderWindow::DrawTile(int tileX, int tileY, int tileID, int tilingIndex) {
-    if (tileID <= TileID::ET_None) return;
+    if (tileID == TileID::ET_None || (tileID >= TileID::ET_Trigger1 && tileID <= TileID::ET_Trigger4) || tileID == TileID::ET_Fizzler) return;
 
     SDL_Rect tile;
     tile.w = tileRes;
