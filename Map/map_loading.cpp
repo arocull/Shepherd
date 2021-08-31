@@ -166,17 +166,25 @@ Map* GenerateMapFromFile(const char* filePath) {
                 int scrollIndex = 0;
                 for (; scrollIndex < MaxScrollNameLength - 1 && !mapFile.eof(); scrollIndex++) {
                     char currentChar = mapFile.get();
-                    if (currentChar == '\n') break; // Stop sampling on newline
                     scrollName[scrollIndex] = currentChar;
+                    if (currentChar == '\n') { // Stop sampling on newline, character will get replaced with a terminating character
+                        scrollIndex++;
+                        break;
+                    }
                 }
                 scrollName[scrollIndex - 1] = '\0';     // Terminating character
+                scrollIndex = 0; // Reset scroll text index
 
                 // Do not need to grab newline here--is collected within scroll name builder
                 if (!mapFile.eof()) {
                     char* scroll = (char*) calloc(sizeof(char), MaxScrollLength);
-                    scrollIndex = 0; // Reset scroll index
                     for (; scrollIndex < MaxScrollLength - 1 && !mapFile.eof(); scrollIndex++) {
-                        scroll[scrollIndex] = mapFile.get();
+                        char currentChar = mapFile.get();
+                        scroll[scrollIndex] = currentChar;
+                        if (currentChar == '\n') { // Stop sampling on newline, character will get replaced with a terminating character
+                            scrollIndex++;
+                            break;
+                        }
                     }
                     scroll[scrollIndex - 1] = '\0';     // Terminating character
 
