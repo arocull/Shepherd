@@ -219,5 +219,10 @@ std::string* Map::Ascii() {
         strAppendChar(text, '\n');
     }
 
+    // Finally, append map state data
+    strAppendChar(text, '\n');
+    strAppendChar(text, 'M');
+    strPoolIntegers(text, 8, HasLoaded, Triggers[0], Triggers[1], Triggers[2], PuzzleStatus, ScrollDiscovered, eventTimer, eventID);
+
     return text;
 }

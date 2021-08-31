@@ -8,8 +8,6 @@ bool SaveLoad::SaveMap(Map* map, int x, int y) {
     strAppendChar(&filename, ','); // Comma
     filename.append(std::to_string(y)); // Y position
 
-    strAppendChar(data, '\n');
-
     // Push in Entity Data
     for (int i = 0; i < MaxEntitiesStoreable; i++) {
         if (nullptr != map->StoredEntities[i]) {
@@ -20,6 +18,13 @@ bool SaveLoad::SaveMap(Map* map, int x, int y) {
             data->append(*entityData);
             delete entityData;
         }
+    }
+
+    // TODO: Reconfigure puzzles after loading map and entitites
+    for (int i = 0; i < MaxPuzzles; i++) {
+        // if (nullptr != map->Puzzles[i]) {
+        //     Puzzle* puzzle = map->Puzzles[i];
+        // }
     }
 
 
