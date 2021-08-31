@@ -198,31 +198,31 @@ std::string* Map::Ascii() {
     // Tiles
     for (int y = 0; y < MapHeight; y++) {
         for (int x = 0; x < MapWidth; x++) {
-            strAppendChar(text, GetTileID(x, y));
+            strutil::appendChar(text, GetTileID(x, y));
         }
-        strAppendChar(text, '\n');
+        strutil::appendChar(text, '\n');
     }
 
     // Map ID and Biome
     std::string mapIDString = std::to_string(GetMapID());
     text->append(mapIDString);
-    strAppendChar(text, GetMapBiome());
+    strutil::appendChar(text, GetMapBiome());
 
     // Scroll
     if (HasScroll()) { // If map has a scroll, get scroll data and append to file
-        strAppendChar(text, '\n');
+        strutil::appendChar(text, '\n');
         text->append(GetScrollName());
-        strAppendChar(text, '\n');
+        strutil::appendChar(text, '\n');
         text->append(GetScroll());
     } else { // Otherwise, put blanks
-        strAppendChar(text, '\n');
-        strAppendChar(text, '\n');
+        strutil::appendChar(text, '\n');
+        strutil::appendChar(text, '\n');
     }
 
     // Finally, append map state data
-    strAppendChar(text, '\n');
-    strAppendChar(text, 'M');
-    strPoolIntegers(text, 8, HasLoaded, Triggers[0], Triggers[1], Triggers[2], PuzzleStatus, ScrollDiscovered, eventTimer, eventID);
+    strutil::appendChar(text, '\n');
+    strutil::appendChar(text, 'M');
+    strutil::poolIntegers(text, 8, HasLoaded, Triggers[0], Triggers[1], Triggers[2], PuzzleStatus, ScrollDiscovered, eventTimer, eventID);
 
     return text;
 }

@@ -5,7 +5,7 @@ bool SaveLoad::SaveMap(Map* map, int x, int y) {
 
     string filename = "save/m"; // Indicate this is a map
     filename.append(std::to_string(x)); // X position
-    strAppendChar(&filename, ','); // Comma
+    strutil::appendChar(&filename, ','); // Comma
     filename.append(std::to_string(y)); // Y position
 
     // Push in Entity Data
@@ -14,7 +14,7 @@ bool SaveLoad::SaveMap(Map* map, int x, int y) {
             Entity* obj = map->StoredEntities[i];
             std::string* entityData = obj->Ascii();
 
-            strAppendChar(data, '\n');
+            strutil::appendChar(data, '\n');
             data->append(*entityData);
             delete entityData;
         }
