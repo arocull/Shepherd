@@ -4,6 +4,8 @@
 #include "Core/enums.h"
 #include "SDL2/SDL.h"
 
+#include <Core/strutils.h>
+
 // Entity - Any mobile object with individual properties.
 class Entity {
     public:
@@ -78,4 +80,7 @@ class Entity {
 
         // If true, entity can be saved to or removed from levels upon entering and leaving
         bool archivable = false;
+
+        // Generates an Ascii string that contains data on this entity
+        std::string* Ascii();
 };

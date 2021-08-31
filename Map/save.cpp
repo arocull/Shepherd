@@ -8,9 +8,20 @@ bool SaveLoad::SaveMap(Map* map, int x, int y) {
     strAppendChar(&filename, ','); // Comma
     filename.append(std::to_string(y)); // Y position
 
-    // printf("Map data\n%s\n\tfor filename %s\n", data->c_str(), filename.c_str());
+    strAppendChar(data, '\n');
 
-    // TODO: Entity data
+    // Push in Entity Data
+    for (int i = 0; i < MaxEntitiesStoreable; i++) {
+        if (nullptr != map->StoredEntities[i]) {
+            Entity* obj = map->StoredEntities[i];
+            std::string* entityData = obj->Ascii();
+
+            strAppendChar(data, '\n');
+            data->append(*entityData);
+            delete entityData;
+        }
+    }
+
 
     ofstream saveFile;
     saveFile.open(filename.c_str(), ios::out | ios::trunc);

@@ -47,3 +47,14 @@ void Entity::ResetAnimationTimers() {
 void Entity::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
     SDL_RenderCopy(canvas, texture, NULL, tile); // Render entire given texture as default
 }
+
+
+std::string* Entity::Ascii() {
+    std::string* text = new std::string();
+
+    strAppendChar(text, 'E'); // Signal that this is an Entity
+    // Dump important data into a string of integers
+    strPoolIntegers(text, 11, id, x, y, MaxHealth, Health, HasFire, HasFrost, Flipped, Paused, animation, archivable);
+
+    return text;
+}
