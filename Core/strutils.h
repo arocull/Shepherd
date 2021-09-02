@@ -23,6 +23,7 @@ namespace strutil {
     // - Takes in an integer pointer for the starting index, and iterates it until it hits the end of the current integer
     int parseInt(char* string, int* index);
     // Given a string, returns true or false?
+    // - Takes in an integer pointer for the starting index, and iterates it until it hits the end of the current integer
     bool parseBool(char* string, int* index);
 
     // Returns true if the given character is a number 0-9

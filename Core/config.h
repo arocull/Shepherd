@@ -52,6 +52,9 @@
 // Maximum text length of a scroll in characters
 #define MaxScrollLength 256
 
+// Maximum line length that can be loaded for importing map data and properties
+#define MaxAsciiLoadBuffer 256
+
 
 // Debug //
 

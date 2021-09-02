@@ -1,22 +1,15 @@
 #pragma once
 
-#include <fstream>
-
 #include "Core/config.h"
 #include "Core/mathutil.h"
 #include "Core/enums.h"
 
-#include "Map/tile.h"
 #include "Map/map.h"
 
 #include "Entities/entity.h"
 #include "Entities/Subclasses/sheep.h"
-#include "Entities/Subclasses/wolf.h"
-#include "Entities/Subclasses/crate.h"
-#include "Entities/Subclasses/torch.h"
-#include "Entities/Subclasses/lever.h"
-#include "Entities/Subclasses/spirit.h"
 #include "Entities/entity_management.h"
+
 
 /*
 Checks to see if the given location is valid for spawning entities
@@ -35,5 +28,3 @@ Loads a new level
 - Spawns sheep in
 */
 Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY);
-
-Map* GenerateMapFromFile(const char* filePath);
