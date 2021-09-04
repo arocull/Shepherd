@@ -9,8 +9,10 @@
 #include "Core/strutils.h"
 #include "Map/map.h"
 #include "Entities/entity.h"
+#include "Entities/entity_management.h"
 
 // TODO: Header file that includes all Entity subclasses
+#include "Entities/Subclasses/shepherd.h"
 #include "Entities/Subclasses/sheep.h"
 #include "Entities/Subclasses/fireball.h"
 #include "Entities/Subclasses/wolf.h"
@@ -33,6 +35,8 @@ namespace SaveLoad {
 
     // Creates a new Entity object using the given ID and position
     Entity* NewEntityFromID(EntityID id, int x = 0, int y = 0);
+    // Creates a new Entity using an Ascii buffer
+    Entity* NewEntityFromAscii(char* buffer);
 
 
     // LOADING //
@@ -42,6 +46,9 @@ namespace SaveLoad {
 
 
     // SAVING //
+
+    // Saves the current game state, mostly existing entities, player position, loaded area
+    bool SaveState(int worldX, int worldY, Shepherd* player, Entity** entites);
 
     // Saves a given map into a file
     bool SaveMap(Map* map, int x, int y);

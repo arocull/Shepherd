@@ -8,7 +8,6 @@ class Lever : public Entity {
         Lever(int posX, int posY);
 
     private:
-        bool Flipped = false;
         bool Locked = false;
         bool lastState = false;
 
@@ -23,4 +22,9 @@ class Lever : public Entity {
 
         virtual void Tick() override;
         virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) override;
+
+        // Generates an Ascii string that contains data on this entity. See Entity::Ascii
+        virtual std::string* Ascii() override;
+        // Loads data from a given ascii string. See Entity::LoadAscii
+        virtual void LoadAscii(char* str, int* index) override;
 };

@@ -41,3 +41,17 @@ void Torch::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, flo
         SDL_RenderCopyEx(canvas, texture, &src, tile, 0, NULL, GetFlipStyle());
     }
 }
+
+
+std::string* Torch::Ascii() {
+    std::string* text = Entity::Ascii();
+    strutil::appendChar(text, ',');
+    strutil::poolIntegers(text, 3, glow, Extinguishable, FireUsable);
+    return text;
+}
+void Torch::LoadAscii(char* str, int* index) {
+    Entity::LoadAscii(str, index);
+    glow = strutil::parseBool(str, index);
+    Extinguishable = strutil::parseBool(str, index);
+    FireUsable = strutil::parseBool(str, index);
+}

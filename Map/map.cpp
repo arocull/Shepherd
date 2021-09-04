@@ -226,3 +226,13 @@ std::string* Map::Ascii() {
 
     return text;
 }
+void Map::LoadAscii(char* str, int* index) {
+    HasLoaded = strutil::parseBool(str, index);
+    Triggers[0] = strutil::parseBool(str, index);
+    Triggers[1] = strutil::parseBool(str, index);
+    Triggers[2] = strutil::parseBool(str, index);
+    PuzzleStatus = strutil::parseBool(str, index);
+    ScrollDiscovered = strutil::parseBool(str, index);
+    eventTimer = strutil::parseInt(str, index);
+    eventID = strutil::parseInt(str, index);
+}

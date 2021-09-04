@@ -15,3 +15,16 @@ void Crate::Incinerate(Particle* particles, Entity* attacker) {
         }
     }
 }
+
+
+std::string* Crate::Ascii() {
+    std::string* text = Entity::Ascii();
+    strutil::appendChar(text, ',');
+    strutil::poolIntegers(text, 2, type, canIncinerate);
+    return text;
+}
+void Crate::LoadAscii(char* str, int* index) {
+    Entity::LoadAscii(str, index);
+    type = strutil::parseInt(str, index);
+    canIncinerate = strutil::parseBool(str, index);
+}

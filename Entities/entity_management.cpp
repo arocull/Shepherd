@@ -1,9 +1,9 @@
 // Entity Management Function Definitions //
 #include "entity_management.h"
 
-void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity) {
-    for (int i = 0; i < MaxEntities; i++) {
-        if (!entities[i]) {            //Empty slot in list. Go ahead and add them in!
+void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity, int arrayLength) {
+    for (int i = 0; i < arrayLength; i++) {
+        if (nullptr == entities[i]) {            //Empty slot in list. Go ahead and add them in!
             entities[i] = newEntity;
             return;
         }

@@ -27,6 +27,11 @@ class Fireball : public Entity {
         void Burst(Entity** entities, Particle* particles);
 
         virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) override;
+
+        // Generates an Ascii string that contains data on this entity. See Entity::Ascii
+        virtual std::string* Ascii() override;
+        // Loads data from a given ascii string. See Entity::LoadAscii
+        virtual void LoadAscii(char* str, int* index) override;
     
     private:
         void BurstTorch(Torch* torch);

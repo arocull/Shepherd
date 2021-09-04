@@ -12,7 +12,7 @@ General utilities for managing lists of entities
 #include "Entities/entity.h"
 
 // Adds the selected entity to the given list of entities
-void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity);
+void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity, int arrayLength = MaxEntities);
 
 /*  Adds the selected entity to the given list of entities
 

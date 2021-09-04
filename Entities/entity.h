@@ -82,5 +82,8 @@ class Entity {
         bool archivable = false;
 
         // Generates an Ascii string that contains data on this entity
-        std::string* Ascii();
+        virtual std::string* Ascii();
+        // Loads data from a given ascii string, using an index pointer that is at the first number in the string.
+        // - Assume the ID has already been passed
+        virtual void LoadAscii(char* str, int* index);
 };

@@ -21,6 +21,16 @@ Entity* SaveLoad::NewEntityFromID(EntityID id, int x, int y) {
             return nullptr;
     }
 }
+Entity* SaveLoad::NewEntityFromAscii(char* buffer) {
+    int idx = 1; // Start one character in, since char 0 is a flag for the Ascii buffer type
+    EntityID entityID = (EntityID) strutil::parseInt(buffer, &idx);
+    Entity* obj = NewEntityFromID(entityID, 0, 0); // Set current position to 0, 0--will be overridden when loading data
+    if (nullptr != obj) {
+        obj->LoadAscii(buffer, &idx);
+    }
+
+    return obj;
+}
 
 Map* SaveLoad::LoadMapFile(const char* filePath) {
     std::fstream mapFile;       //Creates stream to read from
@@ -145,7 +155,19 @@ Map* SaveLoad::LoadMapFile(const char* filePath) {
             mapFile.getline(buffer, MaxAsciiLoadBuffer);
             printf("Map %i loaded string %s\n", map->GetMapID(), buffer);
 
-            int idx = 0;
+            int idx = 1;
+
+            switch (buffer[0]) {
+                case 'M':
+                    map->LoadAscii(buffer, &idx);
+                    break;
+                case 'E':
+                    AppendEntity(map->StoredEntities, SaveLoad::NewEntityFromAscii(buffer), MaxEntitiesStoreable);
+                    break;
+                case 'P':
+                    // TODO: Load puzzle data
+                    break;
+            }
         }
         free(buffer);
     }
@@ -197,5 +219,11 @@ bool SaveLoad::SaveMap(Map* map, int x, int y) {
     saveFile.close();
 
     delete data;
+    return true;
+}
+
+bool SaveLoad::SaveState(int worldX, int worldY, Shepherd* player, Entity** entites) {
+    
+
     return true;
 }

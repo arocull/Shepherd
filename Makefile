@@ -57,3 +57,9 @@ clean: # Delete build directory
 
 run: # Run code
 	./build/Core/main
+
+debug: # Run code with gdb
+	gdb ./build/Core/main
+
+debug-mem: # Run code with valgrind
+	valgrind ./build/Core/main

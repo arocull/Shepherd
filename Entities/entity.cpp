@@ -54,7 +54,18 @@ std::string* Entity::Ascii() {
 
     strutil::appendChar(text, 'E'); // Signal that this is an Entity
     // Dump important data into a string of integers
-    strutil::poolIntegers(text, 11, id, x, y, MaxHealth, Health, HasFire, HasFrost, Flipped, Paused, animation, archivable);
+    strutil::poolIntegers(text, 10, id, x, y, Health, HasFire, HasFrost, Flipped, Paused, archivable, animation);
 
     return text;
+}
+void Entity::LoadAscii(char* str, int* index) {
+    x = strutil::parseInt(str, index);
+    y = strutil::parseInt(str, index);
+    Health = strutil::parseInt(str, index);
+    HasFire = strutil::parseBool(str, index);
+    HasFrost = strutil::parseBool(str, index);
+    Flipped = strutil::parseBool(str, index);
+    Paused = strutil::parseBool(str, index);
+    archivable = strutil::parseBool(str, index);
+    animation = (AnimationID) strutil::parseInt(str, index);
 }

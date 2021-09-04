@@ -95,3 +95,17 @@ void Fireball::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, 
 
     SDL_RenderFillRect(canvas, tile);
 }
+
+
+std::string* Fireball::Ascii() {
+    std::string* text = Entity::Ascii();
+    strutil::appendChar(text, ',');
+    strutil::poolIntegers(text, 3, speedX, speedY, enemy);
+    return text;
+}
+void Fireball::LoadAscii(char* str, int* index) {
+    Entity::LoadAscii(str, index);
+    speedX = strutil::parseInt(str, index);
+    speedY = strutil::parseInt(str, index);
+    enemy = strutil::parseBool(str, index);
+}

@@ -15,4 +15,9 @@ class Crate : public Entity {
         bool canIncinerate = false;
 
         void Incinerate(Particle* particles, Entity* attacker);
+
+        // Generates an Ascii string that contains data on this entity. See Entity::Ascii
+        virtual std::string* Ascii() override;
+        // Loads data from a given ascii string. See Entity::LoadAscii
+        virtual void LoadAscii(char* str, int* index) override;
 };

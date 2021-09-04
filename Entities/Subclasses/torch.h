@@ -20,4 +20,9 @@ class Torch : public Entity {
         // Extinguishes the torch (both fire and frost)
         // - Only works if the torch can be extinguished (unless overriden)
         void Extinguish(bool Override = false);
+
+        // Generates an Ascii string that contains data on this entity. See Entity::Ascii
+        virtual std::string* Ascii() override;
+        // Loads data from a given ascii string. See Entity::LoadAscii
+        virtual void LoadAscii(char* str, int* index) override;
 };

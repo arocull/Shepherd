@@ -51,3 +51,15 @@ void Lever::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, flo
         SDL_RenderCopyEx(canvas, texture, &src, tile, 0, NULL, SDL_FLIP_NONE);
     }
 }
+
+
+std::string* Lever::Ascii() {
+    std::string* text = Entity::Ascii();
+    strutil::appendChar(text, ',');
+    strutil::poolIntegers(text, 1, Locked);
+    return text;
+}
+void Lever::LoadAscii(char* str, int* index) {
+    Entity::LoadAscii(str, index);
+    Locked = strutil::parseBool(str, index);
+}

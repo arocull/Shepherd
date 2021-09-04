@@ -5,6 +5,8 @@
         "*.tcc": "cpp",
         "fstream": "cpp",
         "iosfwd": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "Assets/Maps/**": "plain text",
+        "save/*": "plain text",
     }
 }

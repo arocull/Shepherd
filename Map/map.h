@@ -59,6 +59,7 @@ class Map {
         void Free();
 
         std::string* Ascii();
+        void LoadAscii(char* str, int* index);
 
     private:
         int EntitiesStored = 0;
