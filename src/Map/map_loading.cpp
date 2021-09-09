@@ -1,12 +1,12 @@
 // Level Loading //
 #include "Map/map_loading.h"
 
-bool LoadLevel_IsSpawnable(Map* level, Entity* entities[MaxEntities], int xPos, int yPos) {
+bool LoadLevel_IsSpawnable(Map* level, Entity** entities, int xPos, int yPos) {
     return (!level->IsTileSolid(xPos, yPos) && !level->IsTileLiquid(xPos, yPos) && !level->IsTilePitfall(xPos, yPos) && !GetEntityAtLocation(entities, xPos, yPos));
 }
 
 
-Map* LoadLevel(Map* world[WorldWidth][WorldHeight], Map* currentMap, Entity* levelEntities[MaxEntities], int worldX, int worldY, int playerX, int playerY) {
+Map* LoadLevel(Map*** world, Map* currentMap, Entity** levelEntities, int worldX, int worldY, int playerX, int playerY) {
     //Point current level to the new map
     Map* newLevel = world[worldX][worldY];
 

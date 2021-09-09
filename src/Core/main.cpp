@@ -24,6 +24,8 @@ $ make debug-mem-heavy // Attempts to locate all memory leaks
 #include "Core/config.h"
 #include "Core/mathutil.h"
 
+#include "Core/game.h"
+
 #include "Core/Input/input_action.h"
 #include "Core/Input/controller.h"
 #include "Core/UI/menu.h"
@@ -64,128 +66,13 @@ int main(int argc, char **argv) {
     RenderWindow window = RenderWindow(800,500,"Shepherd");
     if (!window.IsInitialized()) return 3;
 
-    SoundService soundService = SoundService();
-
-    MenuManager* menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
-    Controller* controller = new Controller(menus, &soundService); // Player controller input (done as pointer in-case multiple are used in future)
-
-    AIManager* ai = new AIManager();
+    Game* game = new Game(&window);
 
     SDL_Event event;
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
     float DeltaTime = 0;
     float GameTick = 0;
-    int ticks = 0;
-    bool GamePaused = false;
-
-    // Load world from files
-    Map* world[WorldWidth][WorldHeight];
-    world[0][2] = SaveLoad::LoadMapFile("Assets/Maps/Ravine/Start1");
-    world[1][2] = SaveLoad::LoadMapFile("Assets/Maps/Ravine/Start2");
-    world[2][2] = SaveLoad::LoadMapFile("Assets/Maps/Ravine/Start3");
-    world[3][2] = SaveLoad::LoadMapFile("Assets/Maps/Ravine/Start4");
-
-    world[0][1] = SaveLoad::LoadMapFile("Assets/Maps/Desert/Desert1");
-    world[1][1] = SaveLoad::LoadMapFile("Assets/Maps/Desert/Desert2");
-    world[2][1] = SaveLoad::LoadMapFile("Assets/Maps/Desert/Desert3");
-    world[3][1] = SaveLoad::LoadMapFile("Assets/Maps/Desert/GateArea");
-
-    world[0][0] = SaveLoad::LoadMapFile("Assets/Maps/Desert/Desert4");
-    world[1][0] = SaveLoad::LoadMapFile("Assets/Maps/Desert/Desert5");
-    world[2][0] = SaveLoad::LoadMapFile("Assets/Maps/Desert/Desert6");
-    world[3][0] = SaveLoad::LoadMapFile("Assets/Maps/Desert/Desert7");
-
-    world[4][2] = SaveLoad::LoadMapFile("Assets/Maps/Empty");
-    world[4][1] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidHall1");
-    world[4][0] = SaveLoad::LoadMapFile("Assets/Maps/Desert/DesertScroll");
-
-    world[5][2] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid1");
-    world[6][2] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid2");
-    world[7][2] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid3");
-
-    world[5][1] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid4");
-    world[6][1] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid5");
-    world[7][1] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid6");
-
-    world[5][0] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid7");
-    world[6][0] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid8");
-    world[7][0] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/Pyramid9");
-
-    world[8][2] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidFireballs2");
-    world[8][1] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidFireballs1");
-    world[8][0] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidScroll");
-
-    // THIS AREA IS BOUND TO CHANGE
-    world[9][2] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidFireballs3");
-    world[9][1] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidFireballs4");
-    world[9][0] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidFireballs5");
-
-    world[10][2] = SaveLoad::LoadMapFile("Assets/Maps/Empty");
-    world[10][1] = SaveLoad::LoadMapFile("Assets/Maps/Empty");
-    world[10][0] = SaveLoad::LoadMapFile("Assets/Maps/Pyramid/PyramidBoss");
-
-    // Perform first-time setup for levels that need it (set up puzzles, update entity data, get scrolls)
-    {
-        int numScrolls = 0; // Total number of scrolls, for scroll data setup
-        int maxMapID = 0; // Max map ID, for trigger scripts setup
-        for (int x = 0; x < WorldWidth; x++) {
-            for (int y = 0; y < WorldHeight; y++) {
-                Trigger_SetupPuzzles(world[x][y]);
-                if (world[x][y]->HasScroll()) numScrolls++;
-                if (world[x][y]->GetMapID() > maxMapID) { maxMapID = world[x][y]->GetMapID(); }
-            }
-        }
-
-        Trigger_Init(maxMapID); // Initialize trigger scripts
-        menus->InitScrolls(numScrolls); // Initialize scroll list
-        int currentScroll = 0;
-
-        // Fill in scroll data
-        for (int x = 0; x < WorldWidth && currentScroll < numScrolls; x++) {
-            for (int y = 0; y < WorldHeight && currentScroll < numScrolls; y++) {
-                if (world[x][y]->HasScroll()) {
-                    world[x][y]->SetScrollIndex(currentScroll);
-                    currentScroll++;
-                }
-            }
-        }
-    }
-
-    // World indexing, current X and Y is the currently loaded level, world X and Y is changed based upon movement and says what level to load
-    int worldX = 0;
-    int worldY = 2;
-    #ifdef DEBUG_MODE
-        if (DEBUG_SkipGates == 2) {
-            worldX = 4;
-            worldY = 1;
-        } else if (DEBUG_SkipGates == 3) {
-            worldX = 7;
-            worldY = 1;
-        } else if (DEBUG_SkipGates >= 4) {
-            worldX = 9;
-            worldY = 0;
-        }
-    #endif
-    int currentWorldX = worldX;
-    int currentWorldY = worldY;
-    
-    // Allocate memory for runtime entities
-    Entity* levelEntities[MaxEntities];
-    for (int i = 1; i < MaxEntities; i++) {
-        levelEntities[i] = nullptr;
-    }
-    
-    struct Particle* particles = (struct Particle*) calloc(MaxParticles, sizeof(Particle));
-
-    // Player setup
-    Shepherd* player = new Shepherd(20, 8);
-    levelEntities[0] = player;
-
-    // Load in current level and (finally) start the game
-    Map* currentLevel = LoadLevel(world, NULL, levelEntities, worldX, worldY, player->x, player->y);
-    Trigger_GameStart(&window, &soundService, currentLevel, levelEntities);
-
 
     SDL_PollEvent(&event);
     while (event.type != SDL_QUIT) {
@@ -476,88 +363,10 @@ int main(int argc, char **argv) {
 
             GameTick--;
         }
-
-
-        // Particles
-        TickParticles(particles, DeltaTime);
-
-
-        // Render
-        SDL_SetRenderDrawColor(window.canvas, 0, 0, 0, 0);
-        SDL_RenderClear(window.canvas);
-        window.UpdateSize();
-        window.TickDeltaTime(DeltaTime);
-
-        // Fill background based off of biome
-        window.FillViewportBackground(currentLevel->GetMapBiome());
-
-        // Draw tiles first
-        int currentTileID = 0;
-        for (int x = 0; x < MapWidth; x++) {
-            for (int y = 0; y < MapHeight; y++) {
-                currentTileID = currentLevel->GetTileID(x,y);
-                window.DrawTile(
-                    x,
-                    y,
-                    currentTileID,
-                    IsTileable(currentTileID) ? GetTilingIndex( // If the tile is tileable, get the tiling index
-                        currentLevel->GetTileIDConstrained(x,y-1) == currentTileID,
-                        currentLevel->GetTileIDConstrained(x,y+1) == currentTileID,
-                        currentLevel->GetTileIDConstrained(x+1,y) == currentTileID,
-                        currentLevel->GetTileIDConstrained(x-1,y) == currentTileID
-                    ) : 0); // Otherwise, simply return zero
-            }
-        }
-
-        // Draw all entities aside from Shepherd
-        for (Entity* obj : levelEntities) {
-            if (obj && obj->GetID() != EntityID::EE_Shepherd)
-                window.DrawEntity(obj, tickedThisFrame, DeltaTime);
-        }
-
-
-        // Draw active particles - enable blending for transparency
-        SDL_BlendMode blend;
-        SDL_GetRenderDrawBlendMode(window.canvas, &blend);
-        SDL_SetRenderDrawBlendMode(window.canvas, SDL_BLENDMODE_BLEND);
-        for (int i = 0; i < MaxParticles; i++) {
-            if (particles[i].active)
-                window.DrawParticle(particles[i].x, particles[i].y, particles[i].id, particles[i].lifetime/particles[i].maxLifetime);
-        }
-        SDL_SetRenderDrawBlendMode(window.canvas, blend);
-
-        // Draw shepherd last
-        window.DrawEntity(player, tickedThisFrame, DeltaTime);
-
-        // Draw GUI
-        window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
-        window.DrawDialogueBox();
-        
-        soundService.Tick(DeltaTime);
-        SDL_RenderPresent(window.canvas);
     }
 
 
-    // Close window and deallocate memory
-    window.Close();
-    soundService.CloseSoundService();
-
-    // Disable triggers
-    Trigger_Free();
-
-    // Free menus
-    menus->Free();
-    delete menus;
-    delete controller;
-
-    // Free in-game effects
-    StopParticles(particles);
-    free(particles);
-
     // Free world, entities, and finally the player
-    ai->ClearContext();
-    delete ai;
-
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
             SaveLoad::SaveMap(world[x][y], x, y);
@@ -571,7 +380,11 @@ int main(int argc, char **argv) {
             delete levelEntities[i];
         }
     }
-    delete player;
+
+    delete game;
+
+    // Close window and deallocate memory
+    window.Close();
 
     return 0;
 }
