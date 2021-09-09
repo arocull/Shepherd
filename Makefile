@@ -13,11 +13,13 @@ CFLAGS= -g -O2 `sdl2-config --libs` -lSDL2main -lSDL2_mixer `sdl2-config --cflag
 ODIR = build
 # Save files should go in this directory
 SDIR = save
+# Final executable
+TARGET = $(addprefix $(ODIR)/, src/Core/main)
 
 # For modules, list any and all subfolders that need to be compiled
 MODULES := Audio Map Triggers Entities Entities/AI Entities/Subclasses Entities/Boss Core Core/Input Core/UI
 # Apply 'src/' to all modules/subfolders
-SRC_DIR  := . $(MODULES)
+SRC_DIR  := src/ $(addprefix src/, $(MODULES))
 INCLUDES := $(addprefix -I, $(SRC_DIR))
 # Same as above, but utilizes build directory
 BUILD_DIR := $(addprefix $(ODIR)/, $(SRC_DIR))
@@ -27,7 +29,7 @@ DEPS := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.h))
 OBJS := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
 
 # Each CPP file needs a corresponding object output
-_OBJ := $(patsubst %.cpp, %.o, $(OBJS)) Core/main.o
+_OBJ := $(patsubst %.cpp, %.o, $(OBJS)) src/Core/main.o
 # Objects should be outputted in build directory
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
@@ -46,7 +48,7 @@ $(ODIR)/%.o: %.cpp $(SRC_DIR)
 
 # Finally build target / goal
 build: $(OBJ)
-	$(CC) $^ $(CFLAGS) -o build/Core/main
+	$(CC) $^ $(CFLAGS) -o build/src/Core/main
 
 checkdirs: $(BUILD_DIR) # Create necessary directories
 	@mkdir -p $(SDIR)
@@ -56,10 +58,10 @@ clean: # Delete build directory
 	rm -rf $(SDIR)
 
 run: # Run code
-	./build/Core/main
+	./$(TARGET)
 
 debug: # Run code with gdb
-	gdb ./build/Core/main
+	gdb ./$(TARGET)
 
 debug-mem: # Run code with valgrind
-	valgrind ./build/Core/main
+	valgrind ./$(TARGET)
