@@ -19,3 +19,14 @@ GameData::~GameData() {
 
     free(entities);
 }
+
+
+int GameData::CountSheep() {
+    int sheep = 0;
+    for (int i = 0; i < MaxEntities; i++) {
+        if (entities[i] && entities[i]->GetID() == EntityID::EE_Sheep) {
+            sheep++;
+        }
+    }
+    return sheep;
+}

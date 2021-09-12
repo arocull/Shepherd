@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Core/config.h"
+#include "Core/enums.h"
+
 #include "Map/map.h"
 #include "Entities/entity.h"
 #include "Entities/particle.h"
-
 #include "Entities/Subclasses/shepherd.h"
 
 class GameData {
@@ -24,4 +26,7 @@ class GameData {
         int ticks; // Total number of ticks the game has been running for
 
     private:
+
+    public:
+        int CountSheep();
 };

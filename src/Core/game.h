@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL2/SDL.h>
+
 #include "Core/config.h"
 #include "Core/gamedata.h"
 
@@ -21,6 +23,7 @@ class Game {
 
         GameData* data;
         bool paused;
+        bool close;
     
     private:
         RenderWindow* window;
@@ -29,13 +32,23 @@ class Game {
         Controller* controller;
         AIManager* ai;
 
-        int maxMapID;
-        bool tickedThisFrame;
+        int maxMapID = 0;
+        bool tickedThisFrame = false;
+
+        int loadedMapX = 0;
+        int loadedMapY = 0;
+        float tickTimer = 0;
     
     public:
+        // Process Input (window-specific functions happen here)
+        struct InputAction* ProcessInput(SDL_Event* event);
+        
         void Tick();
-        void Step(float deltaTime);
+        // Ticks general utilities like audio and particles, returns true if a tick should occur
+        bool Step(float deltaTime);
         void Draw(float deltaTime);
+
+        void DrawPauseMenu(float deltaTime);
 
     private:
         // Loads scroll data from the currently loaded maps
@@ -43,4 +56,7 @@ class Game {
 
         // Creates a new game, loading default settings
         void NewGame();
+
+        // Ticks player movement once
+        void MovePlayer();
 };

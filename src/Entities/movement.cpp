@@ -1,16 +1,13 @@
-// Movement //
-// TODO: Refactor and merge functions, maybe a movement info struct?
-
 #include "Entities/movement.h"
 
-bool MoveUp = false;
-bool MoveDown = false;
-bool MoveRight = false;
-bool MoveLeft = false;
-bool Move_QueueClear = false;
-bool MoveFireballQueued = false;
+bool Movement::MoveUp = false;
+bool Movement::MoveDown = false;
+bool Movement::MoveRight = false;
+bool Movement::MoveLeft = false;
+bool Movement::Move_QueueClear = false;
+bool Movement::MoveFireballQueued = false;
 
-void Movement_Clear() {
+void Movement::ClearQueue() {
     MoveUp = false;
     MoveDown = false;
     MoveRight = false;
@@ -18,18 +15,17 @@ void Movement_Clear() {
     Move_QueueClear = false;
 }
 
-
-bool Movement_CheckCollision(Map* world, Entity* entities[MaxEntities], int x, int y) {
+bool Movement::CheckCollision(Map* world, Entity* entities[MaxEntities], int x, int y) {
     return !(
         x < 0 ||
         x >= MapWidth ||
         y < 0 ||
         y >= MapHeight ||
         world->IsTileSolid(x, y) ||
-        (GetEntityAtLocation(entities, x, y) && GetEntityAtLocation(entities, x, y)->Solid)
+        (EntityTools::GetEntityAtLocation(entities, x, y) && EntityTools::GetEntityAtLocation(entities, x, y)->Solid)
     );
 }
-bool Movement_CheckCollisionWithPush(Map* world, Entity* entities[MaxEntities], int x, int y, int dx, int dy) {
+bool Movement::CheckCollisionWithPush(Map* world, Entity* entities[MaxEntities], int x, int y, int dx, int dy) {
     if (!(
         x < 0 ||
         x >= MapWidth ||
@@ -39,15 +35,15 @@ bool Movement_CheckCollisionWithPush(Map* world, Entity* entities[MaxEntities], 
     )) {
         bool pushed = true; // Default to true, true if no entity or entity was moved off of tile
 
-        Entity* a = GetEntityAtLocation(entities, x, y);
-        if (a && GetEntityAtLocation(entities, x, y)->Solid) {
+        Entity* a = EntityTools::GetEntityAtLocation(entities, x, y);
+        if (a && EntityTools::GetEntityAtLocation(entities, x, y)->Solid) {
             pushed = false; // Entity is here and solid
             switch (a->GetID()) {
                 case EntityID::EE_Sheep:
-                    pushed = Movement_ShiftEntity(world, entities, a, dx, dy, true); // True if entity moved, false if they were not
+                    pushed = Movement::ShiftEntity(world, entities, a, dx, dy, true); // True if entity moved, false if they were not
                     break;
                 case EntityID::EE_Crate:
-                    pushed = Movement_ShiftEntityOnTiles(world, entities, a, dx, dy, TileID::ET_Empty_Puzzle_Piece, true);
+                    pushed = Movement::ShiftEntityOnTiles(world, entities, a, dx, dy, TileID::ET_Empty_Puzzle_Piece, true);
                     break;
             }
 
@@ -67,17 +63,17 @@ bool Movement_CheckCollisionWithPush(Map* world, Entity* entities[MaxEntities], 
 
     return false;
 }
-bool Movement_CheckCollisionOnTiles(Map* world, Entity* entities[MaxEntities], int x, int y, int tileID) {
+bool Movement::CheckCollisionOnTiles(Map* world, Entity* entities[MaxEntities], int x, int y, int tileID) {
     return !(
         x < 0 ||
         x >= MapWidth ||
         y < 0 ||
         y >= MapHeight ||
         (world->GetTileID(x, y) != tileID && world->GetTileID(x, y) != TileID::ET_Pressure_Plate) ||
-        (GetEntityAtLocation(entities, x, y) && GetEntityAtLocation(entities, x, y)->Solid)
+        (EntityTools::GetEntityAtLocation(entities, x, y) && EntityTools::GetEntityAtLocation(entities, x, y)->Solid)
     );
 }
-bool Movement_CheckCollisionOnTilesWithPush(Map* world, Entity* entities[MaxEntities], int x, int y, int dx, int dy, int tileID) {
+bool Movement::CheckCollisionOnTilesWithPush(Map* world, Entity* entities[MaxEntities], int x, int y, int dx, int dy, int tileID) {
     if (!(
         x < 0 ||
         x >= MapWidth ||
@@ -87,15 +83,15 @@ bool Movement_CheckCollisionOnTilesWithPush(Map* world, Entity* entities[MaxEnti
     )) {
         bool pushed = true; // Default to true, true if no entity or entity was moved off of tile
 
-        Entity* a = GetEntityAtLocation(entities, x, y);
-        if (a && GetEntityAtLocation(entities, x, y)->Solid) {
+        Entity* a = EntityTools::GetEntityAtLocation(entities, x, y);
+        if (a && EntityTools::GetEntityAtLocation(entities, x, y)->Solid) {
             pushed = false; // Entity is here and solid
             switch (a->GetID()) {
                 case EntityID::EE_Sheep:
-                    pushed = Movement_ShiftEntity(world, entities, a, dx, dy, true); // True if entity moved, false if they were not
+                    pushed = Movement::ShiftEntity(world, entities, a, dx, dy, true); // True if entity moved, false if they were not
                     break;
                 case EntityID::EE_Crate:
-                    pushed = Movement_ShiftEntityOnTiles(world, entities, a, dx, dy, tileID, true);
+                    pushed = Movement::ShiftEntityOnTiles(world, entities, a, dx, dy, tileID, true);
                     break;
             }
 
@@ -118,7 +114,7 @@ bool Movement_CheckCollisionOnTilesWithPush(Map* world, Entity* entities[MaxEnti
 
 
 
-bool Movement_ShiftEntity(Map* world, Entity* entities[MaxEntities], Entity* obj, int dx, int dy, bool doPush) {
+bool Movement::ShiftEntity(Map* world, Entity* entities[MaxEntities], Entity* obj, int dx, int dy, bool doPush) {
     int desiredX = obj->x + dx;
     int desiredY = obj->y - dy;
 
@@ -137,26 +133,26 @@ bool Movement_ShiftEntity(Map* world, Entity* entities[MaxEntities], Entity* obj
     //Look into A* pathing?
     if (doPush) {
         if (distY > distX) {
-            for (int stepY = 0; stepY < distY && Movement_CheckCollisionWithPush(world, entities, obj->x, obj->y+yChange, dx, dy); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollisionWithPush(world, entities, obj->x, obj->y+yChange, dx, dy); stepY++)
                 obj->y+=yChange;
-            for (int stepX = 0; stepX < distX && Movement_CheckCollisionWithPush(world, entities, obj->x+xChange, obj->y, dx, dy); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollisionWithPush(world, entities, obj->x+xChange, obj->y, dx, dy); stepX++)
                 obj->x+=xChange;
         } else {
-            for (int stepX = 0; stepX < distX && Movement_CheckCollisionWithPush(world, entities, obj->x+xChange, obj->y, dx, dy); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollisionWithPush(world, entities, obj->x+xChange, obj->y, dx, dy); stepX++)
                 obj->x+=xChange;
-            for (int stepY = 0; stepY < distY && Movement_CheckCollisionWithPush(world, entities, obj->x, obj->y+yChange, dx, dy); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollisionWithPush(world, entities, obj->x, obj->y+yChange, dx, dy); stepY++)
                 obj->y+=yChange;
         }
     } else {
         if (distY > distX) {
-            for (int stepY = 0; stepY < distY && Movement_CheckCollision(world, entities, obj->x, obj->y+yChange); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollision(world, entities, obj->x, obj->y+yChange); stepY++)
                 obj->y+=yChange;
-            for (int stepX = 0; stepX < distX && Movement_CheckCollision(world, entities, obj->x+xChange, obj->y); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollision(world, entities, obj->x+xChange, obj->y); stepX++)
                 obj->x+=xChange;
         } else {
-            for (int stepX = 0; stepX < distX && Movement_CheckCollision(world, entities, obj->x+xChange, obj->y); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollision(world, entities, obj->x+xChange, obj->y); stepX++)
                 obj->x+=xChange;
-            for (int stepY = 0; stepY < distY && Movement_CheckCollision(world, entities, obj->x, obj->y+yChange); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollision(world, entities, obj->x, obj->y+yChange); stepY++)
                 obj->y+=yChange;
         }
     }
@@ -164,7 +160,7 @@ bool Movement_ShiftEntity(Map* world, Entity* entities[MaxEntities], Entity* obj
     return (obj->x == desiredX && obj->y == desiredY);
 }
 
-bool Movement_ShiftEntityOnTiles(Map* world, Entity* entities[MaxEntities], Entity* obj, int dx, int dy, int tileID, bool doPush) {
+bool Movement::ShiftEntityOnTiles(Map* world, Entity* entities[MaxEntities], Entity* obj, int dx, int dy, int tileID, bool doPush) {
     int desiredX = obj->x + dx;
     int desiredY = obj->y - dy;
 
@@ -182,28 +178,28 @@ bool Movement_ShiftEntityOnTiles(Map* world, Entity* entities[MaxEntities], Enti
     if (doPush) { // If we can push entities...
         if (distY > distX) { // If we're moving more vertically than horizontally, prioritize vertical movement first
             // For every vertical step, make sure the tile is pathable, push entities out of the way, and then move there
-            for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x, obj->y+yChange, dx, dy, tileID); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollisionOnTilesWithPush(world, entities, obj->x, obj->y+yChange, dx, dy, tileID); stepY++)
                 obj->y+=yChange;
             // Same as above, but for horizontal steps
-            for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x+xChange, obj->y, dx, dy, tileID); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollisionOnTilesWithPush(world, entities, obj->x+xChange, obj->y, dx, dy, tileID); stepX++)
                 obj->x+=xChange;
         } else { // Otherwise, prioritize horizontal movement rather than vertical
             // Same as above
-            for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x+xChange, obj->y, dx, dy, tileID); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollisionOnTilesWithPush(world, entities, obj->x+xChange, obj->y, dx, dy, tileID); stepX++)
                 obj->x+=xChange;
-            for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTilesWithPush(world, entities, obj->x, obj->y+yChange, dx, dy, tileID); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollisionOnTilesWithPush(world, entities, obj->x, obj->y+yChange, dx, dy, tileID); stepY++)
                 obj->y+=yChange;
         }
     } else { // If we can't push entities, just move forward
         if (distY > distX) { // Prioritize Y movement first
-            for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTiles(world, entities, obj->x, obj->y+yChange, tileID); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollisionOnTiles(world, entities, obj->x, obj->y+yChange, tileID); stepY++)
                 obj->y+=yChange;
-            for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTiles(world, entities, obj->x+xChange, obj->y, tileID); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollisionOnTiles(world, entities, obj->x+xChange, obj->y, tileID); stepX++)
                 obj->x+=xChange;
         } else { // Prioritize X movement first
-            for (int stepX = 0; stepX < distX && Movement_CheckCollisionOnTiles(world, entities, obj->x+xChange, obj->y, tileID); stepX++)
+            for (int stepX = 0; stepX < distX && Movement::CheckCollisionOnTiles(world, entities, obj->x+xChange, obj->y, tileID); stepX++)
                 obj->x+=xChange;
-            for (int stepY = 0; stepY < distY && Movement_CheckCollisionOnTiles(world, entities, obj->x, obj->y+yChange, tileID); stepY++)
+            for (int stepY = 0; stepY < distY && Movement::CheckCollisionOnTiles(world, entities, obj->x, obj->y+yChange, tileID); stepY++)
                 obj->y+=yChange;
         }
     }
@@ -212,7 +208,8 @@ bool Movement_ShiftEntityOnTiles(Map* world, Entity* entities[MaxEntities], Enti
 }
 
 
-void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* obj, int dx, int dy, int* worldX, int* worldY) {
+void Movement::ShiftPlayer(GameData* data, int dx, int dy) {
+    Shepherd* obj = data->player;
     int desiredX = obj->x + dx;
     int desiredY = obj->y - dy;
 
@@ -226,14 +223,14 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
     obj->animation = AnimationID::ANIM_Walk;     //Set animation to walking
     obj->ticksIdled = 0;
 
-    if (desiredX >= MapWidth && *worldX+1 <= WorldWidth-1 && HasAllSheep(entities, obj)) {
-        *worldX = *worldX+1;
+    if (desiredX >= MapWidth && data->worldX+1 <= WorldWidth-1 && EntityTools::HasAllSheep(data->entities, obj)) {
+        data->worldX = data->worldX+1;
         obj->x = 0;
-    } else if (desiredX < 0 && *worldX-1 >= 0 && HasAllSheep(entities, obj)) {
-        *worldX = *worldX-1;
+    } else if (desiredX < 0 && data->worldX-1 >= 0 && EntityTools::HasAllSheep(data->entities, obj)) {
+        data->worldX = data->worldX-1;
         obj->x = MapWidth-1;
-    } else if (desiredX < MapWidth && desiredX >= 0 && !world->IsTileSolid(desiredX, obj->y) && !world->IsTilePitfall(desiredX, obj->y)) {
-        Entity* hit = GetEntityAtLocation(entities, desiredX, obj->y);
+    } else if (desiredX < MapWidth && desiredX >= 0 && !data->map->IsTileSolid(desiredX, obj->y) && !data->map->IsTilePitfall(desiredX, obj->y)) {
+        Entity* hit = EntityTools::GetEntityAtLocation(data->entities, desiredX, obj->y);
         if (hit && hit->GetID() == EntityID::EE_Sheep) {   //If sheep, swap places
             hit->lastX = hit->x;
             hit->shovedX = true;
@@ -243,20 +240,20 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         } else if (hit && hit->GetID() == EntityID::EE_Crate) {  //If hit crate, push crate, then move to place if push was successful
             hit->lastX = hit->x;
             hit->shovedX = true;
-            if (Movement_ShiftEntityOnTiles(world, entities, hit, dx, dy, TileID::ET_Empty_Puzzle_Piece, true))
+            if (Movement::ShiftEntityOnTiles(data->map, data->entities, hit, dx, dy, TileID::ET_Empty_Puzzle_Piece, true))
                 obj->x = desiredX;
         } else if (!hit || (hit && !hit->Solid))
             obj->x = desiredX;
     }
     
-    if (desiredY < 0 && *worldY+1 <= WorldHeight-1 && HasAllSheep(entities, obj)) {
-        *worldY = *worldY+1;
+    if (desiredY < 0 && data->worldY+1 <= WorldHeight-1 && EntityTools::HasAllSheep(data->entities, obj)) {
+        data->worldY = data->worldY+1;
         obj->y = MapHeight-1;
-    } else if (desiredY >= MapHeight && *worldY-1 >= 0 && HasAllSheep(entities, obj)) {
-        *worldY = *worldY-1;
+    } else if (desiredY >= MapHeight && data->worldY-1 >= 0 && EntityTools::HasAllSheep(data->entities, obj)) {
+        data->worldY = data->worldY-1;
         obj->y = 0;
-    } else if (desiredY < MapHeight && desiredY >= 0 && !world->IsTileSolid(obj->x, desiredY) && !world->IsTilePitfall(obj->x, desiredY)) {
-        Entity* hit = GetEntityAtLocation(entities, obj->x, desiredY);
+    } else if (desiredY < MapHeight && desiredY >= 0 && !data->map->IsTileSolid(obj->x, desiredY) && !data->map->IsTilePitfall(obj->x, desiredY)) {
+        Entity* hit = EntityTools::GetEntityAtLocation(data->entities, obj->x, desiredY);
         if (hit && hit->GetID() == EntityID::EE_Sheep) {   //If sheep, swap places
             hit->lastY = hit->y;
             hit->shovedY = true;
@@ -265,7 +262,7 @@ void Movement_ShiftPlayer(Map* world, Entity* entities[MaxEntities], Shepherd* o
         } else if (hit && hit->GetID() == EntityID::EE_Crate) {  //If hit crate, push crate, then move to place if push was successful
             hit->lastY = hit->y;
             hit->shovedY = true;
-            if (Movement_ShiftEntityOnTiles(world, entities, hit, dx, dy, TileID::ET_Empty_Puzzle_Piece, true))
+            if (Movement::ShiftEntityOnTiles(data->map, data->entities, hit, dx, dy, TileID::ET_Empty_Puzzle_Piece, true))
                 obj->y = desiredY;
         } else if (!hit || (hit && !hit->Solid))
             obj->y = desiredY;

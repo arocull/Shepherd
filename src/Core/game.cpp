@@ -3,6 +3,11 @@
 Game::Game(RenderWindow* gameWindow) {
     window = gameWindow;
     paused = false;
+    close = false;
+
+    loadedMapX = 0;
+    loadedMapY = 0;
+    
     maxMapID = 0;
     tickedThisFrame = false;
 
@@ -29,13 +34,70 @@ Game::~Game() {
 
 
 // LOGIC //
+struct InputAction* Game::ProcessInput(SDL_Event* event) {
+    struct InputAction* inputAction = new InputAction();
+    controller->ProcessInput(event, inputAction, paused, window->InFullscreen());
+
+    paused = inputAction->pause; // Pause / Unpause game
+    if (inputAction->fullscreen != window->InFullscreen()) { // Toggle fullscreen
+        window->ToggleFullscreen(inputAction->fullscreen);
+        menus->ToggleFullscreen(inputAction->fullscreen);
+    }
+
+    return inputAction;
+}
 void Game::Tick() {
     data->ticks++;
+    window->LogTick();
+    tickedThisFrame = true;
+
+    // Tally sheep
+    int sheepLeft = 0;
+    for (int i = 0; i < MaxEntities && sheepLeft < MaxSheep; i++) {
+        if (data->entities[i] && data->entities[i]->GetID() == EntityID::EE_Sheep) sheepLeft++;
+    }
+    
+    // If we lost a sheep, trigger game over
+    if (sheepLeft < MaxSheep) {
+        Trigger_GameOver(window, audio, data->map, data->entities);
+        data->player->Paused = true;
+    }
+
+    // If the player sits still, feed them hints or story
+    data->player->ticksIdled++;
+    if (data->player->ticksIdled == TicksUntilIdle) {
+        Trigger_Idled(window, audio, data->map, data->entities);
+    }
+
+    // Do map event tick ahead of player movement (so player does not end up ontop of walls)
+    if (data->map->TickEventTimer()) {
+        Trigger_LevelEvent(window, audio, data->map, data->entities);
+    }
+
+
+    MovePlayer();
 }
-void Game::Step(float deltaTime) {
+bool Game::Step(float deltaTime) {
     TickParticles(data->particles, deltaTime);
     window->TickDeltaTime(deltaTime);
     audio->Tick(deltaTime);
+
+    #ifdef DEBUG_MODE
+        if (controller->accelerate) {
+            tickTimer += deltaTime * TickRate * TickAcceleration;
+        } else {
+            tickTimer += deltaTime * TickRate;
+        }
+    #else
+        tickTimer += deltaTime * TickRate;
+    #endif
+    tickTimer += deltaTime;
+
+    if (tickTimer <= 0.5f && Movement::Move_QueueClear) { // Prevent any 'sliding'
+            Movement::ClearQueue();
+    }
+
+    return tickTimer >= 1;
 }
 void Game::Draw(float deltaTime) {
     window->UpdateSize();
@@ -92,6 +154,25 @@ void Game::Draw(float deltaTime) {
     window->DrawDialogueBox();
     
     tickedThisFrame = false;
+    SDL_RenderPresent(window->canvas);
+}
+
+
+void Game::DrawPauseMenu(float deltaTime) {
+    SDL_SetRenderDrawColor(window->canvas, 0, 0, 0, 0);
+    SDL_RenderClear(window->canvas);
+    window->UpdateSize();
+
+    window->DrawStatusBar(data->player->GetHealth(), data->map->PuzzleStatus);
+    window->DrawDialogueBox(menus->activeMenu->optionDesc[menus->activeMenu->optionIndex]);
+    window->DrawMenuBackground();
+    window->DrawMenu(menus->pauseMenu->getNumOptions(), menus->pauseMenu->optionNames, menus->pauseMenu->optionIndex, menus->inSubmenu());
+
+    if (menus->inSubmenu()) { // Draw submenu as well if it is active
+        window->DrawMenu(menus->activeMenu->getNumOptions(), menus->activeMenu->optionNames, menus->activeMenu->optionIndex, false);
+    }
+
+    audio->Tick(deltaTime);
     SDL_RenderPresent(window->canvas);
 }
 
@@ -199,6 +280,63 @@ void Game::NewGame() {
 
     // Load level into memory
     LoadLevel(data->world, NULL, data->entities, data->worldX, data->worldY, data->player->x, data->player->y);
+    loadedMapX = data->worldX;
+    loadedMapY = data->worldY;
     // Start game with intro cutscene
     Trigger_GameStart(window, audio, data->map, data->entities);
+}
+
+
+// LOGIC //
+
+// Move Player - Moves player and loads new maps if necessary
+void Game::MovePlayer() {
+    Shepherd* player = data->player;
+
+    using namespace Movement;
+
+    if (!player->Paused) {      //If they player is not paused, let them move if input is given
+        player->animation = AnimationID::ANIM_Idle;
+
+        player->lastX = player->x;
+        player->lastY = player->y;
+
+        if (MoveUp) {
+            ShiftPlayer(data, 0, 1);
+        } else if (MoveDown) {
+            ShiftPlayer(data, 0, -1);
+        } else if (MoveRight) {
+            ShiftPlayer(data, 1, 0);
+        } else if (MoveLeft) {
+            ShiftPlayer(data, -1, 0);
+        }
+    }
+
+    if (Movement::Move_QueueClear) {
+        Movement::ClearQueue();
+    }
+
+
+    // Limit world coordinates to actual world
+    if (data->worldX >= WorldWidth) {
+        data->worldX = WorldWidth-1;
+    } else if (data->worldX < 0) {
+        data->worldX = 0;
+    }
+    if (data->worldY >= WorldHeight) {
+        data->worldY = WorldHeight-1;
+    } else if (data->worldY < 0) {
+        data->worldY = 0;
+    }
+
+    // If world coordinate has changed, load a new level
+    if (data->worldX != loadedMapX || data->worldY != loadedMapY) {
+        loadedMapX = data->worldX;
+        loadedMapY = data->worldY;
+        StopParticles(data->particles);
+        data->map = LoadLevel(data->world, data->map, data->entities, data->worldX, data->worldY, player->x, player->y);
+        Trigger_LevelLoaded(window, audio, data->world, data->map, data->entities);
+        player->lastX = player->x; // Don't draw player teleporting
+        player->lastY = player->y;
+    }
 }

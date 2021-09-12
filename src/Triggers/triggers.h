@@ -56,7 +56,7 @@ void Trigger_PuzzleInput(RenderWindow* window, SoundService* SoundService, Parti
 // Triggered whenever a given area is loaded
 // Allows access to whole world to check for other puzzles being solved
 // Note: Only triggered when the level is manually navigated to by the player
-void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map* world[WorldWidth][WorldHeight], Map* map, Entity* entities[]);
+void Trigger_LevelLoaded(RenderWindow* window, SoundService* soundService, Map*** world, Map* map, Entity* entities[]);
 
 // Triggered when the current level's event timer reaches zero
 void Trigger_LevelEvent(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]);

@@ -68,133 +68,40 @@ int main(int argc, char **argv) {
 
     Game* game = new Game(&window);
 
-    SDL_Event event;
+    SDL_Event* event;
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
     float DeltaTime = 0;
     float GameTick = 0;
 
-    SDL_PollEvent(&event);
-    while (event.type != SDL_QUIT) {
+    SDL_PollEvent(event);
+    while (event->type != SDL_QUIT) {
         LastTick = CurrentTick;
         CurrentTick = SDL_GetPerformanceCounter();
         DeltaTime = (CurrentTick-LastTick) / SDL_GetPerformanceFrequency();
 
         // Check Events
-        SDL_PollEvent(&event);
-
-        // Process Input (movement applied automatically using globals, window-specific functions happen here)
-        struct InputAction inputAction;
-        controller->ProcessInput(&event, &inputAction, GamePaused, window.InFullscreen());
-        if (inputAction.close) break; // Close program
-        GamePaused = inputAction.pause; // Pause / Unpause game
-        if (inputAction.fullscreen != window.InFullscreen()) { // Toggle fullscreen
-            window.ToggleFullscreen(inputAction.fullscreen);
-            menus->ToggleFullscreen(inputAction.fullscreen);
+        SDL_PollEvent(event);
+        struct InputAction* input = game->ProcessInput(event);
+        if (input->close) { // Close program if should-close
+            break;
         }
+        delete input;
 
-
-
-        if (GamePaused) { // If the game is paused, just render GUI and skip ahead
-            SDL_SetRenderDrawColor(window.canvas, 0, 0, 0, 0);
-            SDL_RenderClear(window.canvas);
-            window.UpdateSize();
-
-            // TODO: Currently this is a lot of pointers to pointers to pointers, maybe clean up a bit?
-            window.DrawStatusBar(player->GetHealth(), currentLevel->PuzzleStatus);
-            window.DrawDialogueBox(menus->activeMenu->optionDesc[menus->activeMenu->optionIndex]);
-            window.DrawMenuBackground();
-            window.DrawMenu(menus->pauseMenu->getNumOptions(), menus->pauseMenu->optionNames, menus->pauseMenu->optionIndex, menus->inSubmenu());
-
-            if (menus->inSubmenu()) { // Draw submenu as well if it is active
-                window.DrawMenu(menus->activeMenu->getNumOptions(), menus->activeMenu->optionNames, menus->activeMenu->optionIndex, false);
-            }
-
-            soundService.Tick(DeltaTime);
-            SDL_RenderPresent(window.canvas);
+        if (game->paused) { // If the game is paused, just render GUI and skip ahead
+            game->DrawPauseMenu(DeltaTime);
             continue;
         }
 
-        bool tickedThisFrame = false; // True if there was a computation tick this frame (for animations)
+        bool doTick = game->Step(DeltaTime);
+        if (doTick) {
+            game->Tick();
+        }
+        game->Draw(DeltaTime);
 
+
+        // OLD CODE HERE
         // Game Logic
-        #ifdef DEBUG_MODE
-            if (controller->accelerate)
-                GameTick+=DeltaTime*TickRate*TickAcceleration;
-            else
-                GameTick+=DeltaTime*TickRate;
-        #else
-            GameTick+=DeltaTime*TickRate;
-        #endif
-        if (GameTick <= 0.5f && Move_QueueClear)    // Prevent any 'sliding'
-            Movement_Clear();
-        else if (GameTick >= 1) {
-            ticks++;
-            window.LogTick();
-            tickedThisFrame = true;
-
-            // Tally sheep
-            int sheepLeft = 0;
-            for (int i = 0; i < MaxEntities && sheepLeft < MaxSheep; i++) {
-                if (levelEntities[i] && levelEntities[i]->GetID() == EntityID::EE_Sheep) sheepLeft++;
-            }
-            if (sheepLeft < MaxSheep) {
-                Trigger_GameOver(&window, &soundService, currentLevel, levelEntities);
-                player->Paused = true;
-            }
-
-            player->ticksIdled++;
-            if (player->ticksIdled == TicksUntilIdle && sheepLeft >= MaxSheep) {   //If the player sits still, feed them hints or story
-                Trigger_Idled(&window, &soundService, currentLevel, levelEntities);
-            }
-
-            // Do map event tick ahead of player movement (so player does not end up ontop of walls)
-            if (currentLevel->TickEventTimer()) {
-                Trigger_LevelEvent(&window, &soundService, currentLevel, levelEntities);
-            }
-
-            if (!player->Paused) {      //If they player is not paused, let them move if input is given
-                player->animation = AnimationID::ANIM_Idle;
-
-                player->lastX = player->x;
-                player->lastY = player->y;
-
-                if (MoveUp)
-                    Movement_ShiftPlayer(currentLevel, levelEntities, player, 0, 1, &worldX, &worldY);
-                else if (MoveDown)
-                    Movement_ShiftPlayer(currentLevel, levelEntities, player, 0, -1, &worldX, &worldY);
-                else if (MoveRight)
-                    Movement_ShiftPlayer(currentLevel, levelEntities, player, 1, 0, &worldX, &worldY);
-                else if (MoveLeft)
-                    Movement_ShiftPlayer(currentLevel, levelEntities, player, -1, 0, &worldX, &worldY);
-            }
-
-            if (Move_QueueClear)
-                Movement_Clear();
-
-
-            // Limit world coordinates to actual world
-            if (worldX >= WorldWidth)
-                worldX = WorldWidth-1;
-            else if (worldX < 0)
-                worldX = 0;
-            if (worldY >= WorldHeight)
-                worldY = WorldHeight-1;
-            else if (worldY < 0)
-                worldY = 0;
-
-            // If world coordinate has changed, load a new level
-            if (worldX != currentWorldX || worldY != currentWorldY) {
-                currentWorldX = worldX;
-                currentWorldY = worldY;
-                StopParticles(particles);
-                currentLevel = LoadLevel(world, currentLevel, levelEntities, worldX, worldY, player->x, player->y);
-                Trigger_LevelLoaded(&window, &soundService, world, currentLevel, levelEntities);
-                player->lastX = player->x; // Don't draw player teleporting
-                player->lastY = player->y;
-            }
-
-
             // Check Entities for Fire
             int standingTile = currentLevel->GetTileID(player->x, player->y);
             if (standingTile >= TileID::ET_Trigger1 && standingTile <= TileID::ET_Trigger4) {

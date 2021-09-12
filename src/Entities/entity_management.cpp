@@ -1,7 +1,7 @@
 // Entity Management Function Definitions //
 #include "entity_management.h"
 
-void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity, int arrayLength) {
+void EntityTools::AppendEntity(Entity* entities[MaxEntities], Entity* newEntity, int arrayLength) {
     for (int i = 0; i < arrayLength; i++) {
         if (nullptr == entities[i]) {            //Empty slot in list. Go ahead and add them in!
             entities[i] = newEntity;
@@ -11,7 +11,7 @@ void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity, int arrayLen
 }
 
 
-void AppendEntityDetailed(Entity* entities[MaxEntities], Entity* newEntity, int dataRange, int filter) {
+void EntityTools::AppendEntityDetailed(Entity* entities[MaxEntities], Entity* newEntity, int dataRange, int filter) {
     if (!newEntity || newEntity->GetID() != filter) return;                 //Don't attempt to add something that doesn't exist!
 
     for (int i = 0; i < dataRange; i++) {
@@ -25,7 +25,7 @@ void AppendEntityDetailed(Entity* entities[MaxEntities], Entity* newEntity, int 
 }
 
 
-void RemoveEntity(Entity* entities[MaxEntities], Entity* delEntity) {
+void EntityTools::RemoveEntity(Entity* entities[MaxEntities], Entity* delEntity) {
     for (int i = 0; i < MaxEntities; i++) {
         if (entities[i] && delEntity && entities[i] == delEntity) {
             delete entities[i];
@@ -36,7 +36,7 @@ void RemoveEntity(Entity* entities[MaxEntities], Entity* delEntity) {
 }
 
 
-void CleanEntities(Entity* entities[MaxEntities]) {
+void EntityTools::CleanEntities(Entity* entities[MaxEntities]) {
     for (int i = MaxEntities-1; i > 0; i--) {
         if (entities[i]) {
             if (entities[i]->GetHealth() <= 0 && entities[i]->GetID() != 1) {
@@ -52,7 +52,7 @@ void CleanEntities(Entity* entities[MaxEntities]) {
 }
 
 
-Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos, int dataRange) {
+Entity* EntityTools::GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos, int dataRange) {
     for (int i = 0; i < dataRange; i++) {
         if (entities[i] && entities[i]->x == xPos && entities[i]->y == yPos)
             return entities[i];
@@ -60,7 +60,7 @@ Entity* GetEntityAtLocation(Entity* entities[MaxEntities], int xPos, int yPos, i
 
     return nullptr;
 }
-Entity* GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence, int dataRange) {
+Entity* EntityTools::GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence, int dataRange) {
     occurrence--;
 
     int count = 0;
@@ -77,7 +77,7 @@ Entity* GetEntityOccurence(Entity* entities[MaxEntities], int id, int occurrence
 }
 
 
-Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos) {
+Entity* EntityTools::GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos) {
     Entity* closest = nullptr;
 
     int dis = 1000;
@@ -93,7 +93,7 @@ Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos) {
 
     return closest;
 }
-Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos, int ArraySize, int searchID) {
+Entity* EntityTools::GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos, int ArraySize, int searchID) {
     Entity* closest = nullptr;
 
     int dis = 1000;
@@ -111,9 +111,7 @@ Entity* GetNearestEntity(Entity* entities[MaxEntities], int xPos, int yPos, int 
 }
 
 
-bool HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
-    if (!DEBUG_RequireSheep) return true;   //Return if sheep are unnecessary for leaving
-
+bool EntityTools::HasAllSheep(Entity* entities[MaxEntities], Entity* obj) {
     Entity* touchedSheep[MaxSheep+1];   //List holds all sheep + one shepherd
     for (int i = 1; i <= MaxSheep; i++) {   //Initialize list
         touchedSheep[i] = nullptr;
