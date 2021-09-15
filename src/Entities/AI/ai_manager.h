@@ -4,9 +4,15 @@
 #include "Core/enums.h"
 #include "Core/mathutil.h"
 
+#include "Core/gamedata.h"
+#include "Core/renderwindow.h"
+#include "Audio/sound_service.h"
 #include "Entities/entity.h"
+
 #include "Entities/Subclasses/sheep.h"
 #include "Entities/Subclasses/wolf.h"
+#include "Entities/Subclasses/fireball.h"
+#include "Entities/Boss/pyramidgolem.h"
 
 #include "Map/map.h"
 #include "Entities/movement.h"
@@ -15,22 +21,21 @@
 // AI Manager - Takes a context and makes decisions for given entities, including movement, attacks, and interactions
 class AIManager {
     public:
-        AIManager();
+        AIManager(GameData* data, RenderWindow* window, SoundService* audio);
     
     private:
-        Entity* shepherd;
-        Map* level;
-        Entity** entities;
-        int tick;
-
+        GameData* data;
+        RenderWindow* window;
+        SoundService* audio;
         Entity* enemyGoal;
 
         void TickSheep(Sheep* sheep);
         void TickWolf(Wolf* wolf);
+        void TickFireball(Fireball* fireball);
+
+        void TickPyramidGolem(PyramidGolem* boss);
 
     public:
-        void SetContext(Entity* shepherd, Map* currentLevel, Entity** levelEntities, int currentTick);
-        void ClearContext();
-
+        void UpdateContext();
         void TickAI(Entity* entity);
 };

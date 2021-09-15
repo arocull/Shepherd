@@ -23,6 +23,8 @@ void PyramidGolem::Unload() {
 }
 // Called every tick
 void PyramidGolem::Tick() {
+    Entity::Tick();
+
     goalMoveX = 0;
     goalMoveY = 0;
 
@@ -159,7 +161,7 @@ void PyramidGolem::ThrowEntity(Entity* hit, Entity** entities, Map* map) {
     hit->y = RandomI(10, MapHeight-2);
 
     // Shift entity to prevent entities from getting stacked ontop of each other
-    Movement_ShiftEntity(map, entities, hit, sgn(x - hitX) * RandomI(1, 3), -1, true);
+    Movement::ShiftEntity(map, entities, hit, sgn(x - hitX) * RandomI(1, 3), -1, true);
     
     hit->lastX = hitX;
     hit->lastY = hitY;

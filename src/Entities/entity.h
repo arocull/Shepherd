@@ -26,6 +26,8 @@ class Entity {
         virtual void Unload();
         // Call this function every tick (handles internal entity functions)
         virtual void Tick();
+        // Call this function every tick after most functionality is performed, solidifies values like Fire vs Frost
+        virtual void PostTick();
         // Call this function to pause an entity and set it to its proper animation
         virtual void Pause();
 
@@ -35,6 +37,8 @@ class Entity {
 
         // RENDERING //
         
+        // Updates lastX and lastY to the current Entity location if not shoved, ticks shoved otherwise
+        void ShoveAnimation();
         // Gets flip style of entity for rendering
         SDL_RendererFlip GetFlipStyle();
         // Resets entity animation timers

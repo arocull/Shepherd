@@ -11,17 +11,16 @@ Game::Game(RenderWindow* gameWindow) {
     maxMapID = 0;
     tickedThisFrame = false;
 
+    data = new GameData();
+
     audio = new SoundService();
     menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
     controller = new Controller(menus, audio); // Player controller input (done as pointer in-case multiple are used in future)
-    ai = new AIManager();
-
-    data = new GameData();
+    ai = new AIManager(data, window, audio);
 }
 Game::~Game() {
     Trigger_Free();
 
-    ai->ClearContext();
     menus->Free();
     audio->CloseSoundService();
 
@@ -74,8 +73,123 @@ void Game::Tick() {
         Trigger_LevelEvent(window, audio, data->map, data->entities);
     }
 
-
+    // Perform input-based player movement
     MovePlayer();
+
+    // Perform tile triggers, fizzlers, scrolls
+    int standingTile = data->map->GetTileID(data->player->x, data->player->y);
+    if (standingTile >= TileID::ET_Trigger1 && standingTile <= TileID::ET_Trigger4) {
+        Trigger_OnTile(window, audio, data->map, data->entities, abs(standingTile));
+    } else if (standingTile == TileID::ET_Fizzler) {
+        Trigger_OnFizzler(window, audio, data->map, data->player);
+    } else if (standingTile == TileID::ET_Scroll && data->map->HasScroll()) {
+        Trigger_OnScroll(window, audio, data->map, data->entities); // Do scroll trigger
+        menus->UnlockScroll(data->map->GetScrollIndex(), data->map->GetScrollName(), data->map->GetScroll()); // Unlock scroll in index
+    }
+
+    // Cast Fireball, do after fizzler so players cannot perform one-frame fireball sling tricks
+    if (Movement::MoveFireballQueued && !data->player->Paused) {
+        Movement::MoveFireballQueued = false;
+        data->player->SwingAttack(data->entities, data->particles, audio);
+        Trigger_StaffSwing(window, audio, data->map, data->entities);
+        data->player->ticksIdled = 0;
+    }
+
+    // Prep AI
+    ai->UpdateContext();
+
+    // Tick Entities and Tally Pressure Plates
+    bool currentPuzzleStatus = data->map->PuzzleStatus;
+    bool PressurePlatesChanged = false;
+    bool LeversChanged = false;
+    data->map->PressurePlatesPressed = 0;
+
+
+    for (int i = 0; i < MaxEntities; i++) {
+        if (!data->entities[i]) continue;   //Skip checks if this is a nullpointer or paused
+        Entity* obj = data->entities[i];
+
+        obj->ShoveAnimation();
+        obj->Tick();
+        obj->PostTick();
+        
+        if (obj->HasFire || obj->HasFrost) {  // Freeze or thaw nearby water
+            data->map->FreezeArea(obj->x, obj->y, 1, obj->HasFire);
+        }
+
+        int entityTile = data->map->GetTileID(obj->x, obj->y); // Get data of tile the entity is standing on
+        // If standing on lava, take burn damage, gain fire, lose frost
+        if (entityTile == TileID::ET_Magma && obj->GetID() != EntityID::EE_Fireball) {
+            obj->TakeDamage(1, nullptr);
+            obj->HasFire = true;
+            obj->HasFrost = false;
+        }
+
+        if (obj->Paused) {
+            ai->TickAI(obj);
+        }
+
+        if (obj->GetID() == EntityID::EE_Lever) {
+            Lever* lever = dynamic_cast<Lever*>(obj);
+            if (lever->stateChanged) LeversChanged = true;
+        } else if (obj->GetID() == EntityID::EE_Spirit) {
+            Spirit* spirit = dynamic_cast<Spirit*>(obj);
+            if (spirit) spirit->Emit(data->particles);
+        }
+
+        // Finally, update tile Entity is on for puzzle solutions
+        int entityTile = data->map->GetTileID(obj->x, obj->y); 
+        if (entityTile == TileID::ET_Pressure_Plate) { // If we're on a pressure plate....
+            if (!obj->OnPressurePlate) {
+                obj->OnPressurePlate = true;
+                Particle* clickEffect = ActivateParticle(data->particles, 3, obj->x, obj->y);
+
+                PressurePlatesChanged = true;
+            }
+            data->map->PressurePlatesPressed++;
+        } else if (obj->OnPressurePlate) { // If we left a pressure plate...
+            obj->OnPressurePlate = false;
+            PressurePlatesChanged = true;
+        }
+    }
+    // Clean Entity List
+    EntityTools::CleanEntities(data->entities);
+
+    // Update Puzzles
+    bool doTriggerPuzzleInput = false;
+
+    // Run checks on puzzles
+    int puzzlesEnabled = 0;
+    int puzzlesCompleted = 0;
+    for (int i = 0; i < MaxPuzzles; i++) {
+        if (data->map->Puzzles[i].Enabled) {
+            puzzlesEnabled++;
+
+            bool wasSolved = data->map->Puzzles[i].Solved;
+
+            Puzzle_CheckSolution(&data->map->Puzzles[i]);
+            if (data->map->Puzzles[i].Solved) {
+                puzzlesCompleted++;
+                if (wasSolved != data->map->Puzzles[i].Solved) {
+                    doTriggerPuzzleInput = true;
+                    #ifdef DEBUG_MODE
+                    printf("Puzzle solved!\n");
+                    #endif
+                }
+            }
+        }
+    }
+    if (puzzlesEnabled > 0)
+        data->map->PuzzleStatus = (puzzlesEnabled == puzzlesCompleted);
+
+    // Run triggers
+    if (doTriggerPuzzleInput || PressurePlatesChanged || LeversChanged) Trigger_PuzzleInput(window, audio, data->particles, data->map, data->entities);
+
+    // If the player completed a puzzle this tick, show a particle
+    if (!currentPuzzleStatus && data->map->PuzzleStatus) {
+        Particle* a = ActivateParticle(data->particles, 2, data->player->x, data->player->y);
+        if (a) a->maxLifetime = 0.75f;
+    }
 }
 bool Game::Step(float deltaTime) {
     TickParticles(data->particles, deltaTime);

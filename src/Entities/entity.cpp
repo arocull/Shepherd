@@ -26,6 +26,11 @@ void Entity::Unload() {
 void Entity::Tick() {
 
 }
+void Entity::PostTick() {
+    if (HasFire && HasFrost) {  // Fire overrides frost
+        HasFrost = false;
+    }
+}
 void Entity::Pause() {
     Paused = true;
     animation = AnimationID::ANIM_Paused;
@@ -36,6 +41,19 @@ bool Entity::TakeDamage(int dmgAmount, Entity* attacker) {
     return Health <= 0;
 }
 
+void Entity::ShoveAnimation() {
+    if (!shovedX) {
+        lastX = x;
+    } else {
+        shovedX = false;
+    }
+
+    if (!shovedY) {
+        lastY = y;
+    } else {
+        shovedY = false;
+    }
+}
 SDL_RendererFlip Entity::GetFlipStyle() {
     // Return a horizontal flip if the sprite is flipped--otherwise return no flip
     return Flipped ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
