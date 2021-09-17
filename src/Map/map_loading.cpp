@@ -2,7 +2,7 @@
 #include "Map/map_loading.h"
 
 bool LoadLevel_IsSpawnable(Map* level, Entity** entities, int xPos, int yPos) {
-    return (!level->IsTileSolid(xPos, yPos) && !level->IsTileLiquid(xPos, yPos) && !level->IsTilePitfall(xPos, yPos) && !GetEntityAtLocation(entities, xPos, yPos));
+    return (!level->IsTileSolid(xPos, yPos) && !level->IsTileLiquid(xPos, yPos) && !level->IsTilePitfall(xPos, yPos) && !EntityTools::GetEntityAtLocation(entities, xPos, yPos));
 }
 
 
@@ -16,24 +16,24 @@ Map* LoadLevel(Map*** world, Map* currentMap, Entity** levelEntities, int worldX
         if (levelEntities[i] && levelEntities[i]->GetID() != 1) {
             levelEntities[i]->Unload();
             if (currentMap && levelEntities[i]->archivable) {
-                AppendEntityDetailed(currentMap->StoredEntities, levelEntities[i], MaxEntitiesStoreable, levelEntities[i]->GetID());
+                EntityTools::AppendEntityDetailed(currentMap->StoredEntities, levelEntities[i], MaxEntitiesStoreable, levelEntities[i]->GetID());
             } else
                 delete levelEntities[i];
             levelEntities[i] = nullptr;
         }
     }
     if (currentMap)
-        CleanEntities(currentMap->StoredEntities);
-    CleanEntities(levelEntities);
+        EntityTools::CleanEntities(currentMap->StoredEntities);
+    EntityTools::CleanEntities(levelEntities);
 
     //Load entities from map into the new level entities
     for (int i = 0; i < MaxEntitiesStoreable; i++) {
         if (newLevel->StoredEntities[i]) {
-            AppendEntity(levelEntities, newLevel->StoredEntities[i]);
+            EntityTools::AppendEntity(levelEntities, newLevel->StoredEntities[i]);
             newLevel->StoredEntities[i] = nullptr;
         }
     }
-    CleanEntities(newLevel->StoredEntities);
+    EntityTools::CleanEntities(newLevel->StoredEntities);
 
 
     // Spawn Sheep (if playerX or playerY is negative, do not spawn any)
@@ -57,7 +57,7 @@ Map* LoadLevel(Map*** world, Map* currentMap, Entity** levelEntities, int worldX
             for (int y = top; y <= bottom; y++) {
                 for (int x = left; x <= right; x++) {
                     if (LoadLevel_IsSpawnable(newLevel, levelEntities, x, y) && sheepLeft > 0 && !(x == playerX && y == playerY)) {
-                        AppendEntity(levelEntities, new Sheep(x, y));
+                        EntityTools::AppendEntity(levelEntities, new Sheep(x, y));
                         sheepLeft--;
                     }
                 }

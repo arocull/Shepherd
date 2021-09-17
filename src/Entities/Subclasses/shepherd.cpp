@@ -20,7 +20,7 @@ void Shepherd::SlingFireball(Entity** entities, Particle* particles, SoundServic
     
     Fireball* fireball = new Fireball(x, y, faceX, faceY, 0);
     fireball->enemy = false;
-    AppendEntity(entities, fireball);
+    EntityTools::AppendEntity(entities, fireball);
     soundService->PlaySound("Assets/Audio/FireballSling.wav");
 }
 void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService* soundService) {
@@ -38,7 +38,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
     // Tally sheep; find out how many there are and what proportion of them is paused
     for (int w = x-1; w < x+2; w++) {
         for (int z = y-1; z < y+2; z++) {
-            Entity* obj = GetEntityAtLocation(entities, w, z);
+            Entity* obj = EntityTools::GetEntityAtLocation(entities, w, z);
             if (obj) {
                 switch (obj->GetID()) {
                     case EntityID::EE_Sheep: // Tally sheep
@@ -95,7 +95,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
         //printf("doin' the thing\n");
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
-                Entity* obj = GetEntityAtLocation(entities, w, z);
+                Entity* obj = EntityTools::GetEntityAtLocation(entities, w, z);
                 // Check if it's a torch--don't bother further processing though if we already have a flame unless the torch can override our flame
                 if (obj && obj->GetID() == EntityID::EE_Torch && (!hasFlame || (HasFrost && obj->HasFire))) {
                     Torch* t = dynamic_cast<Torch*>(obj);
@@ -117,7 +117,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
         bool torchLit = false;
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
-                Entity* obj = GetEntityAtLocation(entities, w, z);
+                Entity* obj = EntityTools::GetEntityAtLocation(entities, w, z);
                 if (obj && obj->GetID() == EntityID::EE_Torch && !obj->HasFire && !obj->HasFrost) {
                     Torch* t = dynamic_cast<Torch*>(obj);
                     if (t && t->Extinguishable) {
@@ -136,7 +136,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
     } else if (leverToFlip) { // Flip levers without interfering with sheep
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
-                Entity* obj = GetEntityAtLocation(entities, w, z);
+                Entity* obj = EntityTools::GetEntityAtLocation(entities, w, z);
                 if (obj && obj->GetID() == EntityID::EE_Lever) {
                     Lever* lever = dynamic_cast<Lever*>(obj);
                     if (lever) {
@@ -155,7 +155,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
         // Pause any sheep and attack any wolves within a tile radius of the Shepherd
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
-                Entity* obj = GetEntityAtLocation(entities, w, z);
+                Entity* obj = EntityTools::GetEntityAtLocation(entities, w, z);
                 if (obj && obj->GetID() == EntityID::EE_Sheep) { //If sheep, toggle pause
                     if (NewPause) obj->Pause();
                     else obj->Paused = false;

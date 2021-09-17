@@ -100,26 +100,9 @@ int main(int argc, char **argv) {
         game->Draw(DeltaTime);
     }
 
-
-    // Free world, entities, and finally the player
-    for (int x = 0; x < WorldWidth; x++) {
-        for (int y = 0; y < WorldHeight; y++) {
-            SaveLoad::SaveMap(world[x][y], x, y);
-            world[x][y]->Free();
-            delete world[x][y];
-        }
-    }
-    for (int i = 0; i < MaxEntities; i++) {
-        if (levelEntities[i] && levelEntities[i]->GetID() != 1) {
-            levelEntities[i]->Unload();
-            delete levelEntities[i];
-        }
-    }
-
-    delete game;
-
-    // Close window and deallocate memory
-    window.Close();
+    SaveLoad::Save(game->data); // Save game data
+    delete game; // Free game and relevant game data
+    window.Close(); // Close window and deallocate memory
 
     return 0;
 }

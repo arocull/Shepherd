@@ -2,7 +2,7 @@
 
 
 bool IsTilePathable(int x, int y, Map* map, Entity** entities, bool avoidLiquids, EntityID ignoreEntity) {
-    Entity* a = GetEntityAtLocation(entities, x, y);
+    Entity* a = EntityTools::GetEntityAtLocation(entities, x, y);
     return (
         x >= 0 && x < MapWidth && y >= 0 && y < MapHeight &&    // Is tile within map bounds?
         (!map->IsTileSolid(x,y) && !(map->IsTileLiquid(x,y) && avoidLiquids) && !map->IsTilePitfall(x, y)) &&    // Check if tile is pathable
@@ -26,7 +26,7 @@ int GetTileDifficultyIndex(
     if (avoidFire || avoidEntity > 0) {
         for (int w = -1; w <= 1; w++) { // Entities within 3x3 area around spot
             for (int z = -1; z <= 1; z++) {
-                Entity* a = GetEntityAtLocation(entities, x + w, y + z);
+                Entity* a = EntityTools::GetEntityAtLocation(entities, x + w, y + z);
                 if (a && a != obj) {
                     if (avoidFire && (a->HasFire || a->HasFrost)) {
                         if (w == 0 || z == 0) difficulty += 2;

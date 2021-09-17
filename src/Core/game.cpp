@@ -24,11 +24,11 @@ Game::~Game() {
     menus->Free();
     audio->CloseSoundService();
 
-    delete data;
     delete ai;
     delete controller;
     delete menus;
     delete audio;
+    delete data;
 }
 
 
@@ -138,7 +138,7 @@ void Game::Tick() {
         }
 
         // Finally, update tile Entity is on for puzzle solutions
-        int entityTile = data->map->GetTileID(obj->x, obj->y); 
+        entityTile = data->map->GetTileID(obj->x, obj->y); 
         if (entityTile == TileID::ET_Pressure_Plate) { // If we're on a pressure plate....
             if (!obj->OnPressurePlate) {
                 obj->OnPressurePlate = true;

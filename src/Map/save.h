@@ -7,6 +7,7 @@
 
 #include "Core/enums.h"
 #include "Core/strutils.h"
+#include "Core/gamedata.h"
 #include "Map/map.h"
 #include "Entities/entity.h"
 #include "Entities/entity_management.h"
@@ -47,9 +48,10 @@ namespace SaveLoad {
 
     // SAVING //
 
-    // Saves the current game state, mostly existing entities, player position, loaded area
-    bool SaveState(int worldX, int worldY, Shepherd* player, Entity** entites);
-
+    // Saves the game state and all maps
+    bool Save(GameData* data);
+    // Saves the current game state. Mostly focuses on existing entities, player position, loaded area
+    bool SaveState(GameData* data);
     // Saves a given map into a file
     bool SaveMap(Map* map, int x, int y);
 };

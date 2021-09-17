@@ -84,7 +84,7 @@ Map* SaveLoad::LoadMapFile(const char* filePath) {
 
                 if (entity) {
                     entity->archivable = true;
-                    AppendEntity(map->StoredEntities, entity);
+                    EntityTools::AppendEntity(map->StoredEntities, entity);
                 }
             }
             
@@ -162,7 +162,7 @@ Map* SaveLoad::LoadMapFile(const char* filePath) {
                     map->LoadAscii(buffer, &idx);
                     break;
                 case 'E':
-                    AppendEntity(map->StoredEntities, SaveLoad::NewEntityFromAscii(buffer), MaxEntitiesStoreable);
+                    EntityTools::AppendEntity(map->StoredEntities, SaveLoad::NewEntityFromAscii(buffer), MaxEntitiesStoreable);
                     break;
                 case 'P':
                     // TODO: Load puzzle data
@@ -176,6 +176,29 @@ Map* SaveLoad::LoadMapFile(const char* filePath) {
     return map;
 }
 
+
+// SAVING //
+
+bool SaveLoad::Save(GameData* data) {
+    // TODO: Check if save folder exists
+    // TODO: Multiple saves?
+    
+    SaveState(data);
+    for (int x = 0; x < WorldWidth; x++) {
+        for (int y = 0; y < WorldHeight; y++) {
+            SaveMap(data->world[x][y], x, y);
+        }
+    }
+
+    // TODO: Pack saves into one file?
+
+    return true;
+}
+bool SaveLoad::SaveState(GameData* data) {
+    
+
+    return true;
+}
 bool SaveLoad::SaveMap(Map* map, int x, int y) {
     string* data = map->Ascii();
 
@@ -219,11 +242,5 @@ bool SaveLoad::SaveMap(Map* map, int x, int y) {
     saveFile.close();
 
     delete data;
-    return true;
-}
-
-bool SaveLoad::SaveState(int worldX, int worldY, Shepherd* player, Entity** entites) {
-    
-
     return true;
 }

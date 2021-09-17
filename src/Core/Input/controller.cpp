@@ -24,6 +24,8 @@ void Controller::ProcessInput(SDL_Event* input, InputAction* action, bool paused
 
 
 void Controller::KeyDown(SDL_Keycode key, InputAction* action) {
+    using namespace Movement;
+
     switch (key) {
         // Settings
         case SDLK_ESCAPE: // Open / Close pause menu, or back out of submenus
@@ -33,7 +35,7 @@ void Controller::KeyDown(SDL_Keycode key, InputAction* action) {
                 else action->pause = !action->pause;
 
                 MoveFireballQueued = false;
-                Movement_Clear();
+                Movement::ClearQueue();
             }
             break;
         case SDLK_F11: // Toggle fullscreen
@@ -48,19 +50,19 @@ void Controller::KeyDown(SDL_Keycode key, InputAction* action) {
         
         // Movement (doubles between WASD and arrow keys)
         case SDLK_w: case SDLK_UP:
-            Movement_Clear();
+            Movement::ClearQueue();
             MoveUp = true;
             break;
         case SDLK_s: case SDLK_DOWN:
-            Movement_Clear();
+            Movement::ClearQueue();
             MoveDown = true;
             break;
         case SDLK_d: case SDLK_RIGHT:
-            Movement_Clear();
+            Movement::ClearQueue();
             MoveRight = true;
             break;
         case SDLK_a: case SDLK_LEFT:
-            Movement_Clear();
+            Movement::ClearQueue();
             MoveLeft = true;
             break;
         case SDLK_SPACE: case SDLK_RETURN: case SDLK_RETURN2: // Sling fireball or use menu
@@ -112,17 +114,18 @@ void Controller::KeyDown(SDL_Keycode key, InputAction* action) {
             }
         }
 
-        MoveFireballQueued = false;
-        Movement_Clear(); // Clear input so it is not carried back into game
+        Movement::MoveFireballQueued = false;
+        Movement::ClearQueue(); // Clear input so it is not carried back into game
     }
 }
 void Controller::KeyUp(SDL_Keycode key) {
+    using namespace Movement;
     switch (key) {
         case SDLK_w: case SDLK_UP:
         case SDLK_s: case SDLK_DOWN:
         case SDLK_d: case SDLK_RIGHT:
         case SDLK_a: case SDLK_LEFT:
-            Move_QueueClear = true; // Letting go of any movement key qeues a move clear (does not clear immeadietly to prevent 'sticky' controls)
+            Movement::Move_QueueClear = true; // Letting go of any movement key qeues a move clear (does not clear immeadietly to prevent 'sticky' controls)
             break;
         case SDLK_ESCAPE:
             KeyEscapeDown = false;

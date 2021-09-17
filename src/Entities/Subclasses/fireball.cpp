@@ -25,7 +25,7 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
     for (int iX = -1; iX < 2; iX++) {
         for (int iY = -1; iY < 2; iY++) {
 
-            Entity* hit = GetEntityAtLocation(entities, x + iX, y + iY);
+            Entity* hit = EntityTools::GetEntityAtLocation(entities, x + iX, y + iY);
             if (hit) {
                 switch (hit->GetID()) {
                     case EntityID::EE_Torch:
@@ -49,7 +49,7 @@ void Fireball::Burst(Entity** entities, Particle* particles) {
         }
     }
 
-    return RemoveEntity(entities, this);
+    return EntityTools::RemoveEntity(entities, this);
 }
 
 void Fireball::BurstTorch(Torch* torch) {
