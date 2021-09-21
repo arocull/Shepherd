@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 
     Game* game = new Game(&window);
 
-    SDL_Event* event;
+    SDL_Event* event = new SDL_Event();
     float LastTick = 0;
     float CurrentTick = SDL_GetPerformanceCounter();
     float DeltaTime = 0;
@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
 
     SaveLoad::Save(game->data); // Save game data
     delete game; // Free game and relevant game data
+    delete event;
     window.Close(); // Close window and deallocate memory
 
     return 0;

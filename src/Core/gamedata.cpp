@@ -7,6 +7,7 @@ GameData::GameData() {
     }
 
     entities = (Entity**) calloc(MaxEntities, sizeof(Entity*));
+    particles = (Particle*) calloc(MaxParticles, sizeof(Particle));
 }
 GameData::~GameData() {
     StopParticles(particles);

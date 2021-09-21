@@ -47,8 +47,9 @@ Map* SaveLoad::LoadMapFile(const char* filePath) {
 
             charID = mapFile.get(); //Get next character in line
 
-            if (charID == '\n' && !mapFile.eof())         //If char ID is a newline, get the next character instead
+            if (charID == '\n' && !mapFile.eof()) { // If char ID is a newline, get the next character instead
                 charID = mapFile.get();
+            }
 
 
             // Check character and set tile ID accordingly; defaults to 0 if none of these are present

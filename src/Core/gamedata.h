@@ -20,10 +20,10 @@ class GameData {
         Entity** entities; // Current entities that are on-screen
         struct Particle* particles; // Existing particle instances
         
-        int worldX; // Current X position in world
-        int worldY; // Current Y position in world
+        int worldX = 0; // Current X position in world
+        int worldY = 0; // Current Y position in world
 
-        int ticks; // Total number of ticks the game has been running for
+        int ticks = 0; // Total number of ticks the game has been running for
 
     private:
 

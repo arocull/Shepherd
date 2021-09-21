@@ -17,6 +17,10 @@ Game::Game(RenderWindow* gameWindow) {
     menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
     controller = new Controller(menus, audio); // Player controller input (done as pointer in-case multiple are used in future)
     ai = new AIManager(data, window, audio);
+
+    // TODO: Setup function that loads a save instead?
+    NewGame();
+    LoadScrolls();
 }
 Game::~Game() {
     Trigger_Free();
@@ -88,8 +92,9 @@ void Game::Tick() {
     }
 
     // Cast Fireball, do after fizzler so players cannot perform one-frame fireball sling tricks
-    if (Movement::MoveFireballQueued && !data->player->Paused) {
-        Movement::MoveFireballQueued = false;
+    if (Movement::MoveFireballQueued) {
+        Movement::MoveFireballQueued = false; // TODO: Make this more clear that it's general spacebar stuff
+        data->player->Paused = false; // Player un-stuns themself by swining
         data->player->SwingAttack(data->entities, data->particles, audio);
         Trigger_StaffSwing(window, audio, data->map, data->entities);
         data->player->ticksIdled = 0;
@@ -205,13 +210,17 @@ bool Game::Step(float deltaTime) {
     #else
         tickTimer += deltaTime * TickRate;
     #endif
-    tickTimer += deltaTime;
 
     if (tickTimer <= 0.5f && Movement::Move_QueueClear) { // Prevent any 'sliding'
             Movement::ClearQueue();
     }
 
-    return tickTimer >= 1;
+    if (tickTimer >= 1) {
+        tickTimer = 0;
+        return true;
+    }
+
+    return false;
 }
 void Game::Draw(float deltaTime) {
     window->UpdateSize();
@@ -219,7 +228,6 @@ void Game::Draw(float deltaTime) {
     SDL_RenderClear(window->canvas);
 
     Map* lvl = data->map;
-
     window->FillViewportBackground(lvl->GetMapBiome());
 
     // Draw tiles first
@@ -313,6 +321,8 @@ void Game::LoadScrolls() {
             }
         }
     }
+
+    // TODO: If a map has a scroll already discovered, re-discover it here?
 }
 
 void Game::NewGame() {
@@ -393,7 +403,7 @@ void Game::NewGame() {
     data->entities[0] = data->player;
 
     // Load level into memory
-    LoadLevel(data->world, NULL, data->entities, data->worldX, data->worldY, data->player->x, data->player->y);
+    data->map = LoadLevel(data->world, NULL, data->entities, data->worldX, data->worldY, data->player->x, data->player->y);
     loadedMapX = data->worldX;
     loadedMapY = data->worldY;
     // Start game with intro cutscene
