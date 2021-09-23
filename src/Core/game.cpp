@@ -130,7 +130,7 @@ void Game::Tick() {
             obj->HasFrost = false;
         }
 
-        if (obj->Paused) {
+        if (!obj->Paused) {
             ai->TickAI(obj);
         }
 

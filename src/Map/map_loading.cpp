@@ -37,12 +37,8 @@ Map* LoadLevel(Map*** world, Map* currentMap, Entity** levelEntities, int worldX
 
 
     // Spawn Sheep (if playerX or playerY is negative, do not spawn any)
-    if (
-        playerX >= 0 && playerY >= 0
-        #ifdef DEBUG_MODE
-            && DEBUG_RequireSheep
-        #endif
-    ) {
+    #ifndef DEBUG_NoSheepRequired
+    if (playerX >= 0 && playerY >= 0) {
         int sheepLeft = MaxSheep;
 
         int top = playerY-1; int bottom = playerY+1; int left = playerX-1; int right = playerX+1;
@@ -69,6 +65,7 @@ Map* LoadLevel(Map*** world, Map* currentMap, Entity** levelEntities, int worldX
             right++;
         }
     }
+    #endif
 
     // Job's done!
     return newLevel;

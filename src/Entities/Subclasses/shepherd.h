@@ -26,6 +26,7 @@ class Shepherd : public Entity {
 
         int ticksIdled = 0;
 
+        virtual void ShoveAnimation() override;
         virtual void Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) override;
 
         // Causes Shepherd to sling a fireball; based off last direction they moved

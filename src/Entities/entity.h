@@ -38,7 +38,7 @@ class Entity {
         // RENDERING //
         
         // Updates lastX and lastY to the current Entity location if not shoved, ticks shoved otherwise
-        void ShoveAnimation();
+        virtual void ShoveAnimation();
         // Gets flip style of entity for rendering
         SDL_RendererFlip GetFlipStyle();
         // Resets entity animation timers

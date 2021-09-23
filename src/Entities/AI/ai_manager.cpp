@@ -137,7 +137,7 @@ void AIManager::TickFireball(Fireball* fireball) {
 
     // Set things on fire that the fireball is ontop of
 
-    if (fireball->x == fX && fireball->y == fY) {     // Destroy fireball if did not move
+    if (fireball->x == fX && fireball->y == fY) {     // Destroy fireball if it did not move
         fireball->Burst(data->entities, data->particles);
         window->AddScreenShake(0.15f, 0.0f);
     }

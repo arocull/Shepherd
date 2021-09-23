@@ -37,7 +37,9 @@ void Trigger_OnFizzler(RenderWindow* window, SoundService* soundService, Map* ma
 void Trigger_GameStart(RenderWindow* window, SoundService* soundService, Map* map, Entity* entities[]) {
     // Starting Level Cinematic
     for (int i = 0; i < MaxEntities; i++) {
-        if (entities[i]) entities[i]->Pause();
+        if (entities[i]) {
+            entities[i]->Pause();
+        }
     }
     window->SetDialogueText("\nHit spacebar to rally your sheep.", 0);
 

@@ -89,6 +89,7 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
         HasFire = fireballPresent->HasFire;
         HasFrost = fireballPresent->HasFrost;
         fireballPresent->TakeDamage(1, this); // Fireballs with no health are marked for cleanup
+        EntityTools::RemoveEntity(entities, fireballPresent);
 
     // If we're not holding fire and there is fire we can pick up
     } else if (!hasFlame && litTorchPresent) {
@@ -149,22 +150,28 @@ void Shepherd::SwingAttack(Entity** entities, Particle* particles, SoundService*
     } else {
         // Defaultly pause all sheep encountered
         bool NewPause = true;
-        if (pausedSheep > sheepFound/2) // ...unless there more paused sheep already than unpaused within the sample 
+        if (pausedSheep > sheepFound/2) { // ...unless there more paused than unpaused sheep within the sample 
             NewPause = false;
+        }
 
         // Pause any sheep and attack any wolves within a tile radius of the Shepherd
         for (int w = x-1; w < x+2; w++) {
             for (int z = y-1; z < y+2; z++) {
                 Entity* obj = EntityTools::GetEntityAtLocation(entities, w, z);
                 if (obj && obj->GetID() == EntityID::EE_Sheep) { //If sheep, toggle pause
-                    if (NewPause) obj->Pause();
-                    else obj->Paused = false;
+                    if (NewPause) { obj->Pause(); }
+                    else { obj->Paused = false; }
                 }
             }
         }
     }
 }
 
+void Shepherd::ShoveAnimation() {
+    if (Paused) { // Only perform shove animation if paused
+        Entity::ShoveAnimation();
+    }
+}
 void Shepherd::Draw(SDL_Renderer* canvas, SDL_Texture* texture, SDL_Rect* tile, float delta) {
     SDL_Rect src;
     src.h = 32;
