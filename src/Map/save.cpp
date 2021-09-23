@@ -2,6 +2,8 @@
 
 Entity* SaveLoad::NewEntityFromID(EntityID id, int x, int y) {
     switch (id) {
+        case EntityID::EE_Shepherd:
+            return new Shepherd(x, y);
         case EntityID::EE_Sheep:
             return new Sheep(x, y);
         case EntityID::EE_Fireball:
@@ -183,21 +185,48 @@ Map* SaveLoad::LoadMapFile(const char* filePath) {
 bool SaveLoad::Save(GameData* data) {
     // TODO: Check if save folder exists
     // TODO: Multiple saves?
+
+    bool valid = true;
     
-    SaveState(data);
-    for (int x = 0; x < WorldWidth; x++) {
-        for (int y = 0; y < WorldHeight; y++) {
-            SaveMap(data->world[x][y], x, y);
+    valid = SaveState(data);
+    for (int x = 0; x < WorldWidth && valid; x++) {
+        for (int y = 0; y < WorldHeight && valid; y++) {
+            valid = SaveMap(data->world[x][y], x, y);
         }
     }
 
     // TODO: Pack saves into one file?
 
-    return true;
+    return valid;
 }
 bool SaveLoad::SaveState(GameData* data) {
-    
+    string filename = "save/STATE";
+    ofstream saveFile;
+    saveFile.open(filename.c_str(), ios::out | ios::trunc);
+    if (!saveFile.is_open()) {
+        perror("Failed to save STATE file:\n");
+        printf("\t%s\n", filename.c_str());
+        return false;
+    }
 
+    string* text = new string();
+    strutil::appendChar(text, 'S'); // Identify first line as a state
+    strutil::poolIntegers(text, 3, data->ticks, data->worldX, data->worldY); // Save number of ticks and currently loaded map position
+    strutil::appendChar(text, '\n');
+
+    for (int i = 0; i < MaxEntities; i++) { // Save and store entity data
+        if (data->entities[i]) {
+            string* entityData = data->entities[i]->Ascii();
+            strutil::appendChar(text, '\n');
+            text->append(*entityData);
+            delete entityData;
+        }
+    }
+
+    saveFile << text->c_str();
+    saveFile.close();
+    delete text;
+    
     return true;
 }
 bool SaveLoad::SaveMap(Map* map, int x, int y) {
