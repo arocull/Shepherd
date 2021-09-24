@@ -10,6 +10,8 @@ Shepherd::Shepherd(int spawnX, int spawnY) {
     y = spawnY;
     lastX = spawnX;
     lastY = spawnY;
+
+    archivable = false;
 }
 
 

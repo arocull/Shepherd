@@ -13,7 +13,7 @@ General utilities for managing lists of entities
 
 namespace EntityTools {
     // Adds the selected entity to the given list of entities
-    void AppendEntity(Entity* entities[MaxEntities], Entity* newEntity, int arrayLength = MaxEntities);
+    void AppendEntity(Entity** entities, Entity* newEntity, int arrayLength = MaxEntities);
 
     /*  Adds the selected entity to the given list of entities
 

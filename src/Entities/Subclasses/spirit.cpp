@@ -8,6 +8,8 @@ Spirit::Spirit(int xPos, int yPos) {
     MaxHealth = 100;
     Health = 100;
     Solid = false;
+
+    archivable = false;
 }
 
 

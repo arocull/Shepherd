@@ -8,6 +8,8 @@ Sheep::Sheep(int xPos, int yPos) {
     lastY = yPos;
     MaxHealth = 2;
     Health = 2;
+
+    archivable = false;
 }
 
 void Sheep::Unload() {

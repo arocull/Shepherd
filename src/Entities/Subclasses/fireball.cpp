@@ -16,6 +16,8 @@ Fireball::Fireball(int spawnX, int spawnY, int dirX, int dirY, int type) {
         HasFire = true;
         animation = AnimationID::ANIM_Idle;
     }
+
+    archivable = false;
 }
 
 // Causes the fireball to burst, setting nearby entities on fire as well as deleting the fireball itself

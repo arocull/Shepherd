@@ -1,7 +1,7 @@
 // Entity Management Function Definitions //
 #include "entity_management.h"
 
-void EntityTools::AppendEntity(Entity* entities[MaxEntities], Entity* newEntity, int arrayLength) {
+void EntityTools::AppendEntity(Entity** entities, Entity* newEntity, int arrayLength) {
     for (int i = 0; i < arrayLength; i++) {
         if (nullptr == entities[i]) {            //Empty slot in list. Go ahead and add them in!
             entities[i] = newEntity;
@@ -12,7 +12,7 @@ void EntityTools::AppendEntity(Entity* entities[MaxEntities], Entity* newEntity,
 
 
 void EntityTools::AppendEntityDetailed(Entity* entities[MaxEntities], Entity* newEntity, int dataRange, int filter) {
-    if (!newEntity || newEntity->GetID() != filter) return;                 //Don't attempt to add something that doesn't exist!
+    if (!newEntity || newEntity->GetID() != filter) return; // Don't attempt to add something that doesn't exist!
 
     for (int i = 0; i < dataRange; i++) {
         if (entities[i] == newEntity)       //Entity already exists within list! Don't add them again!

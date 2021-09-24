@@ -76,14 +76,16 @@ int main(int argc, char **argv) {
     float GameTick = 0;
 
     bool loadSave = false;
+    #ifndef DEBUG_MODE
     if (SaveLoad::SaveGameValid()) { // If we have a save valid, load a save
         game->SaveMenuOpen();
-        game->paused = true; // Pause game so we can interact with menus
 
         while (event->type != SDL_QUIT) { // Small loop for UI interaction
             LastTick = CurrentTick;
             CurrentTick = SDL_GetPerformanceCounter();
             DeltaTime = (CurrentTick-LastTick) / SDL_GetPerformanceFrequency();
+
+            game->paused = true; // Pause game so we can interact with menus
 
             // Check Events
             SDL_PollEvent(event);
@@ -96,11 +98,12 @@ int main(int argc, char **argv) {
             }
             delete input;
 
-            game->DrawPauseMenu(DeltaTime);
+            game->DrawPauseMenu(DeltaTime); // Draw pause menu player interacts with
         }
         window.LoadScreen(); // Draw load screen again as we do more work
         game->paused = false;
     }
+    #endif
 
     // Load save if it was declared to
     game->SaveMenuClose();
@@ -139,7 +142,7 @@ int main(int argc, char **argv) {
     }
     window.LoadScreen(); // Hide game as we clean up so the user know we're processing
 
-    SaveLoad::Save(game->data); // Save game data
+    game->SaveGame(); // Save game data
     delete game; // Free game and relevant game data
     delete event;
     window.Close(); // Close window and deallocate memory

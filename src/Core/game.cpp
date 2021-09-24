@@ -407,7 +407,7 @@ void Game::LoadGameDefaults() {
     data->entities[0] = data->player;
 
     // Load level into memory
-    data->map = LoadLevel(data->world, NULL, data->entities, data->worldX, data->worldY, data->player->x, data->player->y);
+    data->map = LevelManager::LoadLevel(data, true);
     loadedMapX = data->worldX;
     loadedMapY = data->worldY;
     // Start game with intro cutscene
@@ -430,13 +430,16 @@ bool Game::LoadGame() {
     Trigger_Init(maxMapID); // Initialize triggers
 
     // Load level into memory
-    data->map = LoadLevel(data->world, NULL, data->entities, data->worldX, data->worldY, data->player->x, data->player->y);
+    data->map = LevelManager::LoadLevel(data);
     loadedMapX = data->worldX;
     loadedMapY = data->worldY;
 
-    LoadScrolls();
-
     return true;
+}
+void Game::SaveGame() {
+    LevelManager::UnloadArchivable(data->map, data->entities); // Unload archivable entities so they are in map data
+    SaveLoad::Save(data); // Save game data
+    LevelManager::LoadArchivable(data->map, data->entities); // Reload archived entities
 }
 
 
@@ -487,7 +490,7 @@ void Game::MovePlayer() {
         loadedMapX = data->worldX;
         loadedMapY = data->worldY;
         StopParticles(data->particles);
-        data->map = LoadLevel(data->world, data->map, data->entities, data->worldX, data->worldY, player->x, player->y);
+        data->map = LevelManager::LoadLevel(data);
         Trigger_LevelLoaded(window, audio, data->world, data->map, data->entities);
         player->lastX = player->x; // Don't draw player teleporting
         player->lastY = player->y;

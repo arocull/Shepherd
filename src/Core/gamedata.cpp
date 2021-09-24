@@ -5,6 +5,7 @@ GameData::GameData() {
     for (int x = 0; x < WorldWidth; x++) {
         world[x] = (Map**) calloc(WorldHeight, sizeof(Map*));
     }
+    map = nullptr;
 
     entities = (Entity**) calloc(MaxEntities, sizeof(Entity*));
     particles = (Particle*) calloc(MaxParticles, sizeof(Particle));

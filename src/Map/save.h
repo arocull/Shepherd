@@ -38,20 +38,24 @@ namespace SaveLoad {
     Entity* NewEntityFromID(EntityID id, int x = 0, int y = 0);
     // Creates a new Entity using an Ascii buffer
     Entity* NewEntityFromAscii(char* buffer);
+    // Applies the given Ascii buffer to game data
+    void StateFromAscii(char* buffer, GameData* data);
 
 
     // LOADING //
 
-    // Checks to see if the current existing save is valid, returns true if so
-    bool SaveGameValid();
     // Loads an entire game, returns true if successful, false otherwise
     bool LoadGame(GameData* data);
     // Loads a given file in as a new map
     Map* LoadMapFile(const char* filePath);
+    // Load flags
+    void LoadObjects(fstream* file, GameData* data, Map* map, Entity** entities, int maxEntities = MaxEntitiesStoreable);
 
 
     // SAVING //
 
+    // Checks to see if the current existing save is valid, returns true if so
+    bool SaveGameValid();
     // Saves the game state and all maps
     bool Save(GameData* data);
     // Saves the current game state. Mostly focuses on existing entities, player position, loaded area

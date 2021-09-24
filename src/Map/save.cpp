@@ -33,26 +33,57 @@ Entity* SaveLoad::NewEntityFromAscii(char* buffer) {
 
     return obj;
 }
-
-
-bool SaveLoad::SaveGameValid() {
-    std::string filename = "save/STATE";
-
-    fstream saveFile;
-    saveFile.open(filename.c_str());
-    if (!saveFile.is_open()) {
-        return false;
+void SaveLoad::StateFromAscii(char* buffer, GameData* data) {
+    if (nullptr == data) {
+        return;
     }
 
-    char next = saveFile.get();
-    if (saveFile.eof() || 'S' != next) {
-        return false;
-    }
-
-    return true;
+    int idx = 1;
+    data->ticks = strutil::parseInt(buffer, &idx);
+    data->worldX = strutil::parseInt(buffer, &idx);
+    data->worldY = strutil::parseInt(buffer, &idx);
 }
+
+
+
 bool SaveLoad::LoadGame(GameData* data) {
-    return false;
+    // First, load all maps
+    for (int x = 0; x < WorldWidth; x++) {
+        for (int y = 0; y < WorldHeight; y++) {
+            string filename = "save/m"; // Build map name
+            filename.append(std::to_string(x)); // X position
+            strutil::appendChar(&filename, ','); // Comma
+            filename.append(std::to_string(y)); // Y position
+
+            data->world[x][y] = LoadMapFile(filename.c_str()); // Load map with given filename
+            if (nullptr == data->world[x][y]) { // If loading fails, abort load
+                // TODO: Delete all loaded maps when we load a fresh save
+                return false;
+            }
+        }
+    }
+
+    // Open main file
+    fstream state;
+    state.open("save/STATE");
+    if (!state.is_open()) {
+        return false;
+    }
+
+    // Then, load state
+    SaveLoad::LoadObjects(&state, data, nullptr, data->entities, MaxEntities);
+
+    for (int i = 0; i < MaxEntities; i++) { // Find the Shepherd and set him as the player
+        if (data->entities[i] && data->entities[i]->GetID() == EntityID::EE_Shepherd) {
+            data->player = dynamic_cast<Shepherd*>(data->entities[i]);
+            break;
+        }
+    }
+    if (nullptr == data->player) { // If no Shepherd was found, this save is invalid
+        return false;
+    }
+
+    return true; // If no errors occurred, we are good to go!
 }
 Map* SaveLoad::LoadMapFile(const char* filePath) {
     std::fstream mapFile;       //Creates stream to read from
@@ -170,38 +201,59 @@ Map* SaveLoad::LoadMapFile(const char* filePath) {
         free(scrollName);
     }
 
-    if (!mapFile.eof()) { // Again, make sure we're not at end of file
-        // Now we are getting to save-states. Here, we pull text line-by-line until we 
-        // Then, process each line based off of the given flag at the start of the line.
-        char* buffer = (char*) calloc(sizeof(char), MaxAsciiLoadBuffer);
-        for (int i = 0; i < MaxAsciiLoadBuffer && !mapFile.eof(); i++) {
-            mapFile.getline(buffer, MaxAsciiLoadBuffer);
-            printf("Map %i loaded string %s\n", map->GetMapID(), buffer);
-
-            int idx = 1;
-
-            switch (buffer[0]) {
-                case 'M':
-                    map->LoadAscii(buffer, &idx);
-                    break;
-                case 'E':
-                    EntityTools::AppendEntity(map->StoredEntities, SaveLoad::NewEntityFromAscii(buffer), MaxEntitiesStoreable);
-                    break;
-                case 'P':
-                    // TODO: Load puzzle data
-                    break;
-            }
-        }
-        free(buffer);
-    }
+    // Load stored objects like entities, puzzles, and map states
+    SaveLoad::LoadObjects(&mapFile, nullptr, map, map->StoredEntities, MaxEntitiesStoreable);
 
     mapFile.close();
     return map;
+}
+void SaveLoad::LoadObjects(fstream* file, GameData* data, Map* map, Entity** entities, int maxEntities) {
+    // Now we are getting to save-states. Here, we pull text line-by-line until we 
+    // Then, process each line based off of the given flag at the start of the line.
+    char* buffer = (char*) calloc(sizeof(char), MaxAsciiLoadBuffer);
+    for (int i = 0; i < MaxAsciiLoadBuffer && !file->eof(); i++) {
+        file->getline(buffer, MaxAsciiLoadBuffer);
+
+        int idx = 1;
+
+        switch (buffer[0]) {
+            case 'S':
+                SaveLoad::StateFromAscii(buffer, data);
+                break;
+            case 'M':
+                map->LoadAscii(buffer, &idx);
+                break;
+            case 'E':
+                EntityTools::AppendEntity(entities, SaveLoad::NewEntityFromAscii(buffer), maxEntities);
+                break;
+            case 'P':
+                // TODO: Load puzzle data
+                break;
+        }
+    }
+    free(buffer);
 }
 
 
 // SAVING //
 
+bool SaveLoad::SaveGameValid() {
+    std::string filename = "save/STATE";
+
+    fstream saveFile;
+    saveFile.open(filename.c_str());
+    if (!saveFile.is_open()) {
+        return false;
+    }
+
+    char next = saveFile.get();
+    if (saveFile.eof() || 'S' != next) {
+        return false;
+    }
+    saveFile.close();
+
+    return true;
+}
 bool SaveLoad::Save(GameData* data) {
     // TODO: Check if save folder exists
     // TODO: Multiple saves?

@@ -56,6 +56,8 @@ class Game {
         void LoadGameDefaults();
         // Attempts to load a saved game, returns true if successful, false otherwise
         bool LoadGame();
+        // Attempts to save the game, good for checkpoints
+        void SaveGame();
 
     private:
         // Loads scroll data from the currently loaded maps

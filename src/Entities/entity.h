@@ -83,7 +83,7 @@ class Entity {
         float animationTimerTime = 0.0f;
 
         // If true, entity can be saved to or removed from levels upon entering and leaving
-        bool archivable = false;
+        bool archivable = true;
 
         // Generates an Ascii string that contains data on this entity
         virtual std::string* Ascii();

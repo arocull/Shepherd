@@ -204,9 +204,13 @@ std::string* Map::Ascii() {
     }
 
     // Map ID and Biome
+    if (GetMapID() < 10) { // If the map ID is less than 2 digits, append an additional zero to the front
+        strutil::appendChar(text, '0');
+    }
     std::string mapIDString = std::to_string(GetMapID());
     text->append(mapIDString);
-    strutil::appendChar(text, GetMapBiome());
+    strutil::appendChar(text, (char) GetMapBiome());
+    printf("Map %c\n", (char) GetMapBiome());
 
     // Scroll
     if (HasScroll()) { // If map has a scroll, get scroll data and append to file
