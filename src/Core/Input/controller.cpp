@@ -12,6 +12,7 @@ void Controller::ProcessInput(SDL_Event* input, InputAction* action, bool paused
     action->close = false;
     action->pause = paused;
     action->fullscreen = inFullscreen;
+    action->index = -1;
 
 
     switch (input->type) {
@@ -77,6 +78,10 @@ void Controller::KeyDown(SDL_Keycode key, InputAction* action) {
 
         if (MoveUp) menus->OptionUp(); // Move up in menu
         else if (MoveDown) menus->OptionDown(); // Move down in menu
+
+        if (MoveRight || MoveFireballQueued) { // Set index of inputted menu item
+            action->index = menus->activeMenu->optionIndex;
+        }
 
         if (menus->inSubmenu()) { // If in submenu, manipulate index
             if (MoveRight || MoveFireballQueued) { // When enter / right / spacebar

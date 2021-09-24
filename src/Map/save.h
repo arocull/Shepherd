@@ -42,6 +42,10 @@ namespace SaveLoad {
 
     // LOADING //
 
+    // Checks to see if the current existing save is valid, returns true if so
+    bool SaveGameValid();
+    // Loads an entire game, returns true if successful, false otherwise
+    bool LoadGame(GameData* data);
     // Loads a given file in as a new map
     Map* LoadMapFile(const char* filePath);
 

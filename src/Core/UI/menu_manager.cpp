@@ -26,6 +26,12 @@ MenuManager::MenuManager() {
     settingsMenu->optionDesc[2] = (char*) "Resets all save data and forcibly closes the game.";
 
     activeMenu = pauseMenu;
+
+    loadingSave = new Menu(MenuID::EM_SaveLoading, 2);
+    loadingSave->optionNames[0] = (char*) "Load Save";
+    loadingSave->optionNames[1] = (char*) "New Game";
+    loadingSave->optionDesc[0] = (char*) "Loads the currently saved game. (NOTE THAT THIS IS CURRENTLY EXPERIMENTAL. IT CAN AND WILL BREAK.)";
+    loadingSave->optionDesc[1] = (char*) "Starts a new game and overrides your existing save.";
 }
 
 
@@ -49,7 +55,9 @@ void MenuManager::UnlockScroll(int scrollIndex, char* name, char* desc) {
 
 // Goes up one layer of menu--currently jumps to main pause menu
 void MenuManager::Back() {
-    activeMenu = pauseMenu;
+    if (inSubmenu()) {
+        activeMenu = pauseMenu;
+    }
 }
 
 
@@ -72,6 +80,7 @@ void MenuManager::ClampOptionIndex() {
 
 
 
+// TODO: Streamline these with Enums + array indices?
 void MenuManager::EnterMenuMap() {
     activeMenu = mapMenu;
 }
@@ -80,6 +89,9 @@ void MenuManager::EnterMenuScrolls() {
 }
 void MenuManager::EnterMenuSettings() {
     activeMenu = settingsMenu;
+}
+void MenuManager::EnterSaveLoading() {
+    activeMenu = loadingSave;
 }
 
 
@@ -92,17 +104,29 @@ void MenuManager::ToggleFullscreen(bool inFullscreen) {
 
 
 bool MenuManager::inSubmenu() {
-    return (activeMenu != pauseMenu);
+    return (activeMenu != pauseMenu && activeMenu != loadingSave);
 }
 
 void MenuManager::Free() {
+    FreeSaveLoading();
     activeMenu = nullptr;
 
-    pauseMenu->Free();
-    if (scrollsMenu) scrollsMenu->Free();
-    settingsMenu->Free();
+    if (scrollsMenu) {
+        scrollsMenu->Free();
+        delete scrollsMenu;
+        scrollsMenu = nullptr;
+    }
 
-    delete pauseMenu;
-    if (scrollsMenu) delete scrollsMenu;
+    settingsMenu->Free();
     delete settingsMenu;
+    pauseMenu->Free();
+    delete pauseMenu;
+}
+void MenuManager::FreeSaveLoading() {
+    if (loadingSave) {
+        loadingSave->Free();
+        delete loadingSave;
+        loadingSave = nullptr;
+    }
+    activeMenu = pauseMenu;
 }

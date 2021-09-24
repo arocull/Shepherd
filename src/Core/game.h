@@ -49,13 +49,17 @@ class Game {
         void Draw(float deltaTime);
 
         void DrawPauseMenu(float deltaTime);
+        void SaveMenuOpen();
+        void SaveMenuClose();
+
+        // Creates a new game, loading default settings
+        void LoadGameDefaults();
+        // Attempts to load a saved game, returns true if successful, false otherwise
+        bool LoadGame();
 
     private:
         // Loads scroll data from the currently loaded maps
         void LoadScrolls();
-
-        // Creates a new game, loading default settings
-        void NewGame();
 
         // Ticks player movement once
         void MovePlayer();

@@ -34,6 +34,26 @@ Entity* SaveLoad::NewEntityFromAscii(char* buffer) {
     return obj;
 }
 
+
+bool SaveLoad::SaveGameValid() {
+    std::string filename = "save/STATE";
+
+    fstream saveFile;
+    saveFile.open(filename.c_str());
+    if (!saveFile.is_open()) {
+        return false;
+    }
+
+    char next = saveFile.get();
+    if (saveFile.eof() || 'S' != next) {
+        return false;
+    }
+
+    return true;
+}
+bool SaveLoad::LoadGame(GameData* data) {
+    return false;
+}
 Map* SaveLoad::LoadMapFile(const char* filePath) {
     std::fstream mapFile;       //Creates stream to read from
     mapFile.open(filePath);     //Opens file path

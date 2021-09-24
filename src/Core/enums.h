@@ -62,7 +62,8 @@ enum MenuID {
     EM_Pause = 0,
     EM_Map = 1,
     EM_Scrolls = 2,
-    EM_Settings = 3
+    EM_Settings = 3,
+    EM_SaveLoading = 4,
 };
 
 

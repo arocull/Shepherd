@@ -17,10 +17,6 @@ Game::Game(RenderWindow* gameWindow) {
     menus = new MenuManager(); // Should this be a pointer, or created as a normal base-object like SoundService and Window?
     controller = new Controller(menus, audio); // Player controller input (done as pointer in-case multiple are used in future)
     ai = new AIManager(data, window, audio);
-
-    // TODO: Setup function that loads a save instead?
-    NewGame();
-    LoadScrolls();
 }
 Game::~Game() {
     Trigger_Free();
@@ -285,17 +281,23 @@ void Game::DrawPauseMenu(float deltaTime) {
     SDL_RenderClear(window->canvas);
     window->UpdateSize();
 
-    window->DrawStatusBar(data->player->GetHealth(), data->map->PuzzleStatus);
+    // window->DrawStatusBar(data->player->GetHealth(), data->map->PuzzleStatus);
     window->DrawDialogueBox(menus->activeMenu->optionDesc[menus->activeMenu->optionIndex]);
     window->DrawMenuBackground();
-    window->DrawMenu(menus->pauseMenu->getNumOptions(), menus->pauseMenu->optionNames, menus->pauseMenu->optionIndex, menus->inSubmenu());
+    window->DrawMenu(menus->activeMenu->getNumOptions(), menus->activeMenu->optionNames, menus->activeMenu->optionIndex, false);
 
     if (menus->inSubmenu()) { // Draw submenu as well if it is active
-        window->DrawMenu(menus->activeMenu->getNumOptions(), menus->activeMenu->optionNames, menus->activeMenu->optionIndex, false);
+        window->DrawMenu(menus->pauseMenu->getNumOptions(), menus->pauseMenu->optionNames, menus->pauseMenu->optionIndex, true);
     }
 
     audio->Tick(deltaTime);
     SDL_RenderPresent(window->canvas);
+}
+void Game::SaveMenuOpen() {
+    menus->EnterSaveLoading();
+}
+void Game::SaveMenuClose() {
+    menus->FreeSaveLoading();
 }
 
 
@@ -325,7 +327,7 @@ void Game::LoadScrolls() {
     // TODO: If a map has a scroll already discovered, re-discover it here?
 }
 
-void Game::NewGame() {
+void Game::LoadGameDefaults() {
     using SaveLoad::LoadMapFile;
     Map*** world = data->world;
 
@@ -373,6 +375,8 @@ void Game::NewGame() {
     world[10][1] = LoadMapFile("Assets/Maps/Empty");
     world[10][0] = LoadMapFile("Assets/Maps/Pyramid/PyramidBoss");
 
+    LoadScrolls();
+
     // Initialize puzzles
     for (int x = 0; x < WorldWidth; x++) {
         for (int y = 0; y < WorldHeight; y++) {
@@ -408,6 +412,31 @@ void Game::NewGame() {
     loadedMapY = data->worldY;
     // Start game with intro cutscene
     Trigger_GameStart(window, audio, data->map, data->entities);
+}
+bool Game::LoadGame() {
+    bool success = SaveLoad::LoadGame(data);
+    if (!success) {
+        return false;
+    }
+    
+    LoadScrolls();
+
+    for (int x = 0; x < WorldWidth; x++) { // Initialize puzzles
+        for (int y = 0; y < WorldHeight; y++) {
+            Trigger_SetupPuzzles(data->world[x][y]);
+            if (data->world[x][y]->GetMapID() > maxMapID) { maxMapID = data->world[x][y]->GetMapID(); }
+        }
+    }
+    Trigger_Init(maxMapID); // Initialize triggers
+
+    // Load level into memory
+    data->map = LoadLevel(data->world, NULL, data->entities, data->worldX, data->worldY, data->player->x, data->player->y);
+    loadedMapX = data->worldX;
+    loadedMapY = data->worldY;
+
+    LoadScrolls();
+
+    return true;
 }
 
 
