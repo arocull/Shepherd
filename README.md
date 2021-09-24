@@ -21,7 +21,7 @@ Solve ancient puzzles and fend off wolves as you lead your sheep to greener past
 
 Note that this game is a work-in-progress, only providing about 5-15 minutes of gameplay for the time being.
 
-Games cannot be saved for the time being, but this will hopefully be a feature in the future.
+Updates to the game may break saves, and save games may be unstable. To clear an existing save game, either run `$ make clean` and then `$ make`, or press "New Game" in the menu upon launching the game.
 
 ### Controls
 There is a tutorial in place that should give you the basic controls and instruct you on how to play.
@@ -41,6 +41,8 @@ Below the level identification section is lines that can be used for **scrolls**
 The first line after map identification is the name of the scroll. This is what you see when browsing discovered scrolls in the pause menu.
 The line below the scroll name is the text the scroll contains when read. It extends the remaining length of the file, just note it has a max length of 256 characters (set in [config.h](src/Core/config.h)) and all the text must be able to fit in the dialogue box at once.
 
+Below scrolls, additional data like puzzles, entities, etc can be placed, but each line must start with a flag. These are harder to work with and may more frequently change--they are mostly intended for save data. However, if you would like to mess with them, you can view them in [SaveLoad::LoadObjects](src/Map/save.cpp).
+
 ## Triggers and Puzzles
 
 If you want to set up and configure a puzzle, simply edit the function [Trigger_SetupPuzzles](src/Triggers/triggers.cpp) and add a section for your added level. Note the use of the [Puzzle](src/Map/puzzle.h) struct, which is a general, easy-to-use interface for creating puzzle conditions.
@@ -54,7 +56,7 @@ Entities are located in the [Entities > Subclasses](src/Entities/Subclasses) fol
 
 Entities are managed a little messily right now, but may be cleaned up in the future. First, to register an entity, add their name and corresponding ID to the [EntityID enum](src/Core/enums.h). Make sure to set their ID in their class constructor.
 
-All Entities have their Tick function called, but if you need certain behaviors that interact with other entities, like Fireballs bursting or a custom AI, you will likely have to add it in the main game loop, located in [main](src/Core/main.cpp), currently at around line 383 at time of writing. If it's an enemy, you may find the [AI Manager](src/Entities/ai_manager.h) more useful, letting you write lengthy functions without filling up `main.cpp`, and providing support for things like swarm targets (or `enemyGoal` as defined in the manager).
+All Entities have their Tick function called, but if you need certain behaviors that interact with other entities, like Fireballs bursting or a custom AI, you will likely have to add it in the main game loop, located in [game](src/Core/game.cpp), at around line 130 at time of writing. If it's an enemy, you may find the [AI Manager](src/Entities/ai_manager.h) more useful, letting you write lengthy functions without filling up `game.cpp`, and providing support for things like swarm targets (or `enemyGoal` as defined in the manager).
 
 If you want to spawn your enemy using the Level's ASCII tileset, you can edit the [GenerateMapFromFile](src/Map/map_loading.cpp) function and specify a specific ASCII character for your Entity. Otherwise, you can spawn them with [Triggers](#Triggers).
 
