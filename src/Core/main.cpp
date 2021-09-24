@@ -1,61 +1,15 @@
-/*
-Written by Alan O'Cull
-To compile:
-$ make clean
-$ make
-
-To Run: $ make run
-
-$ make debug
-$ > break FunctionNameToStopAt
-$ > run
-
-$ make debug-mem // Basic memory tracking
-$ make debug-mem-heavy // Attempts to locate all memory leaks
-*/
-
+/* Shepherd - A small game by Alan O'Cull */
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
-#include <cstdlib>
-#include <cstdio>
 #include <ctime>
 
 #include "Core/config.h"
-#include "Core/mathutil.h"
-
 #include "Core/game.h"
-
 #include "Core/Input/input_action.h"
 #include "Core/Input/controller.h"
-#include "Core/UI/menu.h"
-#include "Core/UI/menu_manager.h"
 #include "Core/renderwindow.h"
-
-#include "Audio/sound_service.h"
-
-#include "Map/tile.h"
-#include "Map/map.h"
-
-#include "Entities/entity.h"
-#include "Entities/Subclasses/shepherd.h"
-#include "Entities/Subclasses/fireball.h"
-#include "Entities/Subclasses/torch.h"
-#include "Entities/Subclasses/lever.h"
-#include "Entities/Subclasses/spirit.h"
-
-#include "Entities/particle.h"
-
-#include "Entities/entity_management.h"
-#include "Entities/movement.h"
-#include "Entities/AI/path_manager.h"
-#include "Entities/AI/ai_manager.h"
-
-#include "Triggers/triggers.h"
-
-#include "Map/map_loading.h"
 #include "Map/save.h"
-
 
 int main(int argc, char **argv) {
     if (SDL_Init(SDL_INIT_EVERYTHING)) {
