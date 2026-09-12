@@ -1,0 +1,30 @@
+Shepherd, a humble game prototype by StagMath (Alan O'Cull)
+
+Controls:
+- WASD or Arrow Keys to move (may need to hold)
+- Spacebar to swing your staff (performs various actions)
+- Your character always faces the direction you last moved in
+- Escape to open pause menu
+	- Tap W/up or S/down to navigate
+	- D/right to select
+- F11 to toggle fullscreen
+
+Notes:
+- There must be a "save" directory in the folder you run the game executable from, even if it's empty. It will not save otherwise.
+- This game has no framerate controls, so you may want to keep it in windowed mode if your monitor is over 60Hz, to prevent slowdowns.
+- I've only tested this on Ubuntu and Debian-based Linux installs. I cannot guarantee functionality elsewhere.
+
+Rambles:
+Thanks for choosing to try out Shepherd!
+
+I made this game with very limited tools during the awkward transition between my senior year in highschool
+(during which the COVID-19 epidemic started in the USA), and my freshman year at college.
+
+This game was my intro to Linux, and I considered any time I spent making it as a time of worship with the Lord.
+The game itself could stand for improvement (to this day my level designs are still very mid), but the journey itself is what's important to me now.
+
+The game ends when you defeat the Golem boss at the end of the Pyramid.
+This game also had sheep-eating wolves and freezing liquids, but they never made it into my initial level designs.
+The levels are easy to mess with though (see Assets/Maps/) so feel free to try messing with them!
+
+Thank you so much again for playing!

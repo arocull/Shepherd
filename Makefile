@@ -6,7 +6,7 @@
 CC=g++
 # gcc/g++ Compilation Flags
 # 	-g[1-3] for debugging symbols, -O[1-3] for optimization levels
-# 	-Wall for warnings, -Werror for warnings as errors 
+# 	-Wall for warnings, -Werror for warnings as errors
 CFLAGS= -g -O2 `sdl2-config --libs` -lSDL2main -lSDL2_mixer `sdl2-config --cflags` -L/usr/lib
 
 # Build files should go in this directory
@@ -65,3 +65,14 @@ debug: # Run code with gdb
 
 debug-mem: # Run code with valgrind
 	valgrind ./$(TARGET)
+
+bundle: # Bundle for itch.io release
+	rm -rf dist
+	rm -rf Shepherd.tar.gz
+	mkdir -p dist
+	mkdir -p dist/save # Required to save the game
+	cp build/src/Core/main dist/shepherd
+	cp -r Assets dist/Assets
+	cp instructions.txt dist/instructions.txt
+	cp LICENSE.md dist/LICENSE.md
+	cd dist && tar -czvf ../Shepherd.tar.gz .

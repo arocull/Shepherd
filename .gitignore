@@ -2,5 +2,8 @@ build/
 build
 save/
 save
+dist/
+dist
 *.xcf
 *.log
+*.tar.gz
